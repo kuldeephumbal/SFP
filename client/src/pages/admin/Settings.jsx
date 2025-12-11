@@ -29,7 +29,7 @@ import {
     LockReset,
     Close
 } from '@mui/icons-material';
-import CustomBreadcrumb from '../components/CustomBreadcrumb';
+import CustomBreadcrumb from '../../components/CustomBreadcrumb';
 
 const Settings = () => {
     const [loading, setLoading] = useState(false);

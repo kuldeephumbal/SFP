@@ -14,7 +14,7 @@ import {
   TrendingDown,
   MoreVert
 } from '@mui/icons-material';
-import CustomBreadcrumb from '../components/CustomBreadcrumb';
+import CustomBreadcrumb from '../../components/CustomBreadcrumb';
 import {
   Chart as ChartJS,
   CategoryScale,

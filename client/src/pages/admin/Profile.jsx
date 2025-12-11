@@ -16,7 +16,7 @@ import {
     DialogContent,
     DialogActions
 } from '@mui/material';
-import CustomBreadcrumb from '../components/CustomBreadcrumb';
+import CustomBreadcrumb from '../../components/CustomBreadcrumb';
 import {
     Edit,
     Save,

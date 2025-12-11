@@ -20,8 +20,8 @@ import {
     Select,
     InputAdornment
 } from '@mui/material';
-import CustomBreadcrumb from '../components/CustomBreadcrumb';
-import BaseTable from '../components/BaseTable';
+import CustomBreadcrumb from '../../components/CustomBreadcrumb';
+import BaseTable from '../../components/BaseTable';
 import {
     Send,
     Campaign,
