@@ -1,17 +1,21 @@
+const path = require('path');
 const swaggerJSDoc = require('swagger-jsdoc');
 const swaggerUi = require('swagger-ui-express');
+
+const port = process.env.PORT || 8000;
+const serverUrl = process.env.SERVER_URL || `http://localhost:${port}`;
 
 const options = {
   definition: {
     openapi: '3.0.0',
     info: {
-      title: 'BMS API',
+      title: 'SFP API',
       version: '1.0.0',
-      description: 'Business Management System API',
-    }, 
+      description: 'Shankhnad Foundation Project API',
+    },
     servers: [
       {
-        url: 'http://localhost:5000/api',
+        url: `${serverUrl}`,
       },
     ],
     components: {
@@ -22,9 +26,9 @@ const options = {
           bearerFormat: 'JWT',
         },
       },
-    }
+    },
   },
-  apis: ['./routes/*.js'], // Adjust path as needed
+  apis: [path.join(__dirname, '../routes/*.js')],
 };
 
 const swaggerSpec = swaggerJSDoc(options);

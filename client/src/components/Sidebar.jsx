@@ -21,7 +21,20 @@ import {
     ExpandLess,
     ExpandMore,
     Close,
-    Message,
+    PersonAddAlt,
+    Slideshow,
+    TrendingUp,
+    Article,
+    Groups,
+    YouTube,
+    PhotoLibrary,
+    Event,
+    VolunteerActivism,
+    ReportProblem,
+    Layers,
+    Paid,
+    MailOutline,
+    Info,
 } from '@mui/icons-material';
 import { useState, useEffect } from 'react';
 
@@ -34,27 +47,35 @@ const Sidebar = ({ open, onClose }) => {
     const location = useLocation();
     const [expandedItems, setExpandedItems] = useState({});
 
-    // Get active item from current path
-    const getActiveItemFromPath = () => {
-        const path = location.pathname;
-        if (path === '/' || path === '/dashboard') return 'Dashboard';
-        if (path === '/contracts') return 'Contracts & Documents';
-        if (path === '/communication') return 'Communication System';
-        return 'Dashboard';
+    const menuItems = [
+        { title: 'Dashboard', icon: <Dashboard />, path: '/dashboard' },
+        { title: 'Application Of Member', icon: <PersonAddAlt />, path: '/application-member' },
+        { title: 'Slider', icon: <Slideshow />, path: '/slider' },
+        { title: 'Recent Activity', icon: <TrendingUp />, path: '/recent-activity' },
+        { title: 'Latest Activity', icon: <Article />, path: '/latest-activity' },
+        { title: 'Member', icon: <Groups />, path: '/member' },
+        { title: 'Youtube Videos', icon: <YouTube />, path: '/youtube-videos' },
+        { title: 'Gallery', icon: <PhotoLibrary />, path: '/gallery' },
+        { title: 'Upcoming Event', icon: <Event />, path: '/upcoming-event' },
+        { title: 'Crowd Funding', icon: <VolunteerActivism />, path: '/crowd-funding' },
+        { title: 'Problem Raised', icon: <ReportProblem />, path: '/problem-raised' },
+        { title: 'Our Project', icon: <Layers />, path: '/our-project' },
+        { title: 'Donations', icon: <Paid />, path: '/donations' },
+        { title: 'Enquiry', icon: <MailOutline />, path: '/enquiry' },
+        { title: 'About Us', icon: <Info />, path: '/about-us' },
+    ];
+
+    const findActiveTitleByPath = (path) => {
+        if (path === '/') return 'Dashboard';
+        const match = menuItems.find(item => item.path === path);
+        return match ? match.title : 'Dashboard';
     };
 
-    const [activeItem, setActiveItem] = useState(getActiveItemFromPath());
+    const [activeItem, setActiveItem] = useState(findActiveTitleByPath(location.pathname));
 
     // Update active item when route changes
     useEffect(() => {
-        const getActiveFromPath = () => {
-            const path = location.pathname;
-            if (path === '/' || path === '/dashboard') return 'Dashboard';
-            if (path === '/contracts') return 'Contracts & Documents';
-            if (path === '/communication') return 'Communication System';
-            return 'Dashboard';
-        };
-        setActiveItem(getActiveFromPath());
+        setActiveItem(findActiveTitleByPath(location.pathname));
     }, [location.pathname]);
 
     const handleExpandClick = (item) => {
@@ -84,19 +105,6 @@ const Sidebar = ({ open, onClose }) => {
         setActiveItem(`${parentTitle}-${childName}`);
         // You can add navigation for child items here if needed
     };
-
-    const menuItems = [
-        {
-            title: 'Dashboard',
-            icon: <Dashboard />,
-            path: '/dashboard'
-        },
-        {
-            title: 'Communication System',
-            icon: <Message />,
-            path: '/communication'
-        }
-    ];
 
     const renderMenuItem = (item, index) => {
         if (item.divider) {
@@ -272,7 +280,7 @@ const Sidebar = ({ open, onClose }) => {
                     fontWeight: '700',
                     fontSize: '1.3rem',
                 }}>
-                    CUST
+                    Shankhnad Foundation
                 </Typography>
                 {isMobile && (
                     <IconButton onClick={onClose} sx={{ color: 'inherit' }}>

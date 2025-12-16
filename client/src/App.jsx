@@ -8,7 +8,7 @@ import {
 } from '@mui/material';
 import Header from './components/header';
 import Sidebar from './components/Sidebar';
-import backgroundImage from './assets/img/img01.jpg';
+import backgroundImage from '/assets/img/img01.jpg';
 
 const App = ({ children }) => {
     const [sidebarOpen, setSidebarOpen] = useState(false);

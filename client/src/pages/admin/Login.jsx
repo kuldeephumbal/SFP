@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link as RouterLink} from 'react-router-dom';
+import { Link as RouterLink, useNavigate } from 'react-router-dom';
 import {
     Box,
     Card,
@@ -17,6 +17,7 @@ import {
     Visibility,
     VisibilityOff
 } from '@mui/icons-material';
+import api from '../../components/BaseURL';
 
 const Login = () => {
 
@@ -26,6 +27,10 @@ const Login = () => {
     });
 
     const [showPassword, setShowPassword] = useState(false);
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState('');
+
+    const navigate = useNavigate();
 
 
 
@@ -39,6 +44,23 @@ const Login = () => {
 
     const togglePasswordVisibility = () => {
         setShowPassword(!showPassword);
+    };
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        setError('');
+        setLoading(true);
+        try {
+            const { data } = await api.post('/auth/login', formData);
+            localStorage.setItem('token', data.token);
+            localStorage.setItem('user', JSON.stringify(data.user));
+            navigate('/dashboard');
+        } catch (err) {
+            const message = err?.response?.data?.message || 'Login failed. Please check your credentials.';
+            setError(message);
+        } finally {
+            setLoading(false);
+        }
     };
 
     return (
@@ -76,7 +98,7 @@ const Login = () => {
                         </Typography>
                     </Box>
 
-                    <form>
+                    <form onSubmit={handleSubmit}>
                         <TextField
                             fullWidth
                             name="email"
@@ -123,11 +145,18 @@ const Login = () => {
                             }}
                         />
 
+                        {error && (
+                            <Typography color="error" variant="body2" sx={{ mt: 1 }}>
+                                {error}
+                            </Typography>
+                        )}
+
                         <Button
                             type="submit"
                             fullWidth
                             variant="contained"
                             size="large"
+                            disabled={loading}
                             sx={{
                                 mt: 3,
                                 mb: 2,
@@ -137,7 +166,7 @@ const Login = () => {
                                     background: 'linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%)'
                                 }
                             }}
-                        >Submit
+                        >{loading ? 'Signing in...' : 'Submit'}
                         </Button>
 
                         <Box sx={{ textAlign: 'right', mt: 1 }}>
