@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Box,
   Card,
@@ -12,8 +12,10 @@ import {
 import {
   TrendingUp,
   TrendingDown,
-  MoreVert
+  MoreVert,
+  YouTube
 } from '@mui/icons-material';
+import api from '../../components/BaseURL';
 import CustomBreadcrumb from '../../components/CustomBreadcrumb';
 import {
   Chart as ChartJS,
@@ -47,6 +49,9 @@ ChartJS.register(
 );
 
 const Dashboard = () => {
+  const [youtubeVideos, setYoutubeVideos] = useState([]);
+  const [videosLoading, setVideosLoading] = useState(false);
+
   const stats = [
     {
       title: '26K',
@@ -187,6 +192,30 @@ const Dashboard = () => {
     }
   };
 
+  const getEmbedUrl = (url) => {
+    if (!url) return '';
+    if (url.includes('embed/')) return url;
+    let videoId = '';
+    if (url.includes('watch?v=')) {
+      videoId = url.split('watch?v=')[1].split('&')[0];
+    } else if (url.includes('youtu.be/')) {
+      videoId = url.split('youtu.be/')[1].split('?')[0];
+    }
+    return videoId ? `https://www.youtube.com/embed/${videoId}` : url;
+  };
+
+  useEffect(() => {
+    setVideosLoading(true);
+    api
+      .get('/youtube-video')
+      .then((res) => setYoutubeVideos(res.data || []))
+      .catch((err) => {
+        console.error('Failed to load youtube videos', err);
+        setYoutubeVideos([]);
+      })
+      .finally(() => setVideosLoading(false));
+  }, []);
+
   const StatCard = ({ stat }) => (
     <Card
       sx={{
@@ -307,7 +336,6 @@ const Dashboard = () => {
   return (
     <>
       <CustomBreadcrumb />
-
       <Box sx={{ width: '100%', px: { xs: 0.5, sm: 2 }, py: { xs: 1, sm: 2 } }}>
         <Box sx={{
           display: 'grid',
@@ -413,6 +441,93 @@ const Dashboard = () => {
               }}
             />
           </Box>
+        </Box>
+
+        <Box sx={{
+          mt: { xs: 2, sm: 3 },
+          display: 'grid',
+          gridTemplateColumns: { xs: '1fr', md: 'repeat(2, 1fr)', xl: 'repeat(3, 1fr)' },
+          gap: { xs: 1.5, sm: 2 }
+        }}>
+          {videosLoading && (
+            <Card sx={{
+              background: 'rgba(255, 255, 255, 0.05)',
+              backdropFilter: 'blur(20px)',
+              border: '1px solid rgba(255, 255, 255, 0.2)',
+              borderRadius: { xs: '16px', sm: '20px' },
+              boxShadow: '0 8px 32px rgba(0, 0, 0, 0.2)',
+              minHeight: 260
+            }}>
+              <CardContent sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%' }}>
+                <Typography sx={{ color: 'rgba(255, 255, 255, 0.9)', fontWeight: 600 }}>
+                  Loading YouTube videos...
+                </Typography>
+              </CardContent>
+            </Card>
+          )}
+
+          {!videosLoading && youtubeVideos.length === 0 && (
+            <Card sx={{
+              background: 'linear-gradient(135deg, rgba(96, 165, 250, 0.2) 0%, rgba(59, 130, 246, 0.15) 100%)',
+              backdropFilter: 'blur(20px)',
+              border: '1px solid rgba(255, 255, 255, 0.2)',
+              borderRadius: { xs: '16px', sm: '20px' },
+              boxShadow: '0 8px 32px rgba(0, 0, 0, 0.25)',
+              minHeight: 260
+            }}>
+              <CardContent sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%', textAlign: 'center' }}>
+                <YouTube sx={{ fontSize: 40, color: '#ef4444', mb: 1 }} />
+                <Typography variant="h6" sx={{ color: 'rgba(255, 255, 255, 0.9)', mb: 0.5 }}>
+                  No YouTube videos yet
+                </Typography>
+                <Typography variant="body2" sx={{ color: 'rgba(255, 255, 255, 0.7)' }}>
+                  Add videos from the YouTube Videos page to see them here.
+                </Typography>
+              </CardContent>
+            </Card>
+          )}
+
+          {!videosLoading && youtubeVideos.slice(0, 6).map((video) => (
+            <Card
+              key={video._id || video.id}
+              sx={{
+                background: 'rgba(255, 255, 255, 0.05)',
+                backdropFilter: 'blur(20px)',
+                border: '1px solid rgba(255, 255, 255, 0.15)',
+                borderRadius: { xs: '16px', sm: '20px' },
+                boxShadow: '0 8px 32px rgba(0, 0, 0, 0.25)',
+                overflow: 'hidden'
+              }}
+            >
+              <CardContent sx={{ p: 0 }}>
+                <Box sx={{ position: 'relative', paddingTop: '56.25%', background: '#0f172a' }}>
+                  {getEmbedUrl(video.url) && (
+                    <Box
+                      component="iframe"
+                      src={getEmbedUrl(video.url)}
+                      title={video.url}
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                      allowFullScreen
+                      sx={{
+                        position: 'absolute',
+                        top: 0,
+                        left: 0,
+                        width: '100%',
+                        height: '100%',
+                        border: 0
+                      }}
+                    />
+                  )}
+                </Box>
+                <Box sx={{ p: { xs: 1.5, sm: 2 }, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                  <Typography sx={{ color: 'rgba(255, 255, 255, 0.9)', fontWeight: 600, mr: 2, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                    {video.url}
+                  </Typography>
+                  <YouTube sx={{ color: '#ef4444' }} />
+                </Box>
+              </CardContent>
+            </Card>
+          ))}
         </Box>
       </Box>
     </>

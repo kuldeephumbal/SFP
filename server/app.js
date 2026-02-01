@@ -6,6 +6,12 @@ const app = express();
 const connectDB = require('./config/db');
 const swaggerDocs = require('./docs/swagger');
 const authRoutes = require('./routes/login');
+const sliderRoutes = require('./routes/slider');
+const recentActivityRoutes = require('./routes/recentActivity');
+const latestActivityRoutes = require('./routes/latestActivity');
+const youtubeVideoRoutes = require('./routes/youtubeVideo');
+const memberRoutes = require('./routes/member');
+const galleryRoutes = require('./routes/gallery');
 
 // Middleware
 swaggerDocs(app);
@@ -28,6 +34,12 @@ connectDB();
 
 // Routes
 app.use('/api/auth', authRoutes);
+app.use('/api/slider', sliderRoutes);
+app.use('/api/recent-activity', recentActivityRoutes);
+app.use('/api/latest-activity', latestActivityRoutes);
+app.use('/api/youtube-video', youtubeVideoRoutes);
+app.use('/api/member', memberRoutes);
+app.use('/api/gallery', galleryRoutes);
 
 // Start the server
 const PORT = process.env.PORT || 8000;

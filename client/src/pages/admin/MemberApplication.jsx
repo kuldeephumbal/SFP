@@ -1,0 +1,699 @@
+import React, { useState } from 'react';
+import {
+    Box,
+    Typography,
+    Card,
+    CardContent,
+    Button,
+    TextField,
+    IconButton,
+    Dialog,
+    DialogTitle,
+    DialogContent,
+    DialogActions,
+    FormControl,
+    InputLabel,
+    Select,
+    MenuItem,
+    InputAdornment,
+    Avatar,
+    Chip,
+    Grid
+} from '@mui/material';
+import {
+    Search,
+    Visibility,
+    Check,
+    Delete,
+    PersonAdd,
+    FilterList
+} from '@mui/icons-material';
+import { toast } from 'react-toastify';
+import CustomBreadcrumb from '../../components/CustomBreadcrumb';
+import BaseTable from '../../components/BaseTable';
+
+const MemberApplication = () => {
+    const [searchQuery, setSearchQuery] = useState('');
+    const [filterStatus, setFilterStatus] = useState('all');
+    const [viewDialogOpen, setViewDialogOpen] = useState(false);
+    const [selectedApplication, setSelectedApplication] = useState(null);
+
+    // Mock data
+    const [applications, setApplications] = useState([
+        {
+            id: 1,
+            name: 'Rajesh Kumar',
+            email: 'rajesh.kumar@example.com',
+            mobile_number: '9876543210',
+            gender: 'Male',
+            date_of_birth: '1990-05-15',
+            blood_group: 'O+',
+            profession: 'Software Engineer',
+            address: '123 MG Road, Gandhi Nagar',
+            district: 'Bangalore Urban',
+            state: 'Karnataka',
+            pin_code: '560001',
+            organization_name: 'Tech Solutions Pvt Ltd',
+            relation_type: 'Father',
+            relation_name: 'Suresh Kumar',
+            aadhar_number: '1234 5678 9012',
+            id_type: 'Aadhar Card',
+            id_document: '/uploads/id_doc1.pdf',
+            other_document: '/uploads/other_doc1.pdf',
+            profile_picture: '/uploads/profile1.jpg',
+            status: 'pending',
+            created_at: '2026-01-20T10:30:00'
+        },
+        {
+            id: 2,
+            name: 'Priya Sharma',
+            email: 'priya.sharma@example.com',
+            mobile_number: '9123456789',
+            gender: 'Female',
+            date_of_birth: '1992-08-22',
+            blood_group: 'A+',
+            profession: 'Teacher',
+            address: '45 Park Street, Civil Lines',
+            district: 'Jaipur',
+            state: 'Rajasthan',
+            pin_code: '302001',
+            organization_name: 'Delhi Public School',
+            relation_type: 'Mother',
+            relation_name: 'Sunita Sharma',
+            aadhar_number: '2345 6789 0123',
+            id_type: 'PAN Card',
+            id_document: '/uploads/id_doc2.pdf',
+            other_document: null,
+            profile_picture: '/uploads/profile2.jpg',
+            status: 'accepted',
+            created_at: '2026-01-18T14:20:00'
+        },
+        {
+            id: 3,
+            name: 'Amit Patel',
+            email: 'amit.patel@example.com',
+            mobile_number: '9988776655',
+            gender: 'Male',
+            date_of_birth: '1988-11-10',
+            blood_group: 'B+',
+            profession: 'Business Owner',
+            address: '78 Station Road, Vastrapur',
+            district: 'Ahmedabad',
+            state: 'Gujarat',
+            pin_code: '380015',
+            organization_name: 'Patel Enterprises',
+            relation_type: 'Father',
+            relation_name: 'Ramesh Patel',
+            aadhar_number: '3456 7890 1234',
+            id_type: 'Driving License',
+            id_document: '/uploads/id_doc3.pdf',
+            other_document: '/uploads/other_doc3.pdf',
+            profile_picture: '/uploads/profile3.jpg',
+            status: 'pending',
+            created_at: '2026-01-22T09:15:00'
+        }
+    ]);
+
+    const formatDateTime = (datetime) => {
+        const date = new Date(datetime);
+        const day = date.getDate().toString().padStart(2, '0');
+        const month = (date.getMonth() + 1).toString().padStart(2, '0');
+        const year = date.getFullYear();
+        let hours = date.getHours();
+        const minutes = date.getMinutes().toString().padStart(2, '0');
+        const ampm = hours >= 12 ? 'PM' : 'AM';
+        hours = hours % 12;
+        hours = hours ? hours : 12;
+        hours = hours.toString().padStart(2, '0');
+        return `${day}/${month}/${year}, ${hours}:${minutes} ${ampm}`;
+    };
+
+    const formatDate = (datetime) => {
+        const date = new Date(datetime);
+        const day = date.getDate().toString().padStart(2, '0');
+        const month = (date.getMonth() + 1).toString().padStart(2, '0');
+        const year = date.getFullYear();
+        return `${day}/${month}/${year}`;
+    };
+
+    const handleDeleteApplication = (id) => {
+        if (window.confirm('Are you sure you want to delete this application?')) {
+            setApplications(applications.filter((app) => app.id !== id));
+            toast.success('Application deleted successfully');
+        }
+    };
+
+    const handleAcceptApplication = (id) => {
+        setApplications(
+            applications.map((app) =>
+                app.id === id ? { ...app, status: 'accepted' } : app
+            )
+        );
+        toast.success('Application accepted and member added successfully.');
+    };
+
+    const handleViewDetails = (application) => {
+        setSelectedApplication(application);
+        setViewDialogOpen(true);
+    };
+
+    const filteredApplications = applications.filter((app) => {
+        const matchesSearch =
+            app.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            app.email?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            app.mobile_number?.includes(searchQuery);
+        const matchesStatus =
+            filterStatus === 'all' ||
+            (filterStatus === 'accepted' && app.status === 'accepted') ||
+            (filterStatus === 'pending' && app.status !== 'accepted');
+        return matchesSearch && matchesStatus;
+    });
+
+    return (
+        <>
+            <CustomBreadcrumb />
+
+            {/* Page Header */}
+            <div className="container-fluid mb-4">
+                <div className="row align-items-center">
+                    <div className="col">
+                        <Typography variant="h4" sx={{ fontWeight: 'bold', color: 'white', mb: 1 }}>
+                            Member Applications
+                        </Typography>
+                        <Typography variant="body2" sx={{ color: 'rgba(255, 255, 255, 0.7)' }}>
+                            Review and manage member application requests
+                        </Typography>
+                    </div>
+                </div>
+            </div>
+
+            {/* Main Content */}
+            <Card
+                sx={{
+                    background: 'rgba(255, 255, 255, 0.1)',
+                    backdropFilter: 'blur(20px)',
+                    border: '1px solid rgba(255, 255, 255, 0.2)',
+                    borderRadius: '20px',
+                    boxShadow: '0 8px 32px rgba(0, 0, 0, 0.3)'
+                }}
+            >
+                <CardContent>
+                    {/* Action Bar */}
+                    <Box sx={{ display: 'flex', gap: 2, mb: 3, flexWrap: 'wrap' }}>
+                        <TextField
+                            placeholder="Search applications..."
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                            sx={{
+                                minWidth: 250,
+                                '& .MuiOutlinedInput-root': {
+                                    color: 'white',
+                                    '& fieldset': { borderColor: 'rgba(255, 255, 255, 0.3)' },
+                                    '&:hover fieldset': { borderColor: 'rgba(255, 255, 255, 0.5)' },
+                                    '&.Mui-focused fieldset': { borderColor: '#60a5fa' }
+                                }
+                            }}
+                            InputProps={{
+                                startAdornment: (
+                                    <InputAdornment position="start">
+                                        <Search sx={{ color: 'rgba(255, 255, 255, 0.7)' }} />
+                                    </InputAdornment>
+                                )
+                            }}
+                        />
+
+                        <FormControl sx={{ minWidth: 120 }}>
+                            <InputLabel sx={{ color: 'rgba(255, 255, 255, 0.7)' }}>Status</InputLabel>
+                            <Select
+                                value={filterStatus}
+                                label="Status"
+                                onChange={(e) => setFilterStatus(e.target.value)}
+                                sx={{
+                                    color: 'white',
+                                    '& .MuiOutlinedInput-notchedOutline': {
+                                        borderColor: 'rgba(255, 255, 255, 0.3)'
+                                    },
+                                    '&:hover .MuiOutlinedInput-notchedOutline': {
+                                        borderColor: 'rgba(255, 255, 255, 0.5)'
+                                    },
+                                    '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                                        borderColor: '#60a5fa'
+                                    }
+                                }}
+                            >
+                                <MenuItem value="all">All Applications</MenuItem>
+                                <MenuItem value="pending">Pending</MenuItem>
+                                <MenuItem value="accepted">Accepted</MenuItem>
+                            </Select>
+                        </FormControl>
+
+                        <Box sx={{ flexGrow: 1 }} />
+
+                        <Chip
+                            icon={<PersonAdd />}
+                            label={`Total: ${filteredApplications.length}`}
+                            sx={{
+                                backgroundColor: 'rgba(96, 165, 250, 0.2)',
+                                color: '#60a5fa',
+                                fontWeight: 'bold',
+                                fontSize: '0.875rem'
+                            }}
+                        />
+                    </Box>
+
+                    {/* Applications Table */}
+                    <BaseTable
+                        columns={[
+                            {
+                                field: 'profile',
+                                headerName: 'Profile',
+                                minWidth: '100px',
+                                renderCell: (row) => (
+                                    <Avatar
+                                        src={`http://localhost:5000${row.profile_picture}`}
+                                        alt={row.name}
+                                        sx={{ width: 50, height: 50 }}
+                                    />
+                                )
+                            },
+                            {
+                                field: 'name',
+                                headerName: 'Name',
+                                minWidth: '150px',
+                                renderCell: (row) => (
+                                    <Box>
+                                        <Typography sx={{ color: 'white', fontWeight: 'medium', fontSize: '0.875rem' }}>
+                                            {row.name}
+                                        </Typography>
+                                        <Typography variant="caption" sx={{ color: 'rgba(255, 255, 255, 0.7)' }}>
+                                            {row.email || '-'}
+                                        </Typography>
+                                    </Box>
+                                )
+                            },
+                            {
+                                field: 'contact',
+                                headerName: 'Contact',
+                                minWidth: '120px',
+                                renderCell: (row) => (
+                                    <Box>
+                                        <Typography sx={{ color: 'white', fontSize: '0.875rem' }}>
+                                            {row.mobile_number || '-'}
+                                        </Typography>
+                                        <Typography variant="caption" sx={{ color: 'rgba(255, 255, 255, 0.7)' }}>
+                                            {row.gender}
+                                        </Typography>
+                                    </Box>
+                                )
+                            },
+                            {
+                                field: 'location',
+                                headerName: 'Location',
+                                minWidth: '150px',
+                                renderCell: (row) => (
+                                    <Box>
+                                        <Typography sx={{ color: 'white', fontSize: '0.875rem' }}>
+                                            {row.district}
+                                        </Typography>
+                                        <Typography variant="caption" sx={{ color: 'rgba(255, 255, 255, 0.7)' }}>
+                                            {row.state}
+                                        </Typography>
+                                    </Box>
+                                )
+                            },
+                            {
+                                field: 'profession',
+                                headerName: 'Profession',
+                                minWidth: '150px',
+                                renderCell: (row) => (
+                                    <Typography sx={{ color: 'rgba(255, 255, 255, 0.9)', fontSize: '0.875rem' }}>
+                                        {row.profession || '-'}
+                                    </Typography>
+                                )
+                            },
+                            {
+                                field: 'blood_group',
+                                headerName: 'Blood Group',
+                                minWidth: '100px',
+                                renderCell: (row) => (
+                                    <Chip
+                                        label={row.blood_group}
+                                        size="small"
+                                        sx={{
+                                            backgroundColor: 'rgba(239, 68, 68, 0.2)',
+                                            color: '#f87171',
+                                            fontWeight: 'bold'
+                                        }}
+                                    />
+                                )
+                            },
+                            {
+                                field: 'status',
+                                headerName: 'Status',
+                                type: 'status',
+                                minWidth: '120px',
+                                statusColors: {
+                                    accepted: 'success',
+                                    pending: 'warning'
+                                },
+                                renderCell: (row) => (
+                                    <Chip
+                                        label={row.status === 'accepted' ? 'Approved' : 'Pending'}
+                                        size="small"
+                                        sx={{
+                                            backgroundColor:
+                                                row.status === 'accepted'
+                                                    ? 'rgba(34, 197, 94, 0.2)'
+                                                    : 'rgba(245, 158, 11, 0.2)',
+                                            color: row.status === 'accepted' ? '#4ade80' : '#f59e0b',
+                                            fontWeight: 'bold'
+                                        }}
+                                    />
+                                )
+                            },
+                            {
+                                field: 'applied_date',
+                                headerName: 'Applied Date',
+                                minWidth: '150px',
+                                renderCell: (row) => (
+                                    <Typography sx={{ color: 'rgba(255, 255, 255, 0.9)', fontSize: '0.875rem' }}>
+                                        {formatDateTime(row.created_at)}
+                                    </Typography>
+                                )
+                            }
+                        ]}
+                        data={filteredApplications}
+                        searchable={false}
+                        renderActions={(row) => (
+                            <>
+                                <IconButton
+                                    size="small"
+                                    sx={{ color: 'rgba(255, 255, 255, 0.7)' }}
+                                    onClick={() => handleViewDetails(row)}
+                                    title="View Details"
+                                >
+                                    <Visibility fontSize="small" />
+                                </IconButton>
+                                {row.status !== 'accepted' && (
+                                    <>
+                                        <IconButton
+                                            size="small"
+                                            sx={{ color: '#4ade80' }}
+                                            onClick={() => handleAcceptApplication(row.id)}
+                                            title="Accept Application"
+                                        >
+                                            <Check fontSize="small" />
+                                        </IconButton>
+                                        <IconButton
+                                            size="small"
+                                            sx={{ color: '#f87171' }}
+                                            onClick={() => handleDeleteApplication(row.id)}
+                                            title="Delete Application"
+                                        >
+                                            <Delete fontSize="small" />
+                                        </IconButton>
+                                    </>
+                                )}
+                            </>
+                        )}
+                    />
+                </CardContent>
+            </Card>
+
+            {/* View Details Dialog */}
+            <Dialog
+                open={viewDialogOpen}
+                onClose={() => setViewDialogOpen(false)}
+                maxWidth="md"
+                fullWidth
+                PaperProps={{
+                    sx: {
+                        background: 'rgba(30, 41, 59, 0.95)',
+                        backdropFilter: 'blur(20px)',
+                        border: '1px solid rgba(255, 255, 255, 0.2)',
+                        borderRadius: '20px',
+                        color: 'white'
+                    }
+                }}
+            >
+                <DialogTitle>
+                    <Typography variant="h6" sx={{ fontWeight: 'bold', color: 'white' }}>
+                        Application Details
+                    </Typography>
+                </DialogTitle>
+                <DialogContent>
+                    {selectedApplication && (
+                        <Box sx={{ pt: 2 }}>
+                            <Grid container spacing={3}>
+                                {/* Profile Picture */}
+                                <Grid item xs={12} md={4} sx={{ textAlign: 'center' }}>
+                                    <Avatar
+                                        src={`http://localhost:5000${selectedApplication.profile_picture}`}
+                                        alt={selectedApplication.name}
+                                        sx={{ width: 150, height: 150, margin: '0 auto', mb: 2 }}
+                                    />
+                                    <Chip
+                                        label={selectedApplication.status === 'accepted' ? 'Approved' : 'Pending'}
+                                        sx={{
+                                            backgroundColor:
+                                                selectedApplication.status === 'accepted'
+                                                    ? 'rgba(34, 197, 94, 0.2)'
+                                                    : 'rgba(245, 158, 11, 0.2)',
+                                            color: selectedApplication.status === 'accepted' ? '#4ade80' : '#f59e0b',
+                                            fontWeight: 'bold'
+                                        }}
+                                    />
+                                </Grid>
+
+                                {/* Personal Information */}
+                                <Grid item xs={12} md={8}>
+                                    <Typography variant="h6" sx={{ color: '#60a5fa', mb: 2 }}>
+                                        Personal Information
+                                    </Typography>
+                                    <Grid container spacing={2}>
+                                        <Grid item xs={6}>
+                                            <Typography variant="caption" sx={{ color: 'rgba(255, 255, 255, 0.6)' }}>
+                                                Full Name
+                                            </Typography>
+                                            <Typography sx={{ color: 'white' }}>{selectedApplication.name}</Typography>
+                                        </Grid>
+                                        <Grid item xs={6}>
+                                            <Typography variant="caption" sx={{ color: 'rgba(255, 255, 255, 0.6)' }}>
+                                                Email
+                                            </Typography>
+                                            <Typography sx={{ color: 'white' }}>
+                                                {selectedApplication.email || '-'}
+                                            </Typography>
+                                        </Grid>
+                                        <Grid item xs={6}>
+                                            <Typography variant="caption" sx={{ color: 'rgba(255, 255, 255, 0.6)' }}>
+                                                Mobile Number
+                                            </Typography>
+                                            <Typography sx={{ color: 'white' }}>
+                                                {selectedApplication.mobile_number || '-'}
+                                            </Typography>
+                                        </Grid>
+                                        <Grid item xs={6}>
+                                            <Typography variant="caption" sx={{ color: 'rgba(255, 255, 255, 0.6)' }}>
+                                                Gender
+                                            </Typography>
+                                            <Typography sx={{ color: 'white' }}>{selectedApplication.gender}</Typography>
+                                        </Grid>
+                                        <Grid item xs={6}>
+                                            <Typography variant="caption" sx={{ color: 'rgba(255, 255, 255, 0.6)' }}>
+                                                Date of Birth
+                                            </Typography>
+                                            <Typography sx={{ color: 'white' }}>
+                                                {formatDate(selectedApplication.date_of_birth)}
+                                            </Typography>
+                                        </Grid>
+                                        <Grid item xs={6}>
+                                            <Typography variant="caption" sx={{ color: 'rgba(255, 255, 255, 0.6)' }}>
+                                                Blood Group
+                                            </Typography>
+                                            <Typography sx={{ color: 'white' }}>
+                                                {selectedApplication.blood_group}
+                                            </Typography>
+                                        </Grid>
+                                        <Grid item xs={6}>
+                                            <Typography variant="caption" sx={{ color: 'rgba(255, 255, 255, 0.6)' }}>
+                                                Profession
+                                            </Typography>
+                                            <Typography sx={{ color: 'white' }}>
+                                                {selectedApplication.profession || '-'}
+                                            </Typography>
+                                        </Grid>
+                                        <Grid item xs={6}>
+                                            <Typography variant="caption" sx={{ color: 'rgba(255, 255, 255, 0.6)' }}>
+                                                Aadhar Number
+                                            </Typography>
+                                            <Typography sx={{ color: 'white' }}>
+                                                {selectedApplication.aadhar_number || '-'}
+                                            </Typography>
+                                        </Grid>
+                                    </Grid>
+                                </Grid>
+
+                                {/* Address & Organization */}
+                                <Grid item xs={12}>
+                                    <Typography variant="h6" sx={{ color: '#60a5fa', mb: 2 }}>
+                                        Address & Organization
+                                    </Typography>
+                                    <Grid container spacing={2}>
+                                        <Grid item xs={12}>
+                                            <Typography variant="caption" sx={{ color: 'rgba(255, 255, 255, 0.6)' }}>
+                                                Address
+                                            </Typography>
+                                            <Typography sx={{ color: 'white' }}>{selectedApplication.address}</Typography>
+                                        </Grid>
+                                        <Grid item xs={4}>
+                                            <Typography variant="caption" sx={{ color: 'rgba(255, 255, 255, 0.6)' }}>
+                                                District
+                                            </Typography>
+                                            <Typography sx={{ color: 'white' }}>{selectedApplication.district}</Typography>
+                                        </Grid>
+                                        <Grid item xs={4}>
+                                            <Typography variant="caption" sx={{ color: 'rgba(255, 255, 255, 0.6)' }}>
+                                                State
+                                            </Typography>
+                                            <Typography sx={{ color: 'white' }}>{selectedApplication.state}</Typography>
+                                        </Grid>
+                                        <Grid item xs={4}>
+                                            <Typography variant="caption" sx={{ color: 'rgba(255, 255, 255, 0.6)' }}>
+                                                Pin Code
+                                            </Typography>
+                                            <Typography sx={{ color: 'white' }}>{selectedApplication.pin_code}</Typography>
+                                        </Grid>
+                                        <Grid item xs={6}>
+                                            <Typography variant="caption" sx={{ color: 'rgba(255, 255, 255, 0.6)' }}>
+                                                Organization Name
+                                            </Typography>
+                                            <Typography sx={{ color: 'white' }}>
+                                                {selectedApplication.organization_name || '-'}
+                                            </Typography>
+                                        </Grid>
+                                    </Grid>
+                                </Grid>
+
+                                {/* Family Details */}
+                                <Grid item xs={12}>
+                                    <Typography variant="h6" sx={{ color: '#60a5fa', mb: 2 }}>
+                                        Family Details
+                                    </Typography>
+                                    <Grid container spacing={2}>
+                                        <Grid item xs={6}>
+                                            <Typography variant="caption" sx={{ color: 'rgba(255, 255, 255, 0.6)' }}>
+                                                Relation Type
+                                            </Typography>
+                                            <Typography sx={{ color: 'white' }}>
+                                                {selectedApplication.relation_type}
+                                            </Typography>
+                                        </Grid>
+                                        <Grid item xs={6}>
+                                            <Typography variant="caption" sx={{ color: 'rgba(255, 255, 255, 0.6)' }}>
+                                                Relation Name
+                                            </Typography>
+                                            <Typography sx={{ color: 'white' }}>
+                                                {selectedApplication.relation_name}
+                                            </Typography>
+                                        </Grid>
+                                    </Grid>
+                                </Grid>
+
+                                {/* Documents */}
+                                <Grid item xs={12}>
+                                    <Typography variant="h6" sx={{ color: '#60a5fa', mb: 2 }}>
+                                        Documents
+                                    </Typography>
+                                    <Grid container spacing={2}>
+                                        <Grid item xs={6}>
+                                            <Typography variant="caption" sx={{ color: 'rgba(255, 255, 255, 0.6)' }}>
+                                                ID Type
+                                            </Typography>
+                                            <Typography sx={{ color: 'white' }}>
+                                                {selectedApplication.id_type || '-'}
+                                            </Typography>
+                                        </Grid>
+                                        <Grid item xs={6}>
+                                            <Typography variant="caption" sx={{ color: 'rgba(255, 255, 255, 0.6)' }}>
+                                                ID Document
+                                            </Typography>
+                                            <Typography>
+                                                {selectedApplication.id_document ? (
+                                                    <a
+                                                        href={`http://localhost:5000${selectedApplication.id_document}`}
+                                                        target="_blank"
+                                                        rel="noreferrer"
+                                                        style={{ color: '#60a5fa', textDecoration: 'none' }}
+                                                    >
+                                                        View Document
+                                                    </a>
+                                                ) : (
+                                                    <span style={{ color: 'white' }}>-</span>
+                                                )}
+                                            </Typography>
+                                        </Grid>
+                                        <Grid item xs={6}>
+                                            <Typography variant="caption" sx={{ color: 'rgba(255, 255, 255, 0.6)' }}>
+                                                Other Document
+                                            </Typography>
+                                            <Typography>
+                                                {selectedApplication.other_document ? (
+                                                    <a
+                                                        href={`http://localhost:5000${selectedApplication.other_document}`}
+                                                        target="_blank"
+                                                        rel="noreferrer"
+                                                        style={{ color: '#60a5fa', textDecoration: 'none' }}
+                                                    >
+                                                        View Document
+                                                    </a>
+                                                ) : (
+                                                    <span style={{ color: 'white' }}>-</span>
+                                                )}
+                                            </Typography>
+                                        </Grid>
+                                    </Grid>
+                                </Grid>
+
+                                {/* Applied Date */}
+                                <Grid item xs={12}>
+                                    <Typography variant="caption" sx={{ color: 'rgba(255, 255, 255, 0.6)' }}>
+                                        Applied At
+                                    </Typography>
+                                    <Typography sx={{ color: 'white' }}>
+                                        {formatDateTime(selectedApplication.created_at)}
+                                    </Typography>
+                                </Grid>
+                            </Grid>
+                        </Box>
+                    )}
+                </DialogContent>
+                <DialogActions sx={{ p: 3 }}>
+                    {selectedApplication && selectedApplication.status !== 'accepted' && (
+                        <Button
+                            variant="contained"
+                            startIcon={<Check />}
+                            onClick={() => {
+                                handleAcceptApplication(selectedApplication.id);
+                                setViewDialogOpen(false);
+                            }}
+                            sx={{
+                                background: 'linear-gradient(135deg, #4ade80 0%, #22c55e 100%)',
+                                '&:hover': {
+                                    background: 'linear-gradient(135deg, #22c55e 0%, #16a34a 100%)'
+                                }
+                            }}
+                        >
+                            Accept Application
+                        </Button>
+                    )}
+                    <Button onClick={() => setViewDialogOpen(false)} sx={{ color: 'rgba(255, 255, 255, 0.7)' }}>
+                        Close
+                    </Button>
+                </DialogActions>
+            </Dialog>
+        </>
+    );
+};
+
+export default MemberApplication;

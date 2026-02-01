@@ -22,14 +22,14 @@ const { login, register } = require('../controllers/login');
  *               email:
  *                 type: string
  *                 format: email
- *                 example: admin@cust.com
+ *                 example: admin@gmail.com
  *               password:
  *                 type: string
  *                 format: password
- *                 example: StrongP@ss123
+ *                 example: 123123
  *           example:
- *             email: admin@cust.com
- *             password: StrongP@ss123
+ *             email: admin@gmail.com
+ *             password: 123123
  *     responses:
  *       200:
  *         description: Authenticated successfully
@@ -83,12 +83,12 @@ router.post('/login', login);
  *               email:
  *                 type: string
  *                 format: email
- *                 example: newadmin@cust.com
+ *                 example: admin@gmail.com
  *               password:
  *                 type: string
  *                 format: password
  *                 minLength: 6
- *                 example: StrongP@ss123
+ *                 example: 123123
  *               firstName:
  *                 type: string
  *                 example: John

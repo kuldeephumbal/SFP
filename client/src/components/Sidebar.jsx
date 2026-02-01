@@ -48,21 +48,20 @@ const Sidebar = ({ open, onClose }) => {
     const [expandedItems, setExpandedItems] = useState({});
 
     const menuItems = [
-        { title: 'Dashboard', icon: <Dashboard />, path: '/dashboard' },
-        { title: 'Application Of Member', icon: <PersonAddAlt />, path: '/application-member' },
-        { title: 'Slider', icon: <Slideshow />, path: '/slider' },
-        { title: 'Recent Activity', icon: <TrendingUp />, path: '/recent-activity' },
-        { title: 'Latest Activity', icon: <Article />, path: '/latest-activity' },
-        { title: 'Member', icon: <Groups />, path: '/member' },
-        { title: 'Youtube Videos', icon: <YouTube />, path: '/youtube-videos' },
-        { title: 'Gallery', icon: <PhotoLibrary />, path: '/gallery' },
-        { title: 'Upcoming Event', icon: <Event />, path: '/upcoming-event' },
-        { title: 'Crowd Funding', icon: <VolunteerActivism />, path: '/crowd-funding' },
-        { title: 'Problem Raised', icon: <ReportProblem />, path: '/problem-raised' },
-        { title: 'Our Project', icon: <Layers />, path: '/our-project' },
-        { title: 'Donations', icon: <Paid />, path: '/donations' },
-        { title: 'Enquiry', icon: <MailOutline />, path: '/enquiry' },
-        { title: 'About Us', icon: <Info />, path: '/about-us' },
+        { title: 'Dashboard', icon: <Dashboard />, path: '/admin/dashboard' },
+        { title: 'Application Of Member', icon: <PersonAddAlt />, path: '/admin/member-applications' },
+        { title: 'Slider', icon: <Slideshow />, path: '/admin/slider' },
+        { title: 'Recent Activity', icon: <TrendingUp />, path: '/admin/recent-activity' },
+        { title: 'Latest Activity', icon: <Article />, path: '/admin/latest-activity' },
+        { title: 'Member', icon: <Groups />, path: '/admin/member' },
+        { title: 'Youtube Videos', icon: <YouTube />, path: '/admin/youtube-videos' },
+        { title: 'Gallery', icon: <PhotoLibrary />, path: '/admin/gallery' },
+        { title: 'Upcoming Event', icon: <Event />, path: '/admin/upcoming-event' },
+        { title: 'Crowd Funding', icon: <VolunteerActivism />, path: '/admin/crowd-funding' },
+        { title: 'Problem Raised', icon: <ReportProblem />, path: '/admin/problem-raised' },
+        { title: 'Our Project', icon: <Layers />, path: '/admin/our-project' },
+        { title: 'Donations', icon: <Paid />, path: '/admin/donations' },
+        { title: 'Enquiry', icon: <MailOutline />, path: '/admin/enquiry' },
     ];
 
     const findActiveTitleByPath = (path) => {
