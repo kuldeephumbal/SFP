@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import axios from 'axios';
 import Navbar from '../../components/Navbar';
 import Footer from '../../components/Footer';
 import {
@@ -14,6 +13,7 @@ import {
 } from '@mui/material';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import api from '../../components/BaseURL';
 
 const Donate = () => {
     const [formData, setFormData] = useState({
@@ -97,7 +97,7 @@ const Donate = () => {
                 submitData.append("payment_receipt", formData.paymentReceipt);
             }
 
-            axios.post("http://localhost:5000/api/donate", submitData)
+            api.post("/donation", submitData)
                 .then((response) => {
                     console.log('Donation submitted:', response.data);
                     toast.success('Donation submitted successfully!');

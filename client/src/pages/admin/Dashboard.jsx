@@ -16,7 +16,6 @@ import {
   YouTube
 } from '@mui/icons-material';
 import api from '../../components/BaseURL';
-import CustomBreadcrumb from '../../components/CustomBreadcrumb';
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -335,7 +334,6 @@ const Dashboard = () => {
 
   return (
     <>
-      <CustomBreadcrumb />
       <Box sx={{ width: '100%', px: { xs: 0.5, sm: 2 }, py: { xs: 1, sm: 2 } }}>
         <Box sx={{
           display: 'grid',

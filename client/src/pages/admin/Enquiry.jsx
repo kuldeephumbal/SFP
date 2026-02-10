@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
     Box,
     Typography,
@@ -16,53 +16,30 @@ import {
 } from '@mui/material';
 import { Delete, MailOutline, Search } from '@mui/icons-material';
 import { toast } from 'react-toastify';
-import CustomBreadcrumb from '../../components/CustomBreadcrumb';
 import BaseTable from '../../components/BaseTable';
+import api from '../../components/BaseURL';
 
 const AdminEnquiry = () => {
     const [searchQuery, setSearchQuery] = useState('');
     const [viewDialogOpen, setViewDialogOpen] = useState(false);
     const [selectedEnquiry, setSelectedEnquiry] = useState(null);
 
-    // Mock data
-    const [enquiries, setEnquiries] = useState([
-        {
-            id: 1,
-            name: 'Rajesh Kumar',
-            mobile_number: '9876543210',
-            email: 'rajesh.kumar@email.com',
-            topic: 'Membership Inquiry',
-            description: 'I would like to know more about the membership process and benefits. Could you please provide detailed information about the eligibility criteria, fees, and application procedure?',
-            created_at: '2026-01-24T10:30:00'
-        },
-        {
-            id: 2,
-            name: 'Priya Sharma',
-            mobile_number: '9123456789',
-            email: 'priya.sharma@email.com',
-            topic: 'Donation Query',
-            description: 'I want to donate to your foundation. Please share the bank account details and inform me about tax exemption certificates.',
-            created_at: '2026-01-23T14:20:00'
-        },
-        {
-            id: 3,
-            name: 'Amit Verma',
-            mobile_number: '9988776655',
-            email: 'amit.verma@email.com',
-            topic: 'Volunteer Opportunity',
-            description: 'I am interested in volunteering for your social projects. How can I contribute my time and skills to help the community?',
-            created_at: '2026-01-22T09:15:00'
-        },
-        {
-            id: 4,
-            name: 'Sanjana Patel',
-            mobile_number: '9876501234',
-            email: 'sanjana.patel@email.com',
-            topic: 'Event Information',
-            description: 'Can you provide details about upcoming events organized by your foundation? I would like to participate and support your initiatives.',
-            created_at: '2026-01-21T16:45:00'
+    const [enquiries, setEnquiries] = useState([]);
+
+    useEffect(() => {
+        fetchEnquiries();
+    }, []);
+
+    const fetchEnquiries = async () => {
+        try {
+            const response = await api.get('/enquiry');
+            setEnquiries(response.data || []);
+        } catch (error) {
+            console.error('Error fetching enquiries:', error);
+            toast.error('Failed to fetch enquiries');
+            setEnquiries([]);
         }
-    ]);
+    };
 
     const formatDateTime = (datetime) => {
         const date = new Date(datetime);
@@ -83,10 +60,16 @@ const AdminEnquiry = () => {
         setViewDialogOpen(true);
     };
 
-    const handleDeleteEnquiry = (id) => {
+    const handleDeleteEnquiry = async (id) => {
         if (window.confirm('Are you sure you want to delete this enquiry?')) {
-            setEnquiries(enquiries.filter((enq) => enq.id !== id));
-            toast.success('Enquiry deleted successfully!');
+            try {
+                await api.delete(`/enquiry/${id}`);
+                toast.success('Enquiry deleted successfully!');
+                fetchEnquiries();
+            } catch (error) {
+                console.error('Error deleting enquiry:', error);
+                toast.error('Failed to delete enquiry');
+            }
         }
     };
 
@@ -101,8 +84,6 @@ const AdminEnquiry = () => {
 
     return (
         <>
-            <CustomBreadcrumb />
-
             {/* Page Header */}
             <div className="container-fluid mb-4">
                 <div className="row align-items-center">
@@ -224,12 +205,12 @@ const AdminEnquiry = () => {
                                 )
                             },
                             {
-                                field: 'created_at',
+                                field: 'createdAt',
                                 headerName: 'Enquiry At',
                                 minWidth: '200px',
                                 renderCell: (row) => (
                                     <Typography sx={{ color: 'rgba(255, 255, 255, 0.9)', fontSize: '0.875rem' }}>
-                                        {formatDateTime(row.created_at)}
+                                        {formatDateTime(row.createdAt)}
                                     </Typography>
                                 )
                             }
@@ -258,7 +239,7 @@ const AdminEnquiry = () => {
                                 <IconButton
                                     size="small"
                                     sx={{ color: '#f87171' }}
-                                    onClick={() => handleDeleteEnquiry(row.id)}
+                                    onClick={() => handleDeleteEnquiry(row._id)}
                                     title="Delete Enquiry"
                                 >
                                     <Delete fontSize="small" />

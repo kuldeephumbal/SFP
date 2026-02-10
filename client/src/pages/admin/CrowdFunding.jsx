@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
     Box,
     Typography,
@@ -16,7 +16,7 @@ import {
 } from '@mui/material';
 import { Add, Edit, Delete, VolunteerActivism, Image as ImageIcon, Search } from '@mui/icons-material';
 import { toast } from 'react-toastify';
-import CustomBreadcrumb from '../../components/CustomBreadcrumb';
+import api from '../../components/BaseURL';
 import BaseTable from '../../components/BaseTable';
 
 const AdminCrowdFunding = () => {
@@ -45,36 +45,27 @@ const AdminCrowdFunding = () => {
         imagePreview: ''
     });
 
-    // Mock data
-    const [items, setItems] = useState([
-        {
-            id: 1,
-            topic: 'Emergency Surgery Support',
-            topic_details: 'Raising funds for a child requiring immediate cardiac surgery.',
-            location: 'City Hospital, Block A',
-            raised_amount: '75000',
-            end_date: '2026-02-20',
-            photo: '/uploads/crowd1.jpg'
-        },
-        {
-            id: 2,
-            topic: 'Education Aid',
-            topic_details: 'Provide scholarships to deserving students from low-income families.',
-            location: 'Foundation Office',
-            raised_amount: '52000',
-            end_date: '2026-03-06',
-            photo: '/uploads/crowd2.jpg'
-        },
-        {
-            id: 3,
-            topic: 'Cancer Treatment',
-            topic_details: 'Help fund chemotherapy cycles for an elderly patient.',
-            location: 'Oncology Center',
-            raised_amount: '91000',
-            end_date: '2026-02-28',
-            photo: '/uploads/crowd3.jpg'
-        }
-    ]);
+    const [items, setItems] = useState([]);
+    const [loading, setLoading] = useState(false);
+
+    useEffect(() => {
+        fetchItems();
+    }, []);
+
+    const fetchItems = () => {
+        setLoading(true);
+        api.get('/crowdfunding')
+            .then((res) => {
+                if (Array.isArray(res.data)) {
+                    setItems(res.data);
+                }
+            })
+            .catch((err) => {
+                console.error('Error fetching crowdfunding items:', err);
+                toast.error('Error loading crowdfunding items');
+            })
+            .finally(() => setLoading(false));
+    };
 
     const formatDate = (date) => {
         if (!date) return '-';
@@ -117,20 +108,28 @@ const AdminCrowdFunding = () => {
             toast.warning('Photo is required.');
             return;
         }
-        const nextId = items.length ? Math.max(...items.map((i) => i.id)) + 1 : 1;
-        const item = {
-            id: nextId,
-            topic: newItem.topic.trim(),
-            topic_details: newItem.topic_details.trim(),
-            location: newItem.location.trim(),
-            raised_amount: newItem.raised_amount,
-            end_date: newItem.end_date,
-            photo: newItem.imagePreview // base64 for mock
-        };
-        setItems([item, ...items]);
-        toast.success('Crowdfunding added successfully!');
-        setAddDialogOpen(false);
-        setNewItem({ topic: '', topic_details: '', location: '', raised_amount: '', end_date: '', image: null, imagePreview: '' });
+
+        const formData = new FormData();
+        formData.append('topic', newItem.topic.trim());
+        formData.append('topic_details', newItem.topic_details.trim());
+        formData.append('location', newItem.location.trim());
+        formData.append('raised_amount', newItem.raised_amount);
+        formData.append('end_date', newItem.end_date);
+        formData.append('photo', newItem.image);
+
+        api.post('/crowdfunding', formData, {
+            headers: { 'Content-Type': 'multipart/form-data' }
+        })
+            .then((res) => {
+                setItems([res.data, ...items]);
+                toast.success('Crowdfunding added successfully!');
+                setAddDialogOpen(false);
+                setNewItem({ topic: '', topic_details: '', location: '', raised_amount: '', end_date: '', image: null, imagePreview: '' });
+            })
+            .catch((err) => {
+                console.error('Error adding crowdfunding:', err);
+                toast.error('Error adding crowdfunding');
+            });
     };
 
     const handleEditClick = (item) => {
@@ -152,31 +151,44 @@ const AdminCrowdFunding = () => {
             toast.warning('Please fill all item details correctly.');
             return;
         }
-        setItems(
-            items.map((i) =>
-                i.id === selectedItem.id
-                    ? {
-                        ...i,
-                        topic: editItem.topic.trim(),
-                        topic_details: editItem.topic_details.trim(),
-                        location: editItem.location.trim(),
-                        raised_amount: editItem.raised_amount,
-                        end_date: editItem.end_date,
-                        photo: editItem.imagePreview || i.photo
-                    }
-                    : i
-            )
-        );
-        toast.success('Crowdfunding updated successfully!');
-        setEditDialogOpen(false);
-        setSelectedItem(null);
-        setEditItem({ topic: '', topic_details: '', location: '', raised_amount: '', end_date: '', image: null, imagePreview: '' });
+
+        const formData = new FormData();
+        formData.append('topic', editItem.topic.trim());
+        formData.append('topic_details', editItem.topic_details.trim());
+        formData.append('location', editItem.location.trim());
+        formData.append('raised_amount', editItem.raised_amount);
+        formData.append('end_date', editItem.end_date);
+        if (editItem.image) {
+            formData.append('photo', editItem.image);
+        }
+
+        api.put(`/crowdfunding/${selectedItem._id}`, formData, {
+            headers: { 'Content-Type': 'multipart/form-data' }
+        })
+            .then((res) => {
+                setItems(items.map((i) => (i._id === selectedItem._id ? res.data : i)));
+                toast.success('Crowdfunding updated successfully!');
+                setEditDialogOpen(false);
+                setSelectedItem(null);
+                setEditItem({ topic: '', topic_details: '', location: '', raised_amount: '', end_date: '', image: null, imagePreview: '' });
+            })
+            .catch((err) => {
+                console.error('Error updating crowdfunding:', err);
+                toast.error('Error updating crowdfunding');
+            });
     };
 
     const handleDeleteItem = (id) => {
         if (window.confirm('Are you sure you want to delete this crowdfunding?')) {
-            setItems(items.filter((i) => i.id !== id));
-            toast.success('Crowdfunding deleted successfully!');
+            api.delete(`/crowdfunding/${id}`)
+                .then(() => {
+                    setItems(items.filter((i) => i._id !== id));
+                    toast.success('Crowdfunding deleted successfully!');
+                })
+                .catch((err) => {
+                    console.error('Error deleting crowdfunding:', err);
+                    toast.error('Error deleting crowdfunding');
+                });
         }
     };
 
@@ -188,8 +200,6 @@ const AdminCrowdFunding = () => {
 
     return (
         <>
-            <CustomBreadcrumb />
-
             {/* Page Header */}
             <div className="container-fluid mb-4">
                 <div className="row align-items-center">
@@ -276,7 +286,7 @@ const AdminCrowdFunding = () => {
                                 minWidth: '220px',
                                 renderCell: (row) => (
                                     <img
-                                        src={row.photo.startsWith('/uploads') ? `http://localhost:5000${row.photo}` : row.photo}
+                                        src={`http://localhost:5000/${row.photo.replace(/^\/+/, '')}`}
                                         alt={row.topic}
                                         style={{ width: 180, height: 120, objectFit: 'cover', borderRadius: 8 }}
                                     />
@@ -339,7 +349,7 @@ const AdminCrowdFunding = () => {
                                 <IconButton
                                     size="small"
                                     sx={{ color: '#f87171' }}
-                                    onClick={() => handleDeleteItem(row.id)}
+                                    onClick={() => handleDeleteItem(row._id)}
                                     title="Delete Crowdfunding"
                                 >
                                     <Delete fontSize="small" />
@@ -553,7 +563,7 @@ const AdminCrowdFunding = () => {
                                 />
                             </Box>
                             <Typography variant="caption" sx={{ color: 'rgba(255, 255, 255, 0.7)', mb: 1, display: 'block' }}>
-                                Current Photo: {selectedItem.photo.split('/').pop()}
+                                Current Photo: {selectedItem.photo ? selectedItem.photo.split('/').pop() : '-'}
                             </Typography>
                             <Button
                                 variant="outlined"

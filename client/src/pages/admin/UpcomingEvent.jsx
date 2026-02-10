@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
     Box,
     Typography,
@@ -16,7 +16,7 @@ import {
 } from '@mui/material';
 import { Add, Edit, Delete, Event, Image as ImageIcon, Search } from '@mui/icons-material';
 import { toast } from 'react-toastify';
-import CustomBreadcrumb from '../../components/CustomBreadcrumb';
+import api from '../../components/BaseURL';
 import BaseTable from '../../components/BaseTable';
 
 const UpcomingEvent = () => {
@@ -45,36 +45,27 @@ const UpcomingEvent = () => {
         imagePreview: ''
     });
 
-    // Mock data
-    const [events, setEvents] = useState([
-        {
-            id: 1,
-            topic: 'Health Camp',
-            topic_details: 'Free health check-up and medicines for local residents.',
-            location: 'Community Center, Sector 12',
-            event_date: '2026-02-05',
-            event_time: '10:30',
-            photo: '/uploads/event1.jpg'
-        },
-        {
-            id: 2,
-            topic: 'Blood Donation Drive',
-            topic_details: 'Join us to donate blood and save lives.',
-            location: 'City Hospital Hall',
-            event_date: '2026-02-10',
-            event_time: '09:00',
-            photo: '/uploads/event2.jpg'
-        },
-        {
-            id: 3,
-            topic: 'Tree Plantation',
-            topic_details: 'Plant saplings and contribute to a greener city.',
-            location: 'Riverfront Park',
-            event_date: '2026-02-15',
-            event_time: '08:00',
-            photo: '/uploads/event3.jpg'
-        }
-    ]);
+    const [events, setEvents] = useState([]);
+    const [loading, setLoading] = useState(false);
+
+    useEffect(() => {
+        fetchEvents();
+    }, []);
+
+    const fetchEvents = () => {
+        setLoading(true);
+        api.get('/upcoming-event')
+            .then((res) => {
+                if (Array.isArray(res.data)) {
+                    setEvents(res.data);
+                }
+            })
+            .catch((err) => {
+                console.error('Error fetching upcoming events:', err);
+                toast.error('Error loading events');
+            })
+            .finally(() => setLoading(false));
+    };
 
     const formatDateTime = (date, time) => {
         if (!date || !time) return '-';
@@ -138,20 +129,27 @@ const UpcomingEvent = () => {
             toast.warning('Photo is required.');
             return;
         }
-        const nextId = events.length ? Math.max(...events.map((e) => e.id)) + 1 : 1;
-        const item = {
-            id: nextId,
-            topic: newEvent.topic.trim(),
-            topic_details: newEvent.topic_details.trim(),
-            location: newEvent.location.trim(),
-            event_date: newEvent.event_date,
-            event_time: newEvent.event_time,
-            photo: newEvent.imagePreview // base64 for mock
-        };
-        setEvents([item, ...events]);
-        toast.success('Event added successfully!');
-        setAddDialogOpen(false);
-        setNewEvent({ topic: '', topic_details: '', location: '', event_date: '', event_time: '', image: null, imagePreview: '' });
+        const formData = new FormData();
+        formData.append('topic', newEvent.topic.trim());
+        formData.append('topic_details', newEvent.topic_details.trim());
+        formData.append('location', newEvent.location.trim());
+        formData.append('event_date', newEvent.event_date);
+        formData.append('event_time', newEvent.event_time);
+        formData.append('photo', newEvent.image);
+
+        api.post('/upcoming-event', formData, {
+            headers: { 'Content-Type': 'multipart/form-data' }
+        })
+            .then((res) => {
+                setEvents([res.data, ...events]);
+                toast.success('Event added successfully!');
+                setAddDialogOpen(false);
+                setNewEvent({ topic: '', topic_details: '', location: '', event_date: '', event_time: '', image: null, imagePreview: '' });
+            })
+            .catch((err) => {
+                console.error('Error adding event:', err);
+                toast.error('Error adding event');
+            });
     };
 
     const handleEditClick = (eventItem) => {
@@ -173,31 +171,45 @@ const UpcomingEvent = () => {
             toast.warning('Please fill all event details.');
             return;
         }
-        setEvents(
-            events.map((e) =>
-                e.id === selectedEvent.id
-                    ? {
-                        ...e,
-                        topic: editEvent.topic.trim(),
-                        topic_details: editEvent.topic_details.trim(),
-                        location: editEvent.location.trim(),
-                        event_date: editEvent.event_date,
-                        event_time: editEvent.event_time,
-                        photo: editEvent.imagePreview || e.photo
-                    }
-                    : e
-            )
-        );
-        toast.success('Event updated successfully!');
-        setEditDialogOpen(false);
-        setSelectedEvent(null);
-        setEditEvent({ topic: '', topic_details: '', location: '', event_date: '', event_time: '', image: null, imagePreview: '' });
+        const formData = new FormData();
+        formData.append('topic', editEvent.topic.trim());
+        formData.append('topic_details', editEvent.topic_details.trim());
+        formData.append('location', editEvent.location.trim());
+        formData.append('event_date', editEvent.event_date);
+        formData.append('event_time', editEvent.event_time);
+        if (editEvent.image) {
+            formData.append('photo', editEvent.image);
+        }
+
+        api.put(`/upcoming-event/${selectedEvent._id}`, formData, {
+            headers: { 'Content-Type': 'multipart/form-data' }
+        })
+            .then((res) => {
+                setEvents(
+                    events.map((e) => (e._id === selectedEvent._id ? res.data : e))
+                );
+                toast.success('Event updated successfully!');
+                setEditDialogOpen(false);
+                setSelectedEvent(null);
+                setEditEvent({ topic: '', topic_details: '', location: '', event_date: '', event_time: '', image: null, imagePreview: '' });
+            })
+            .catch((err) => {
+                console.error('Error updating event:', err);
+                toast.error('Error updating event');
+            });
     };
 
     const handleDeleteEvent = (id) => {
         if (window.confirm('Are you sure you want to delete this event?')) {
-            setEvents(events.filter((e) => e.id !== id));
-            toast.success('Event deleted successfully!');
+            api.delete(`/upcoming-event/${id}`)
+                .then(() => {
+                    setEvents(events.filter((e) => e._id !== id));
+                    toast.success('Event deleted successfully!');
+                })
+                .catch((err) => {
+                    console.error('Error deleting event:', err);
+                    toast.error('Error deleting event');
+                });
         }
     };
 
@@ -209,8 +221,6 @@ const UpcomingEvent = () => {
 
     return (
         <>
-            <CustomBreadcrumb />
-
             {/* Page Header */}
             <div className="container-fluid mb-4">
                 <div className="row align-items-center">
@@ -297,7 +307,7 @@ const UpcomingEvent = () => {
                                 minWidth: '220px',
                                 renderCell: (row) => (
                                     <img
-                                        src={row.photo.startsWith('/uploads') ? `http://localhost:5000${row.photo}` : row.photo}
+                                        src={`http://localhost:5000/${row.photo.replace(/^\/+/, '')}`}
                                         alt={row.topic}
                                         style={{ width: 180, height: 120, objectFit: 'cover', borderRadius: 8 }}
                                     />
@@ -350,7 +360,7 @@ const UpcomingEvent = () => {
                                 <IconButton
                                     size="small"
                                     sx={{ color: '#f87171' }}
-                                    onClick={() => handleDeleteEvent(row.id)}
+                                    onClick={() => handleDeleteEvent(row._id)}
                                     title="Delete Event"
                                 >
                                     <Delete fontSize="small" />
@@ -615,7 +625,7 @@ const UpcomingEvent = () => {
                                 />
                             </Box>
                             <Typography variant="caption" sx={{ color: 'rgba(255, 255, 255, 0.7)', mb: 1, display: 'block' }}>
-                                Current Photo: {selectedEvent.photo.split('/').pop()}
+                                Current Photo: {selectedEvent.photo ? selectedEvent.photo.split('/').pop() : '-'}
                             </Typography>
                             <Button
                                 variant="outlined"

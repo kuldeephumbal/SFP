@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
-const { login, register } = require('../controllers/login');
+const { login, register, getProfile, updateProfile, changePassword, updatePreferences } = require('../controllers/login');
+const auth = require('../middleware/auth');
 
 /**
  * @swagger
@@ -136,5 +137,148 @@ router.post('/login', login);
  */
 // Admin registration
 router.post('/register', register);
+
+/**
+ * @swagger
+ * /api/auth/profile:
+ *   get:
+ *     summary: Get logged-in user profile
+ *     tags: [Auth]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Profile retrieved successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 id:
+ *                   type: string
+ *                 firstName:
+ *                   type: string
+ *                 lastName:
+ *                   type: string
+ *                 email:
+ *                   type: string
+ *                 role:
+ *                   type: string
+ *                 createdAt:
+ *                   type: string
+ *       401:
+ *         description: Unauthorized
+ *       404:
+ *         description: User not found
+ */
+router.get('/profile', auth, getProfile);
+
+/**
+ * @swagger
+ * /api/auth/profile:
+ *   put:
+ *     summary: Update logged-in user profile
+ *     tags: [Auth]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - firstName
+ *               - lastName
+ *               - email
+ *             properties:
+ *               firstName:
+ *                 type: string
+ *                 example: John
+ *               lastName:
+ *                 type: string
+ *                 example: Doe
+ *               email:
+ *                 type: string
+ *                 format: email
+ *                 example: john.doe@cust.com
+ *     responses:
+ *       200:
+ *         description: Profile updated successfully
+ *       400:
+ *         description: Missing required fields
+ *       401:
+ *         description: Unauthorized
+ *       409:
+ *         description: Email already in use
+ */
+router.put('/profile', auth, updateProfile);
+
+/**
+ * @swagger
+ * /api/auth/change-password:
+ *   put:
+ *     summary: Change user password
+ *     tags: [Auth]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - currentPassword
+ *               - newPassword
+ *             properties:
+ *               currentPassword:
+ *                 type: string
+ *                 format: password
+ *                 example: oldPassword123
+ *               newPassword:
+ *                 type: string
+ *                 format: password
+ *                 minLength: 6
+ *                 example: newPassword123
+ *     responses:
+ *       200:
+ *         description: Password changed successfully
+ *       400:
+ *         description: Missing required fields or password too short
+ *       401:
+ *         description: Current password is incorrect or unauthorized
+ *       404:
+ *         description: User not found
+ */
+router.put('/change-password', auth, changePassword);
+
+/**
+ * @swagger
+ * /api/auth/preferences:
+ *   put:
+ *     summary: Update user preferences
+ *     tags: [Auth]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               backgroundImage:
+ *                 type: string
+ *                 example: /uploads/background-12345.jpg
+ *     responses:
+ *       200:
+ *         description: Preferences updated successfully
+ *       401:
+ *         description: Unauthorized
+ *       404:
+ *         description: User not found
+ */
+router.put('/preferences', auth, updatePreferences);
 
 module.exports = router;

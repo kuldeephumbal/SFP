@@ -1,16 +1,13 @@
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 import './index.css';
 import App from './App';
 import Dashboard from './pages/admin/Dashboard';
 import Settings from './pages/admin/Settings';
-import Profile from './pages/admin/Profile';
 import Login from './pages/user/Login';
-import ForgotPassword from './pages/admin/ForgotPassword';
-import ResetPassword from './pages/admin/ResetPassword';
 import MemberApplication from './pages/admin/MemberApplication';
 import Slider from './pages/admin/Slider';
 import RecentActivity from './pages/admin/RecentActivity';
@@ -30,6 +27,7 @@ import AdminProblem from './pages/admin/ProblemRaised';
 import AdminOurProjects from './pages/admin/OurProjects';
 import AdminDonation from './pages/admin/Donation';
 import AdminEnquiry from './pages/admin/Enquiry';
+import AdminAchievements from './pages/admin/Achievements';
 import ContactUs from './pages/user/ContactUs';
 import AboutUs from './pages/user/AboutUs';
 import OurTeam from './pages/user/OurTeam';
@@ -61,8 +59,7 @@ createRoot(document.getElementById('root')).render(
         {/* Auth Routes */}
         <Route path="/login" element={<Login />} />
         <Route path="/user-login" element={<Login />} />
-        <Route path="/forgot-password" element={<ForgotPassword />} />
-        <Route path="/reset-password" element={<ResetPassword />} />
+        <Route path="/settings" element={<Navigate to="/admin/settings" replace />} />
 
         {/* Admin Routes */}
         <Route path="/admin/*" element={<App>
@@ -82,8 +79,8 @@ createRoot(document.getElementById('root')).render(
             <Route path="our-project" element={<AdminOurProjects />} />
             <Route path="donations" element={<AdminDonation />} />
             <Route path="enquiry" element={<AdminEnquiry />} />
+            <Route path="achievements" element={<AdminAchievements />} />
             <Route path="settings" element={<Settings />} />
-            <Route path="profile" element={<Profile />} />
             <Route path="*" element={<div>Page Not Found</div>} />
           </Routes>
         </App>} />

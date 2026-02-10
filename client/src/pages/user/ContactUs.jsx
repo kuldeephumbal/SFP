@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import axios from 'axios';
 import Navbar from '../../components/Navbar';
 import Footer from '../../components/Footer';
 import {
@@ -13,6 +12,7 @@ import {
 } from '@mui/material';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import api from '../../components/BaseURL';
 
 const ContactUs = () => {
     const [formData, setFormData] = useState({
@@ -82,7 +82,7 @@ const ContactUs = () => {
                 description: formData.description,
             };
 
-            axios.post('http://localhost:5000/api/add-contact-us', data)
+            api.post('/enquiry', data)
                 .then((response) => {
                     toast.success('Contact submitted successfully!');
                     setFormData({

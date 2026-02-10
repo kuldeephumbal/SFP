@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
 import Navbar from '../../components/Navbar';
 import Footer from '../../components/Footer';
+import api from '../../components/BaseURL';
 import {
     Box,
     Container,
@@ -21,13 +21,10 @@ const UpcomingEvents = () => {
 
     // Fetch upcoming events from the API
     const fetchEvents = () => {
-        axios.get('http://localhost:5000/api/events')
+        api.get('/upcoming-event')
             .then((response) => {
-                // Ensure response.data is an array
                 if (Array.isArray(response.data)) {
                     setEvents(response.data);
-                } else if (response.data && Array.isArray(response.data.events)) {
-                    setEvents(response.data.events);
                 } else {
                     console.warn('Unexpected API response format:', response.data);
                     setEvents([]);
@@ -134,7 +131,7 @@ const UpcomingEvents = () => {
                     ) : (
                         <Grid container spacing={3}>
                             {events.map((event) => (
-                                <Grid item xs={12} key={event.id}>
+                                <Grid item xs={12} key={event._id}>
                                     <Card
                                         sx={{
                                             display: 'flex',
@@ -151,7 +148,7 @@ const UpcomingEvents = () => {
                                         {/* Image Section */}
                                         <CardMedia
                                             component="img"
-                                            image={`http://localhost:5000${event.photo}`}
+                                            image={`http://localhost:5000/${event.photo.replace(/^\/+/, '')}`}
                                             alt={event.topic}
                                             sx={{
                                                 width: { xs: '100%', md: '40%' },
@@ -213,7 +210,7 @@ const UpcomingEvents = () => {
                                                     color: '#999',
                                                 }}
                                             >
-                                                <strong>Last updated:</strong> {formatDateTime2(event.created_at)}
+                                                <strong>Last updated:</strong> {formatDateTime2(event.createdAt)}
                                             </Typography>
                                         </CardContent>
                                     </Card>

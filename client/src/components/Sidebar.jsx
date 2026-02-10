@@ -35,6 +35,7 @@ import {
     Paid,
     MailOutline,
     Info,
+    EmojiEvents,
 } from '@mui/icons-material';
 import { useState, useEffect } from 'react';
 
@@ -62,6 +63,7 @@ const Sidebar = ({ open, onClose }) => {
         { title: 'Our Project', icon: <Layers />, path: '/admin/our-project' },
         { title: 'Donations', icon: <Paid />, path: '/admin/donations' },
         { title: 'Enquiry', icon: <MailOutline />, path: '/admin/enquiry' },
+        { title: 'Achievements', icon: <EmojiEvents />, path: '/admin/achievements' },
     ];
 
     const findActiveTitleByPath = (path) => {

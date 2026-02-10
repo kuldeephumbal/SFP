@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 import {
     Box,
     Typography,
@@ -29,7 +30,7 @@ import {
     LockReset,
     Close
 } from '@mui/icons-material';
-import CustomBreadcrumb from '../../components/CustomBreadcrumb';
+import api from '../../components/BaseURL';
 
 const Settings = () => {
     const [loading, setLoading] = useState(false);
@@ -37,22 +38,13 @@ const Settings = () => {
     const [notification, setNotification] = useState({ open: false, message: '', type: 'success' });
     const [activeTab, setActiveTab] = useState(0);
 
-    // Mock data for testing (this would normally come from API)
-    const mockProfileData = {
-        firstName: 'John',
-        lastName: 'Doe',
-        email: localStorage.getItem('userEmail') || 'admin@cust.com',
-        role: localStorage.getItem('userRole') || 'admin',
-        permissions: ['approve_clients', 'view_reports', 'user_management']
-    };
-
     // Profile settings state
     const [profileSettings, setProfileSettings] = useState({
         firstName: '',
         lastName: '',
         email: '',
         role: '',
-        permissions: []
+        createdAt: ''
     });
 
     // Password change state
@@ -64,11 +56,10 @@ const Settings = () => {
 
     // Notification/preference settings
     const [preferenceSettings, setPreferenceSettings] = useState({
-        notifications: true,
-        darkMode: true,
-        autoSave: false,
-        twoFactor: true
+        backgroundImage: ''
     });
+    const [selectedFile, setSelectedFile] = useState(null);
+    const [previewUrl, setPreviewUrl] = useState('');
 
     // Load user profile data on component mount
     useEffect(() => {
@@ -82,15 +73,32 @@ const Settings = () => {
     }, [profileSettings]);
 
     const fetchProfileData = async () => {
-        // TODO: Add API call here
         setLoadingProfile(true);
+        try {
+            const token = sessionStorage.getItem('token');
+            const response = await api.get('/auth/profile', {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
 
-        // Use mock data
-        console.log('Using mock data');
-        setProfileSettings(mockProfileData);
-
-        console.log('Profile settings after update:', profileSettings);
-        setLoadingProfile(false);
+            setProfileSettings({
+                firstName: response.data.firstName || '',
+                lastName: response.data.lastName || '',
+                email: response.data.email || '',
+                role: response.data.role || '',
+                createdAt: response.data.createdAt || ''
+            });
+        } catch (error) {
+            console.error('Error fetching profile:', error);
+            setNotification({
+                open: true,
+                message: error.response?.data?.message || 'Failed to fetch profile',
+                type: 'error'
+            });
+        } finally {
+            setLoadingProfile(false);
+        }
     };
 
     const handleProfileChange = (field) => (event) => {
@@ -107,11 +115,23 @@ const Settings = () => {
         });
     };
 
-    const handlePreferenceChange = (field) => (event) => {
+    const handlePreferenceChange = (event) => {
         setPreferenceSettings({
             ...preferenceSettings,
-            [field]: event.target.type === 'checkbox' ? event.target.checked : event.target.value
+            backgroundImage: event.target.value
         });
+    };
+
+    const handleFileChange = (event) => {
+        const file = event.target.files[0];
+        if (file) {
+            setSelectedFile(file);
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                setPreviewUrl(reader.result);
+            };
+            reader.readAsDataURL(file);
+        }
     };
 
     const handleTabChange = (event, newValue) => {
@@ -119,15 +139,45 @@ const Settings = () => {
     };
 
     const handleSaveProfile = async () => {
-        // TODO: Add API call here
         setLoading(true);
+        try {
+            const token = sessionStorage.getItem('token');
+            const response = await api.put(
+                '/auth/profile',
+                {
+                    firstName: profileSettings.firstName,
+                    lastName: profileSettings.lastName,
+                    email: profileSettings.email
+                },
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                }
+            );
 
-        setNotification({
-            open: true,
-            message: 'Profile updated successfully',
-            type: 'success'
-        });
-        setLoading(false);
+            // Update sessionStorage with new email if changed
+            const storedUser = JSON.parse(sessionStorage.getItem('user') || '{}');
+            if (response.data.user.email !== storedUser.email) {
+                storedUser.email = response.data.user.email;
+                sessionStorage.setItem('user', JSON.stringify(storedUser));
+            }
+
+            setNotification({
+                open: true,
+                message: response.data.message || 'Profile updated successfully',
+                type: 'success'
+            });
+        } catch (error) {
+            console.error('Error updating profile:', error);
+            setNotification({
+                open: true,
+                message: error.response?.data?.message || 'Failed to update profile',
+                type: 'error'
+            });
+        } finally {
+            setLoading(false);
+        }
     };
 
     const handleChangePassword = async () => {
@@ -150,37 +200,106 @@ const Settings = () => {
             return;
         }
 
-        // TODO: Add API call here
         setLoading(true);
+        try {
+            const token = sessionStorage.getItem('token');
+            const response = await api.put(
+                '/auth/change-password',
+                {
+                    currentPassword: passwordData.currentPassword,
+                    newPassword: passwordData.newPassword
+                },
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                }
+            );
 
-        setPasswordData({
-            currentPassword: '',
-            newPassword: '',
-            confirmPassword: ''
-        });
+            setPasswordData({
+                currentPassword: '',
+                newPassword: '',
+                confirmPassword: ''
+            });
 
-        setNotification({
-            open: true,
-            message: 'Password changed successfully',
-            type: 'success'
-        });
-        setLoading(false);
+            setNotification({
+                open: true,
+                message: response.data.message || 'Password changed successfully',
+                type: 'success'
+            });
+        } catch (error) {
+            console.error('Error changing password:', error);
+            setNotification({
+                open: true,
+                message: error.response?.data?.message || 'Failed to change password',
+                type: 'error'
+            });
+        } finally {
+            setLoading(false);
+        }
     };
 
-    const handleSavePreferences = () => {
-        // Here you would typically call an API to save preferences
-        console.log('Preferences saved:', preferenceSettings);
-        setNotification({
-            open: true,
-            message: 'Preferences saved successfully',
-            type: 'success'
-        });
+    const handleSavePreferences = async () => {
+        setLoading(true);
+        try {
+            const token = sessionStorage.getItem('token');
+
+            let imageUrl = preferenceSettings.backgroundImage;
+
+            // If a file is selected, upload it first
+            if (selectedFile) {
+                const formData = new FormData();
+                formData.append('image', selectedFile);
+
+                const uploadResponse = await api.post('/upload/background', formData, {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                        'Content-Type': 'multipart/form-data'
+                    }
+                });
+
+                imageUrl = uploadResponse.data.imageUrl;
+            }
+
+            // Save the background image preference
+            await api.put('/auth/preferences', {
+                backgroundImage: imageUrl
+            }, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
+
+            // Save to localStorage and reload page
+            localStorage.setItem('backgroundImage', imageUrl);
+
+            // Force update by reloading the page
+            setTimeout(() => {
+                window.location.reload();
+            }, 1500);
+
+            setNotification({
+                open: true,
+                message: 'Background image updated successfully. Page will reload...',
+                type: 'success'
+            });
+
+            setSelectedFile(null);
+            setPreviewUrl('');
+        } catch (error) {
+            console.error('Error saving preferences:', error);
+            setNotification({
+                open: true,
+                message: error.response?.data?.message || 'Failed to save preferences',
+                type: 'error'
+            });
+        } finally {
+            setLoading(false);
+        }
     };
 
     return (
         <>
-            <CustomBreadcrumb />
-
             <Snackbar
                 open={notification.open}
                 autoHideDuration={6000}
@@ -369,8 +488,7 @@ const Settings = () => {
                                                 <TextField
                                                     fullWidth
                                                     label="Role"
-                                                    value={profileSettings.role === 'super_admin' ? 'Super Admin' :
-                                                        profileSettings.role === 'admin' ? 'Administrator' : 'Manager'}
+                                                    value={profileSettings.role === 'admin' ? 'Administrator' : 'Staff'}
                                                     variant="outlined"
                                                     margin="normal"
                                                     InputProps={{
@@ -434,8 +552,7 @@ const Settings = () => {
                                                 Account Type
                                             </Typography>
                                             <Typography variant="body1" sx={{ fontWeight: 'bold', color: 'white' }}>
-                                                {profileSettings.role === 'super_admin' ? 'Super Admin' :
-                                                    profileSettings.role === 'admin' ? 'Administrator' : 'Manager'}
+                                                {profileSettings.role === 'admin' ? 'Administrator' : 'Staff'}
                                             </Typography>
                                         </Box>
                                         <Divider sx={{ my: 2, backgroundColor: 'rgba(255, 255, 255, 0.2)' }} />
@@ -443,16 +560,10 @@ const Settings = () => {
                                             <Typography variant="body2" sx={{ color: 'rgba(255, 255, 255, 0.7)', mb: 1 }}>
                                                 Permissions
                                             </Typography>
-                                            {profileSettings.permissions && profileSettings.permissions.length > 0 ? (
-                                                profileSettings.permissions.map((permission, index) => (
-                                                    <Typography key={index} variant="body2" sx={{ color: 'white', mb: 0.5 }}>
-                                                        • {permission.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}
-                                                    </Typography>
-                                                ))
-                                            ) : profileSettings.role === 'super_admin' ? (
+                                            {profileSettings.role === 'admin' ? (
                                                 <Typography variant="body2" sx={{ color: 'white' }}>• All permissions granted</Typography>
                                             ) : (
-                                                <Typography variant="body2" sx={{ color: 'white' }}>No specific permissions</Typography>
+                                                <Typography variant="body2" sx={{ color: 'white' }}>• Standard staff permissions</Typography>
                                             )}
                                         </Box>
                                     </CardContent>
@@ -660,59 +771,100 @@ const Settings = () => {
                                 }}>
                                     <CardContent sx={{ p: 4 }}>
                                         <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
-                                            <Notifications sx={{ mr: 2, color: '#60a5fa' }} />
+                                            <Palette sx={{ mr: 2, color: '#60a5fa' }} />
                                             <Typography variant="h6" sx={{ fontWeight: 'bold', color: 'white' }}>
-                                                Notification Preferences
+                                                Background Image Settings
                                             </Typography>
                                         </Box>
 
-                                        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-                                            <FormControlLabel
-                                                control={
-                                                    <Switch
-                                                        checked={preferenceSettings.notifications}
-                                                        onChange={handlePreferenceChange('notifications')}
-                                                        color="primary"
+                                        <Grid container spacing={3}>
+                                            <Grid item xs={12}>
+                                                <TextField
+                                                    fullWidth
+                                                    label="Background Image URL"
+                                                    value={preferenceSettings.backgroundImage}
+                                                    onChange={handlePreferenceChange}
+                                                    variant="outlined"
+                                                    margin="normal"
+                                                    placeholder="Enter image URL or upload below"
+                                                    sx={{
+                                                        '& .MuiOutlinedInput-root': {
+                                                            color: 'white',
+                                                            '& fieldset': {
+                                                                borderColor: 'rgba(255, 255, 255, 0.3)'
+                                                            },
+                                                            '&:hover fieldset': {
+                                                                borderColor: 'rgba(255, 255, 255, 0.5)'
+                                                            },
+                                                            '&.Mui-focused fieldset': {
+                                                                borderColor: '#60a5fa'
+                                                            }
+                                                        },
+                                                        '& .MuiInputLabel-root': {
+                                                            color: 'rgba(255, 255, 255, 0.7)',
+                                                            '&.Mui-focused': {
+                                                                color: '#60a5fa'
+                                                            }
+                                                        }
+                                                    }}
+                                                />
+                                            </Grid>
+                                            <Grid item xs={12}>
+                                                <Typography variant="body2" sx={{ color: 'rgba(255, 255, 255, 0.7)', mb: 1 }}>
+                                                    Or Upload Image
+                                                </Typography>
+                                                <Button
+                                                    variant="outlined"
+                                                    component="label"
+                                                    sx={{
+                                                        color: 'white',
+                                                        borderColor: 'rgba(255, 255, 255, 0.3)',
+                                                        '&:hover': {
+                                                            borderColor: '#60a5fa',
+                                                            backgroundColor: 'rgba(96, 165, 250, 0.1)'
+                                                        }
+                                                    }}
+                                                >
+                                                    Choose File
+                                                    <input
+                                                        type="file"
+                                                        hidden
+                                                        accept="image/*"
+                                                        onChange={handleFileChange}
                                                     />
-                                                }
-                                                label={<Typography sx={{ color: 'white' }}>Email Notifications</Typography>}
-                                            />
-                                            <FormControlLabel
-                                                control={
-                                                    <Switch
-                                                        checked={preferenceSettings.darkMode}
-                                                        onChange={handlePreferenceChange('darkMode')}
-                                                        color="primary"
+                                                </Button>
+                                                {selectedFile && (
+                                                    <Typography variant="body2" sx={{ color: '#60a5fa', mt: 1 }}>
+                                                        Selected: {selectedFile.name}
+                                                    </Typography>
+                                                )}
+                                            </Grid>
+                                            {previewUrl && (
+                                                <Grid item xs={12}>
+                                                    <Typography variant="body2" sx={{ color: 'rgba(255, 255, 255, 0.7)', mb: 1 }}>
+                                                        Preview
+                                                    </Typography>
+                                                    <Box
+                                                        component="img"
+                                                        src={previewUrl}
+                                                        alt="Preview"
+                                                        sx={{
+                                                            width: '100%',
+                                                            maxHeight: 200,
+                                                            objectFit: 'cover',
+                                                            borderRadius: 2,
+                                                            border: '1px solid rgba(255, 255, 255, 0.2)'
+                                                        }}
                                                     />
-                                                }
-                                                label={<Typography sx={{ color: 'white' }}>Dark Mode</Typography>}
-                                            />
-                                            <FormControlLabel
-                                                control={
-                                                    <Switch
-                                                        checked={preferenceSettings.autoSave}
-                                                        onChange={handlePreferenceChange('autoSave')}
-                                                        color="primary"
-                                                    />
-                                                }
-                                                label={<Typography sx={{ color: 'white' }}>Auto Save</Typography>}
-                                            />
-                                            <FormControlLabel
-                                                control={
-                                                    <Switch
-                                                        checked={preferenceSettings.twoFactor}
-                                                        onChange={handlePreferenceChange('twoFactor')}
-                                                        color="primary"
-                                                    />
-                                                }
-                                                label={<Typography sx={{ color: 'white' }}>Two-Factor Authentication</Typography>}
-                                            />
-                                        </Box>
+                                                </Grid>
+                                            )}
+                                        </Grid>
 
                                         <Button
                                             variant="contained"
-                                            startIcon={<Save />}
+                                            startIcon={loading ? <CircularProgress size={20} color="inherit" /> : <Save />}
                                             onClick={handleSavePreferences}
+                                            disabled={loading}
                                             sx={{
                                                 mt: 3,
                                                 background: 'linear-gradient(135deg, #60a5fa 0%, #3b82f6 100%)',
@@ -721,7 +873,7 @@ const Settings = () => {
                                                 }
                                             }}
                                         >
-                                            Save Preferences
+                                            {loading ? 'Saving...' : 'Save Background Image'}
                                         </Button>
                                     </CardContent>
                                 </Card>
@@ -736,15 +888,16 @@ const Settings = () => {
                                     boxShadow: '0 8px 32px rgba(0, 0, 0, 0.3)'
                                 }}>
                                     <CardContent sx={{ p: 3 }}>
-                                        <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                                            <Palette sx={{ mr: 2, color: '#60a5fa' }} />
-                                            <Typography variant="h6" sx={{ fontWeight: 'bold', color: 'white' }}>
-                                                App Settings
-                                            </Typography>
-                                        </Box>
-                                        <Typography variant="body2" sx={{ color: 'rgba(255, 255, 255, 0.7)', mb: 2 }}>
-                                            Your settings are automatically synced across all devices.
+                                        <Typography variant="h6" sx={{ fontWeight: 'bold', mb: 2, color: 'white' }}>
+                                            Image Requirements
                                         </Typography>
+                                        <Typography variant="body2" sx={{ color: 'rgba(255, 255, 255, 0.7)', mb: 2 }}>
+                                            Recommended specifications:
+                                        </Typography>
+                                        <Typography variant="body2" sx={{ mb: 1, color: 'white' }}>• Format: JPG, PNG, WebP</Typography>
+                                        <Typography variant="body2" sx={{ mb: 1, color: 'white' }}>• Min resolution: 1920x1080</Typography>
+                                        <Typography variant="body2" sx={{ mb: 1, color: 'white' }}>• Max file size: 5MB</Typography>
+                                        <Typography variant="body2" sx={{ mb: 1, color: 'white' }}>• Aspect ratio: 16:9</Typography>
                                         <Alert
                                             severity="info"
                                             sx={{
@@ -757,7 +910,7 @@ const Settings = () => {
                                                 }
                                             }}
                                         >
-                                            Changes will take effect immediately after saving.
+                                            Changes will be applied to the main layout background.
                                         </Alert>
                                     </CardContent>
                                 </Card>

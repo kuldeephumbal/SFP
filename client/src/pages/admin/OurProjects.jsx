@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
     Box,
     Typography,
@@ -16,8 +16,8 @@ import {
 } from '@mui/material';
 import { Add, Edit, Delete, Layers, Search } from '@mui/icons-material';
 import { toast } from 'react-toastify';
-import CustomBreadcrumb from '../../components/CustomBreadcrumb';
 import BaseTable from '../../components/BaseTable';
+import api from '../../components/BaseURL';
 
 const AdminOurProjects = () => {
     const [searchQuery, setSearchQuery] = useState('');
@@ -28,35 +28,26 @@ const AdminOurProjects = () => {
     // Form states
     const [formData, setFormData] = useState({
         topic: '',
-        topic_details: '',
-        photo: ''
+        topic_details: ''
     });
+    const [imageFile, setImageFile] = useState(null);
     const [imagePreview, setImagePreview] = useState('');
+    const [projects, setProjects] = useState([]);
 
-    // Mock data
-    const [projects, setProjects] = useState([
-        {
-            id: 1,
-            topic: 'Education for Underprivileged Children',
-            topic_details: 'Providing free education and study materials to children from economically weaker sections. This project aims to bridge the educational gap and empower future generations with knowledge and skills. We organize regular tutoring sessions, distribute books, and provide scholarships.',
-            photo: '/uploads/project1.jpg',
-            created_at: '2026-01-20T09:00:00'
-        },
-        {
-            id: 2,
-            topic: 'Clean Water Initiative',
-            topic_details: 'Installing water purification systems in rural areas to provide access to clean drinking water. This initiative targets villages with limited access to safe water sources, helping prevent waterborne diseases and improving overall community health.',
-            photo: '/uploads/project2.jpg',
-            created_at: '2026-01-18T11:30:00'
-        },
-        {
-            id: 3,
-            topic: 'Women Empowerment Program',
-            topic_details: 'Skill development training for women to promote financial independence and entrepreneurship. Participants receive training in various vocational skills including tailoring, handicrafts, computer literacy, and small business management.',
-            photo: '/uploads/project3.jpg',
-            created_at: '2026-01-15T14:45:00'
+    useEffect(() => {
+        fetchProjects();
+    }, []);
+
+    const fetchProjects = async () => {
+        try {
+            const response = await api.get('/projects');
+            setProjects(response.data || []);
+        } catch (error) {
+            console.error('Error fetching projects:', error);
+            toast.error('Failed to fetch projects');
+            setProjects([]);
         }
-    ]);
+    };
 
     const formatDateTime = (datetime) => {
         const date = new Date(datetime);
@@ -75,69 +66,76 @@ const AdminOurProjects = () => {
     const handleImageChange = (e) => {
         const file = e.target.files[0];
         if (file) {
-            const reader = new FileReader();
-            reader.onloadend = () => {
-                setImagePreview(reader.result);
-                setFormData({ ...formData, photo: reader.result });
-            };
-            reader.readAsDataURL(file);
+            setImageFile(file);
+            setImagePreview(URL.createObjectURL(file));
         }
     };
 
     const resetForm = () => {
-        setFormData({ topic: '', topic_details: '', photo: '' });
+        setFormData({ topic: '', topic_details: '' });
+        setImageFile(null);
         setImagePreview('');
         setSelectedProject(null);
     };
 
-    const handleAddProject = () => {
-        if (!formData.topic || !formData.topic_details || !formData.photo) {
+    const handleAddProject = async () => {
+        if (!formData.topic || !formData.topic_details || !imageFile) {
             toast.warning('Please fill all fields and upload an image');
             return;
         }
 
-        const newProject = {
-            id: projects.length + 1,
-            topic: formData.topic,
-            topic_details: formData.topic_details,
-            photo: formData.photo,
-            created_at: new Date().toISOString()
-        };
+        try {
+            const data = new FormData();
+            data.append('topic', formData.topic);
+            data.append('topic_details', formData.topic_details);
+            data.append('photo', imageFile);
 
-        setProjects([...projects, newProject]);
-        toast.success('Project added successfully!');
-        setAddDialogOpen(false);
-        resetForm();
+            await api.post('/projects', data);
+            toast.success('Project added successfully!');
+            setAddDialogOpen(false);
+            resetForm();
+            fetchProjects();
+        } catch (error) {
+            console.error('Error adding project:', error);
+            toast.error('Failed to add project');
+        }
     };
 
-    const handleEditProject = () => {
+    const handleEditProject = async () => {
         if (!formData.topic || !formData.topic_details) {
             toast.warning('Please fill all required fields');
             return;
         }
 
-        setProjects(
-            projects.map((project) =>
-                project.id === selectedProject.id
-                    ? {
-                        ...project,
-                        topic: formData.topic,
-                        topic_details: formData.topic_details,
-                        photo: formData.photo || project.photo
-                    }
-                    : project
-            )
-        );
+        try {
+            const data = new FormData();
+            data.append('topic', formData.topic);
+            data.append('topic_details', formData.topic_details);
+            if (imageFile) {
+                data.append('photo', imageFile);
+            }
 
-        toast.success('Project updated successfully!');
-        setEditDialogOpen(false);
-        resetForm();
+            await api.put(`/projects/${selectedProject._id}`, data);
+            toast.success('Project updated successfully!');
+            setEditDialogOpen(false);
+            resetForm();
+            fetchProjects();
+        } catch (error) {
+            console.error('Error updating project:', error);
+            toast.error('Failed to update project');
+        }
     };
 
-    const handleDeleteProject = (id) => {
+    const handleDeleteProject = async (id) => {
         if (window.confirm('Are you sure you want to delete this project?')) {
-            setProjects(projects.filter((project) => project.id !== id));
-            toast.success('Project deleted successfully!');
+            try {
+                await api.delete(`/projects/${id}`);
+                toast.success('Project deleted successfully!');
+                fetchProjects();
+            } catch (error) {
+                console.error('Error deleting project:', error);
+                toast.error('Failed to delete project');
+            }
         }
     };
 
@@ -145,11 +143,19 @@ const AdminOurProjects = () => {
         setSelectedProject(project);
         setFormData({
             topic: project.topic,
-            topic_details: project.topic_details,
-            photo: project.photo
+            topic_details: project.topic_details
         });
         setImagePreview(project.photo);
+        setImageFile(null);
         setEditDialogOpen(true);
+    };
+
+    const getPreviewSrc = (preview) => {
+        if (!preview) return '';
+        if (preview.startsWith('data:') || preview.startsWith('blob:') || preview.startsWith('http')) {
+            return preview;
+        }
+        return `http://localhost:5000/${preview.replace(/^\/+/, '')}`;
     };
 
     const filteredProjects = projects.filter(
@@ -160,8 +166,6 @@ const AdminOurProjects = () => {
 
     return (
         <>
-            <CustomBreadcrumb />
-
             {/* Page Header */}
             <div className="container-fluid mb-4">
                 <div className="row align-items-center">
@@ -254,7 +258,7 @@ const AdminOurProjects = () => {
                                 minWidth: '150px',
                                 renderCell: (row) => (
                                     <img
-                                        src={row.photo.startsWith('data:') ? row.photo : `http://localhost:5000${row.photo}`}
+                                        src={`http://localhost:5000/${row.photo.replace(/^\/+/, '')}`}
                                         alt={row.topic}
                                         style={{
                                             width: '120px',
@@ -297,12 +301,12 @@ const AdminOurProjects = () => {
                                 )
                             },
                             {
-                                field: 'created_at',
+                                field: 'createdAt',
                                 headerName: 'Created At',
                                 minWidth: '200px',
                                 renderCell: (row) => (
                                     <Typography sx={{ color: 'rgba(255, 255, 255, 0.9)', fontSize: '0.875rem' }}>
-                                        {formatDateTime(row.created_at)}
+                                        {formatDateTime(row.createdAt)}
                                     </Typography>
                                 )
                             }
@@ -322,7 +326,7 @@ const AdminOurProjects = () => {
                                 <IconButton
                                     size="small"
                                     sx={{ color: '#f87171' }}
-                                    onClick={() => handleDeleteProject(row.id)}
+                                    onClick={() => handleDeleteProject(row._id)}
                                     title="Delete Project"
                                 >
                                     <Delete fontSize="small" />
@@ -413,7 +417,7 @@ const AdminOurProjects = () => {
                         {imagePreview && (
                             <Box sx={{ mt: 2, textAlign: 'center' }}>
                                 <img
-                                    src={imagePreview}
+                                    src={getPreviewSrc(imagePreview)}
                                     alt="Preview"
                                     style={{ maxWidth: '100%', maxHeight: '200px', borderRadius: '10px' }}
                                 />
@@ -525,7 +529,7 @@ const AdminOurProjects = () => {
                         {imagePreview && (
                             <Box sx={{ mt: 2, textAlign: 'center' }}>
                                 <img
-                                    src={imagePreview.startsWith('data:') ? imagePreview : `http://localhost:5000${imagePreview}`}
+                                    src={getPreviewSrc(imagePreview)}
                                     alt="Preview"
                                     style={{ maxWidth: '100%', maxHeight: '200px', borderRadius: '10px' }}
                                 />

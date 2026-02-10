@@ -1,6 +1,8 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Navbar from '../../components/Navbar';
 import Footer from '../../components/Footer';
+import api from '../../components/BaseURL';
+import { toast } from 'react-toastify';
 import {
     Box,
     Container,
@@ -14,58 +16,23 @@ import {
     Divider,
 } from '@mui/material';
 
-const achievements = [
-    {
-        year: '2024',
-        title: 'Community Health Camp',
-        description:
-            'Organized a multi-specialty camp offering free checkups and medicines to over 1,200 villagers in rural Bhavnagar.',
-        highlight: '1,200+ beneficiaries',
-        impact: 'Medical support, awareness, early diagnosis',
-    },
-    {
-        year: '2024',
-        title: 'Student Scholarship Drive',
-        description:
-            'Funded tuition and supplies for 85 students from low-income families to continue higher education.',
-        highlight: '₹9.5L in aid',
-        impact: 'Education continuity, reduced dropouts',
-    },
-    {
-        year: '2023',
-        title: 'Blood Donation Marathon',
-        description:
-            'Hosted a district-wide blood donation initiative partnering with local hospitals and volunteers.',
-        highlight: '430 units collected',
-        impact: 'Emergency readiness, hospital reserves strengthened',
-    },
-    {
-        year: '2023',
-        title: 'Women Skill Upliftment',
-        description:
-            'Conducted tailoring and micro-entrepreneurship workshops enabling women to start home businesses.',
-        highlight: '60+ women trained',
-        impact: 'Income generation, community resilience',
-    },
-    {
-        year: '2022',
-        title: 'Tree Plantation Week',
-        description:
-            'Collaborated with schools to plant and adopt saplings, promoting environmental stewardship.',
-        highlight: '2,500 saplings',
-        impact: 'Greener neighborhoods, student awareness',
-    },
-    {
-        year: '2022',
-        title: 'Flood Relief Support',
-        description:
-            'Distributed ration kits, hygiene packs, and temporary shelter materials to affected families.',
-        highlight: '900 families reached',
-        impact: 'Immediate relief, safer recovery',
-    },
-];
-
 const Achievements = () => {
+    const [achievements, setAchievements] = useState([]);
+
+    useEffect(() => {
+        fetchAchievements();
+    }, []);
+
+    const fetchAchievements = async () => {
+        try {
+            const response = await api.get('/achievement');
+            setAchievements(response.data || []);
+        } catch (error) {
+            console.error('Error fetching achievements:', error);
+            toast.error('Failed to load achievements');
+            setAchievements([]);
+        }
+    };
     return (
         <>
             <Navbar />

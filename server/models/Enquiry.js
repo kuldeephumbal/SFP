@@ -1,0 +1,11 @@
+const mongoose = require('mongoose');
+
+const enquirySchema = new mongoose.Schema({
+    name: { type: String, required: true },
+    mobile_number: { type: String, required: true },
+    email: { type: String, required: true },
+    topic: { type: String, required: true },
+    description: { type: String, required: true }
+}, { timestamps: true });
+
+module.exports = mongoose.model('Enquiry', enquirySchema);

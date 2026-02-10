@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
     Box,
     Typography,
@@ -17,50 +17,28 @@ import {
 } from '@mui/material';
 import { Delete, ReportProblem, Search, AttachFile, VideoLibrary } from '@mui/icons-material';
 import { toast } from 'react-toastify';
-import CustomBreadcrumb from '../../components/CustomBreadcrumb';
 import BaseTable from '../../components/BaseTable';
+import api from '../../components/BaseURL';
 
 const AdminProblem = () => {
     const [searchQuery, setSearchQuery] = useState('');
     const [viewDialogOpen, setViewDialogOpen] = useState(false);
     const [selectedProblem, setSelectedProblem] = useState(null);
+    const [problems, setProblems] = useState([]);
 
-    // Mock data
-    const [problems, setProblems] = useState([
-        {
-            id: 1,
-            name: 'Rajesh Kumar',
-            mobile_number: '9876543210',
-            city: 'Delhi',
-            message: 'Need urgent help for medical treatment',
-            description: 'My mother requires immediate surgery but we lack funds. We have tried local resources but unable to arrange. Please help us.',
-            document: '/uploads/doc1.pdf',
-            video_url: 'https://www.youtube.com/watch?v=sample1',
-            created_at: '2026-01-24T10:30:00'
-        },
-        {
-            id: 2,
-            name: 'Priya Sharma',
-            mobile_number: '9123456789',
-            city: 'Mumbai',
-            message: 'Education support needed',
-            description: 'I am a meritorious student but unable to continue higher education due to financial constraints. Please guide me for scholarships or sponsorship.',
-            document: '/uploads/doc2.jpg',
-            video_url: '',
-            created_at: '2026-01-23T14:20:00'
-        },
-        {
-            id: 3,
-            name: 'Amit Verma',
-            mobile_number: '9988776655',
-            city: 'Jaipur',
-            message: 'Housing crisis',
-            description: 'Our family was displaced due to floods. We need temporary shelter and basic necessities urgently. Any assistance would be greatly appreciated.',
-            document: '/uploads/doc3.pdf',
-            video_url: 'https://www.youtube.com/watch?v=sample3',
-            created_at: '2026-01-22T09:15:00'
+    useEffect(() => {
+        fetchProblems();
+    }, []);
+
+    const fetchProblems = async () => {
+        try {
+            const response = await api.get('/problem-raised');
+            setProblems(response.data);
+        } catch (error) {
+            console.error('Error fetching problems:', error);
+            toast.error('Failed to fetch problems');
         }
-    ]);
+    };
 
     const formatDateTime = (datetime) => {
         const date = new Date(datetime);
@@ -81,10 +59,16 @@ const AdminProblem = () => {
         setViewDialogOpen(true);
     };
 
-    const handleDeleteProblem = (id) => {
+    const handleDeleteProblem = async (id) => {
         if (window.confirm('Are you sure you want to delete this problem?')) {
-            setProblems(problems.filter((p) => p.id !== id));
-            toast.success('Problem deleted successfully!');
+            try {
+                await api.delete(`/problem-raised/${id}`);
+                toast.success('Problem deleted successfully!');
+                fetchProblems();
+            } catch (error) {
+                console.error('Error deleting problem:', error);
+                toast.error('Failed to delete problem');
+            }
         }
     };
 
@@ -97,8 +81,6 @@ const AdminProblem = () => {
 
     return (
         <>
-            <CustomBreadcrumb />
-
             {/* Page Header */}
             <div className="container-fluid mb-4">
                 <div className="row align-items-center">
@@ -220,7 +202,7 @@ const AdminProblem = () => {
                                                 label={row.document.endsWith('.pdf') ? 'PDF' : 'Image'}
                                                 size="small"
                                                 component="a"
-                                                href={`http://localhost:5000${row.document}`}
+                                                href={`http://localhost:5000/${row.document.replace(/^\/+/, '')}`}
                                                 target="_blank"
                                                 rel="noopener noreferrer"
                                                 clickable
@@ -252,12 +234,12 @@ const AdminProblem = () => {
                                 )
                             },
                             {
-                                field: 'created_at',
+                                field: 'createdAt',
                                 headerName: 'Date Submitted',
                                 minWidth: '200px',
                                 renderCell: (row) => (
                                     <Typography sx={{ color: 'rgba(255, 255, 255, 0.9)', fontSize: '0.875rem' }}>
-                                        {formatDateTime(row.created_at)}
+                                        {formatDateTime(row.createdAt)}
                                     </Typography>
                                 )
                             }
@@ -286,7 +268,7 @@ const AdminProblem = () => {
                                 <IconButton
                                     size="small"
                                     sx={{ color: '#f87171' }}
-                                    onClick={() => handleDeleteProblem(row.id)}
+                                    onClick={() => handleDeleteProblem(row._id)}
                                     title="Delete Problem"
                                 >
                                     <Delete fontSize="small" />

@@ -12,6 +12,15 @@ const latestActivityRoutes = require('./routes/latestActivity');
 const youtubeVideoRoutes = require('./routes/youtubeVideo');
 const memberRoutes = require('./routes/member');
 const galleryRoutes = require('./routes/gallery');
+const upcomingEventRoutes = require('./routes/upcomigEvent');
+const crowdFundingRoutes = require('./routes/crowdFunding');
+const problemRaisedRoutes = require('./routes/problemRaised');
+const ourProjectRoutes = require('./routes/ourProject');
+const donationRoutes = require('./routes/donation');
+const memberApplicationRoutes = require('./routes/memberApply');
+const enquiryRoutes = require('./routes/Enquiry');
+const achievementRoutes = require('./routes/achievement');
+const uploadRoutes = require('./routes/upload');
 
 // Middleware
 swaggerDocs(app);
@@ -40,6 +49,15 @@ app.use('/api/latest-activity', latestActivityRoutes);
 app.use('/api/youtube-video', youtubeVideoRoutes);
 app.use('/api/member', memberRoutes);
 app.use('/api/gallery', galleryRoutes);
+app.use('/api/upcoming-event', upcomingEventRoutes);
+app.use('/api/crowdfunding', crowdFundingRoutes);
+app.use('/api/problem-raised', problemRaisedRoutes);
+app.use('/api/projects', ourProjectRoutes);
+app.use('/api/donation', donationRoutes);
+app.use('/api/member-application', memberApplicationRoutes);
+app.use('/api/enquiry', enquiryRoutes);
+app.use('/api/achievement', achievementRoutes);
+app.use('/api/upload', uploadRoutes);
 
 // Start the server
 const PORT = process.env.PORT || 8000;

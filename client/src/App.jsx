@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import {
     Box,
@@ -8,12 +8,23 @@ import {
 } from '@mui/material';
 import Header from './components/header';
 import Sidebar from './components/Sidebar';
-import backgroundImage from '/assets/img/img01.jpg';
 
 const App = ({ children }) => {
-    const [sidebarOpen, setSidebarOpen] = useState(false);
+    const [sidebarOpen, setSidebarOpen] = useState(() => {
+        const saved = localStorage.getItem('sidebarOpen');
+        return saved !== null ? JSON.parse(saved) : true;
+    });
     const [isDarkMode, setIsDarkMode] = useState(true);
+    const [backgroundImage, setBackgroundImage] = useState('');
     const location = useLocation();
+
+    // Load background image from localStorage
+    useEffect(() => {
+        const savedBg = localStorage.getItem('backgroundImage');
+        if (savedBg) {
+            setBackgroundImage(savedBg);
+        }
+    }, []);
 
     // TODO: Add authentication check here when needed
     // useEffect(() => {
@@ -43,7 +54,9 @@ const App = ({ children }) => {
     });
 
     const handleSidebarToggle = () => {
-        setSidebarOpen(!sidebarOpen);
+        const newState = !sidebarOpen;
+        setSidebarOpen(newState);
+        localStorage.setItem('sidebarOpen', JSON.stringify(newState));
     };
 
     const handleThemeToggle = () => {
@@ -95,7 +108,8 @@ const App = ({ children }) => {
                             flexGrow: 1,
                             p: 3,
                             pt: '88px', // Add top padding to account for fixed header (64px header + 24px padding)
-                            backgroundImage: `url(${backgroundImage})`,
+                            backgroundColor: backgroundImage ? 'transparent' : 'background.default',
+                            backgroundImage: backgroundImage ? `url(http://localhost:5000${backgroundImage})` : 'none',
                             backgroundSize: 'cover',
                             backgroundPosition: 'center',
                             backgroundRepeat: 'no-repeat',
@@ -103,15 +117,19 @@ const App = ({ children }) => {
                             position: 'relative',
                             overflow: 'auto',
                             minHeight: '100vh',
-                            '&::before': {
+                            '&::before': backgroundImage ? {
                                 content: '""',
                                 position: 'absolute',
                                 top: 0,
                                 left: 0,
                                 right: 0,
                                 bottom: 0,
-                                backgroundColor: 'rgba(0, 0, 0, 0.3)', // Dark overlay for better readability
-                                zIndex: -1
+                                backgroundColor: 'rgba(0, 0, 0, 0.5)', // Dark overlay for better readability
+                                zIndex: 0
+                            } : {},
+                            '& > *': {
+                                position: 'relative',
+                                zIndex: 1
                             },
                             '&::-webkit-scrollbar': {
                                 display: 'none !important',

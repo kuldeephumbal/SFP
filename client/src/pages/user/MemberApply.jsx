@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import axios from 'axios';
 import Navbar from '../../components/Navbar';
 import Footer from '../../components/Footer';
 import {
@@ -19,6 +18,7 @@ import {
 } from '@mui/material';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import api from '../../components/BaseURL';
 
 const MemberApply = () => {
     const [formData, setFormData] = useState({
@@ -108,13 +108,13 @@ const MemberApply = () => {
             submitData.append("image", formData.profilePicture);
         }
         if (formData.idDocument) {
-            submitData.append("document", formData.idDocument);
+            submitData.append("id_document", formData.idDocument);
         }
         if (formData.otherDocument) {
-            submitData.append("document", formData.otherDocument);
+            submitData.append("other_document", formData.otherDocument);
         }
 
-        axios.post("http://localhost:5000/api/add-member-application", submitData)
+        api.post("/member-application", submitData)
             .then((response) => {
                 console.log("Form Data Submitted:", response.data);
                 setFormData({

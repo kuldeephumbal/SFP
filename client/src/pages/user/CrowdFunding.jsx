@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import Navbar from '../../components/Navbar';
 import Footer from '../../components/Footer';
+import api from '../../components/BaseURL';
 import {
     Box,
     Container,
@@ -47,9 +47,13 @@ const CrowdFunding = () => {
     const [loading, setLoading] = useState(true);
 
     const fetchCrowdfunding = () => {
-        axios.get('http://localhost:5000/api/crowdfunding-items')
+        api.get('/crowdfunding')
             .then((response) => {
-                setItems(response.data?.crowdfunding || []);
+                if (Array.isArray(response.data)) {
+                    setItems(response.data);
+                } else {
+                    setItems([]);
+                }
             })
             .catch((error) => {
                 console.error('Error fetching crowdfunding items:', error);
@@ -104,7 +108,7 @@ const CrowdFunding = () => {
                     ) : (
                         <Grid container spacing={3}>
                             {items.map((item) => (
-                                <Grid item xs={12} key={item.id}>
+                                <Grid item xs={12} key={item._id}>
                                     <Card
                                         sx={{
                                             display: 'flex',
@@ -122,7 +126,7 @@ const CrowdFunding = () => {
                                         {/* Image */}
                                         <CardMedia
                                             component="img"
-                                            image={`http://localhost:5000${item.photo}`}
+                                            image={`http://localhost:5000/${item.photo.replace(/^\/+/, '')}`}
                                             alt={item.topic}
                                             sx={{
                                                 width: { xs: '100%', md: '35%' },
@@ -149,14 +153,14 @@ const CrowdFunding = () => {
                                             </Typography>
 
                                             <Typography variant="caption" sx={{ color: '#999' }}>
-                                                <strong>Last updated:</strong> {formatDateTime(item.created_at)}
+                                                <strong>Last updated:</strong> {formatDateTime(item.createdAt)}
                                             </Typography>
 
                                             <Box sx={{ mt: 1.5 }}>
                                                 <Button
                                                     variant="contained"
                                                     color="success"
-                                                    onClick={() => handleDonate(item.id)}
+                                                    onClick={() => handleDonate(item._id)}
                                                     sx={{ textTransform: 'none', fontWeight: 600 }}
                                                 >
                                                     Donate

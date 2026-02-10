@@ -17,7 +17,6 @@ import {
 import { Add, Edit, Delete, YouTube, Search } from '@mui/icons-material';
 import { toast } from 'react-toastify';
 import api from '../../components/BaseURL';
-import CustomBreadcrumb from '../../components/CustomBreadcrumb';
 import BaseTable from '../../components/BaseTable';
 
 const AdminYoutubeVideos = () => {
@@ -177,8 +176,6 @@ const AdminYoutubeVideos = () => {
 
     return (
         <>
-            <CustomBreadcrumb />
-
             {/* Page Header */}
             <div className="container-fluid mb-4">
                 <div className="row align-items-center">

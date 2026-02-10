@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import axios from 'axios';
 import Navbar from '../../components/Navbar';
 import Footer from '../../components/Footer';
+import api from '../../components/BaseURL';
 import {
     Box,
     Container,
@@ -106,7 +106,7 @@ const YourProblem = () => {
             data.append('video_url', formData.video_url);
             data.append('document', documentFile);
 
-            axios.post('http://localhost:5000/api/add-problem', data)
+            api.post('/problem-raised', data)
                 .then((response) => {
                     toast.success('Problem submitted successfully!');
                     setFormData({

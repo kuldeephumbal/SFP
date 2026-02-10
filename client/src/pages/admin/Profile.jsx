@@ -16,7 +16,6 @@ import {
     DialogContent,
     DialogActions
 } from '@mui/material';
-import CustomBreadcrumb from '../../components/CustomBreadcrumb';
 import {
     Edit,
     Save,
@@ -172,8 +171,6 @@ const Profile = () => {
 
     return (
         <>
-            <CustomBreadcrumb />
-
             {successMessage && (
                 <Alert
                     severity="success"

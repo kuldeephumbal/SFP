@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
     Box,
     Typography,
@@ -12,63 +12,28 @@ import {
 } from '@mui/material';
 import { Delete, Paid, Search, Receipt } from '@mui/icons-material';
 import { toast } from 'react-toastify';
-import CustomBreadcrumb from '../../components/CustomBreadcrumb';
 import BaseTable from '../../components/BaseTable';
+import api from '../../components/BaseURL';
 
 const AdminDonation = () => {
     const [searchQuery, setSearchQuery] = useState('');
 
-    // Mock data
-    const [donations, setDonations] = useState([
-        {
-            id: 1,
-            full_name: 'Ramesh Kumar Sharma',
-            email: 'ramesh.sharma@email.com',
-            mobile_number: '9876543210',
-            pancard_number: 'ABCDE1234F',
-            address: 'House No. 123, Sector 15, Delhi - 110001',
-            photo: '/uploads/donor1.jpg',
-            payment_receipt: '/uploads/receipt1.jpg',
-            amount: 5000,
-            created_at: '2026-01-24T14:30:00'
-        },
-        {
-            id: 2,
-            full_name: 'Priya Verma',
-            email: 'priya.verma@email.com',
-            mobile_number: '9123456789',
-            pancard_number: 'XYZPQ5678R',
-            address: 'Flat 45, Building C, Mumbai - 400001',
-            photo: '/uploads/donor2.jpg',
-            payment_receipt: '/uploads/receipt2.jpg',
-            amount: 10000,
-            created_at: '2026-01-23T10:15:00'
-        },
-        {
-            id: 3,
-            full_name: 'Amit Singh',
-            email: null,
-            mobile_number: '9988776655',
-            pancard_number: null,
-            address: 'Village Rampur, Post Office Rampur, Jaipur - 302001',
-            photo: null,
-            payment_receipt: '/uploads/receipt3.jpg',
-            amount: 2500,
-            created_at: '2026-01-22T16:45:00'
-        },
-        {
-            id: 4,
-            full_name: 'Sanjay Patel',
-            email: 'sanjay.patel@email.com',
-            mobile_number: '9876501234',
-            pancard_number: 'LMNOP9012S',
-            address: 'B-204, Green Valley Apartments, Ahmedabad - 380001',
-            photo: '/uploads/donor4.jpg',
-            payment_receipt: '/uploads/receipt4.jpg',
-            amount: 15000,
-            created_at: '2026-01-21T11:20:00'
+    const [donations, setDonations] = useState([]);
+
+    useEffect(() => {
+        fetchDonations();
+    }, []);
+
+    const fetchDonations = async () => {
+        try {
+            const response = await api.get('/donation');
+            setDonations(response.data || []);
+        } catch (error) {
+            console.error('Error fetching donations:', error);
+            toast.error('Failed to fetch donations');
+            setDonations([]);
         }
-    ]);
+    };
 
     const formatDateTime = (datetime) => {
         const date = new Date(datetime);
@@ -84,10 +49,16 @@ const AdminDonation = () => {
         return `${day}/${month}/${year}, ${hours}:${minutes} ${ampm}`;
     };
 
-    const handleDeleteDonation = (id) => {
+    const handleDeleteDonation = async (id) => {
         if (window.confirm('Are you sure you want to delete this donation record?')) {
-            setDonations(donations.filter((donation) => donation.id !== id));
-            toast.success('Donation deleted successfully!');
+            try {
+                await api.delete(`/donation/${id}`);
+                toast.success('Donation deleted successfully!');
+                fetchDonations();
+            } catch (error) {
+                console.error('Error deleting donation:', error);
+                toast.error('Failed to delete donation');
+            }
         }
     };
 
@@ -104,8 +75,6 @@ const AdminDonation = () => {
 
     return (
         <>
-            <CustomBreadcrumb />
-
             {/* Page Header */}
             <div className="container-fluid mb-4">
                 <div className="row align-items-center">
@@ -189,7 +158,7 @@ const AdminDonation = () => {
                                 renderCell: (row) => (
                                     row.photo ? (
                                         <Avatar
-                                            src={`http://localhost:5000${row.photo}`}
+                                            src={`http://localhost:5000/${row.photo.replace(/^\/+/, '')}`}
                                             alt={row.full_name}
                                             sx={{
                                                 width: 60,
@@ -250,13 +219,13 @@ const AdminDonation = () => {
                                 renderCell: (row) => (
                                     <Box
                                         component="a"
-                                        href={`http://localhost:5000${row.payment_receipt}`}
+                                        href={`http://localhost:5000/${row.payment_receipt.replace(/^\/+/, '')}`}
                                         target="_blank"
                                         rel="noopener noreferrer"
                                         sx={{ display: 'inline-block', textDecoration: 'none' }}
                                     >
                                         <img
-                                            src={`http://localhost:5000${row.payment_receipt}`}
+                                            src={`http://localhost:5000/${row.payment_receipt.replace(/^\/+/, '')}`}
                                             alt="Receipt"
                                             style={{
                                                 width: '80px',
@@ -287,12 +256,12 @@ const AdminDonation = () => {
                                 )
                             },
                             {
-                                field: 'created_at',
+                                field: 'createdAt',
                                 headerName: 'Donated At',
                                 minWidth: '200px',
                                 renderCell: (row) => (
                                     <Typography sx={{ color: 'rgba(255, 255, 255, 0.9)', fontSize: '0.875rem' }}>
-                                        {formatDateTime(row.created_at)}
+                                        {formatDateTime(row.createdAt)}
                                     </Typography>
                                 )
                             }
@@ -303,7 +272,7 @@ const AdminDonation = () => {
                             <IconButton
                                 size="small"
                                 sx={{ color: '#f87171' }}
-                                onClick={() => handleDeleteDonation(row.id)}
+                                onClick={() => handleDeleteDonation(row._id)}
                                 title="Delete Donation"
                             >
                                 <Delete fontSize="small" />

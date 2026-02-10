@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
 import {
     Container,
     Paper,
@@ -14,6 +13,7 @@ import {
 } from '@mui/material';
 import Navbar from '../../components/Navbar';
 import Footer from '../../components/Footer';
+import api from '../../components/BaseURL';
 
 export default function OurProjects() {
     const [projects, setProjects] = useState([]);
@@ -35,8 +35,8 @@ export default function OurProjects() {
     };
 
     const fetchProjects = () => {
-        axios
-            .get('http://localhost:5000/api/projects')
+        api
+            .get('/projects')
             .then((response) => {
                 setProjects(response.data || []);
             })
@@ -95,7 +95,7 @@ export default function OurProjects() {
                         ) : projects.length > 0 ? (
                             <Grid container spacing={3}>
                                 {projects.map((project) => (
-                                    <Grid item xs={12} key={project.id}>
+                                    <Grid item xs={12} key={project._id}>
                                         <Card
                                             sx={{
                                                 display: 'flex',
@@ -111,7 +111,7 @@ export default function OurProjects() {
                                             {/* Project Image */}
                                             <CardMedia
                                                 component="img"
-                                                image={`http://localhost:5000${project.photo}`}
+                                                image={`http://localhost:5000/${project.photo.replace(/^\/+/, '')}`}
                                                 alt={project.topic}
                                                 sx={{
                                                     width: { xs: '100%', md: '35%' },
@@ -160,7 +160,7 @@ export default function OurProjects() {
                                                         fontStyle: 'italic'
                                                     }}
                                                 >
-                                                    <strong>Last updated:</strong> {formatDateTime(project.created_at)}
+                                                    <strong>Last updated:</strong> {formatDateTime(project.createdAt)}
                                                 </Typography>
                                             </CardContent>
                                         </Card>

@@ -25,7 +25,6 @@ import {
 } from '@mui/icons-material';
 import { toast } from 'react-toastify';
 import api from '../../components/BaseURL';
-import CustomBreadcrumb from '../../components/CustomBreadcrumb';
 import BaseTable from '../../components/BaseTable';
 
 const LatestActivity = () => {
@@ -226,8 +225,6 @@ const LatestActivity = () => {
 
     return (
         <>
-            <CustomBreadcrumb />
-
             {/* Page Header */}
             <div className="container-fluid mb-4">
                 <div className="row align-items-center">

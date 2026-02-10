@@ -69,12 +69,6 @@ const Header = ({ onMenuClick, sidebarOpen }) => {
         navigate('/login');
     };
 
-    const handleProfile = () => {
-        handleProfileMenuClose();
-        // Navigate to profile page
-        navigate('/profile');
-    };
-
     const handleSettings = () => {
         handleProfileMenuClose();
         // Navigate to settings page
@@ -191,16 +185,6 @@ const Header = ({ onMenuClick, sidebarOpen }) => {
                             }
                         }}
                     >
-                        <MenuItem onClick={handleProfile}>
-                            <ListItemIcon>
-                                <Person fontSize="small" />
-                            </ListItemIcon>
-                            <ListItemText
-                                primary="Profile"
-                                secondary={adminData ? `${adminData.firstName} ${adminData.lastName}` : ''}
-                            />
-                        </MenuItem>
-
                         <MenuItem onClick={handleSettings}>
                             <ListItemIcon>
                                 <Settings fontSize="small" />

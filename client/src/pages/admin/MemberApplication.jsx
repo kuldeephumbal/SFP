@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
     Box,
     Typography,
@@ -29,8 +29,8 @@ import {
     FilterList
 } from '@mui/icons-material';
 import { toast } from 'react-toastify';
-import CustomBreadcrumb from '../../components/CustomBreadcrumb';
 import BaseTable from '../../components/BaseTable';
+import api from '../../components/BaseURL';
 
 const MemberApplication = () => {
     const [searchQuery, setSearchQuery] = useState('');
@@ -38,81 +38,22 @@ const MemberApplication = () => {
     const [viewDialogOpen, setViewDialogOpen] = useState(false);
     const [selectedApplication, setSelectedApplication] = useState(null);
 
-    // Mock data
-    const [applications, setApplications] = useState([
-        {
-            id: 1,
-            name: 'Rajesh Kumar',
-            email: 'rajesh.kumar@example.com',
-            mobile_number: '9876543210',
-            gender: 'Male',
-            date_of_birth: '1990-05-15',
-            blood_group: 'O+',
-            profession: 'Software Engineer',
-            address: '123 MG Road, Gandhi Nagar',
-            district: 'Bangalore Urban',
-            state: 'Karnataka',
-            pin_code: '560001',
-            organization_name: 'Tech Solutions Pvt Ltd',
-            relation_type: 'Father',
-            relation_name: 'Suresh Kumar',
-            aadhar_number: '1234 5678 9012',
-            id_type: 'Aadhar Card',
-            id_document: '/uploads/id_doc1.pdf',
-            other_document: '/uploads/other_doc1.pdf',
-            profile_picture: '/uploads/profile1.jpg',
-            status: 'pending',
-            created_at: '2026-01-20T10:30:00'
-        },
-        {
-            id: 2,
-            name: 'Priya Sharma',
-            email: 'priya.sharma@example.com',
-            mobile_number: '9123456789',
-            gender: 'Female',
-            date_of_birth: '1992-08-22',
-            blood_group: 'A+',
-            profession: 'Teacher',
-            address: '45 Park Street, Civil Lines',
-            district: 'Jaipur',
-            state: 'Rajasthan',
-            pin_code: '302001',
-            organization_name: 'Delhi Public School',
-            relation_type: 'Mother',
-            relation_name: 'Sunita Sharma',
-            aadhar_number: '2345 6789 0123',
-            id_type: 'PAN Card',
-            id_document: '/uploads/id_doc2.pdf',
-            other_document: null,
-            profile_picture: '/uploads/profile2.jpg',
-            status: 'accepted',
-            created_at: '2026-01-18T14:20:00'
-        },
-        {
-            id: 3,
-            name: 'Amit Patel',
-            email: 'amit.patel@example.com',
-            mobile_number: '9988776655',
-            gender: 'Male',
-            date_of_birth: '1988-11-10',
-            blood_group: 'B+',
-            profession: 'Business Owner',
-            address: '78 Station Road, Vastrapur',
-            district: 'Ahmedabad',
-            state: 'Gujarat',
-            pin_code: '380015',
-            organization_name: 'Patel Enterprises',
-            relation_type: 'Father',
-            relation_name: 'Ramesh Patel',
-            aadhar_number: '3456 7890 1234',
-            id_type: 'Driving License',
-            id_document: '/uploads/id_doc3.pdf',
-            other_document: '/uploads/other_doc3.pdf',
-            profile_picture: '/uploads/profile3.jpg',
-            status: 'pending',
-            created_at: '2026-01-22T09:15:00'
+    const [applications, setApplications] = useState([]);
+
+    useEffect(() => {
+        fetchApplications();
+    }, []);
+
+    const fetchApplications = async () => {
+        try {
+            const response = await api.get('/member-application');
+            setApplications(response.data || []);
+        } catch (error) {
+            console.error('Error fetching applications:', error);
+            toast.error('Failed to fetch applications');
+            setApplications([]);
         }
-    ]);
+    };
 
     const formatDateTime = (datetime) => {
         const date = new Date(datetime);
@@ -136,20 +77,30 @@ const MemberApplication = () => {
         return `${day}/${month}/${year}`;
     };
 
-    const handleDeleteApplication = (id) => {
+    const handleDeleteApplication = async (id) => {
         if (window.confirm('Are you sure you want to delete this application?')) {
-            setApplications(applications.filter((app) => app.id !== id));
-            toast.success('Application deleted successfully');
+            try {
+                await api.delete(`/member-application/${id}`);
+                toast.success('Application deleted successfully');
+                fetchApplications();
+            } catch (error) {
+                console.error('Error deleting application:', error);
+                toast.error('Failed to delete application');
+            }
         }
     };
 
-    const handleAcceptApplication = (id) => {
-        setApplications(
-            applications.map((app) =>
-                app.id === id ? { ...app, status: 'accepted' } : app
-            )
-        );
-        toast.success('Application accepted and member added successfully.');
+    const handleAcceptApplication = async (id) => {
+        try {
+            const data = new FormData();
+            data.append('status', 'accepted');
+            await api.put(`/member-application/${id}`, data);
+            toast.success('Application accepted and member added successfully.');
+            fetchApplications();
+        } catch (error) {
+            console.error('Error accepting application:', error);
+            toast.error('Failed to accept application');
+        }
     };
 
     const handleViewDetails = (application) => {
@@ -171,8 +122,6 @@ const MemberApplication = () => {
 
     return (
         <>
-            <CustomBreadcrumb />
-
             {/* Page Header */}
             <div className="container-fluid mb-4">
                 <div className="row align-items-center">
@@ -270,7 +219,7 @@ const MemberApplication = () => {
                                 minWidth: '100px',
                                 renderCell: (row) => (
                                     <Avatar
-                                        src={`http://localhost:5000${row.profile_picture}`}
+                                        src={row.profile_picture ? `http://localhost:5000/${row.profile_picture.replace(/^\/+/, '')}` : ''}
                                         alt={row.name}
                                         sx={{ width: 50, height: 50 }}
                                     />
@@ -377,7 +326,7 @@ const MemberApplication = () => {
                                 minWidth: '150px',
                                 renderCell: (row) => (
                                     <Typography sx={{ color: 'rgba(255, 255, 255, 0.9)', fontSize: '0.875rem' }}>
-                                        {formatDateTime(row.created_at)}
+                                        {formatDateTime(row.createdAt)}
                                     </Typography>
                                 )
                             }
@@ -399,7 +348,7 @@ const MemberApplication = () => {
                                         <IconButton
                                             size="small"
                                             sx={{ color: '#4ade80' }}
-                                            onClick={() => handleAcceptApplication(row.id)}
+                                            onClick={() => handleAcceptApplication(row._id)}
                                             title="Accept Application"
                                         >
                                             <Check fontSize="small" />
@@ -407,7 +356,7 @@ const MemberApplication = () => {
                                         <IconButton
                                             size="small"
                                             sx={{ color: '#f87171' }}
-                                            onClick={() => handleDeleteApplication(row.id)}
+                                            onClick={() => handleDeleteApplication(row._id)}
                                             title="Delete Application"
                                         >
                                             <Delete fontSize="small" />
@@ -448,7 +397,7 @@ const MemberApplication = () => {
                                 {/* Profile Picture */}
                                 <Grid item xs={12} md={4} sx={{ textAlign: 'center' }}>
                                     <Avatar
-                                        src={`http://localhost:5000${selectedApplication.profile_picture}`}
+                                        src={selectedApplication.profile_picture ? `http://localhost:5000/${selectedApplication.profile_picture.replace(/^\/+/, '')}` : ''}
                                         alt={selectedApplication.name}
                                         sx={{ width: 150, height: 150, margin: '0 auto', mb: 2 }}
                                     />
@@ -621,7 +570,7 @@ const MemberApplication = () => {
                                             <Typography>
                                                 {selectedApplication.id_document ? (
                                                     <a
-                                                        href={`http://localhost:5000${selectedApplication.id_document}`}
+                                                        href={`http://localhost:5000/${selectedApplication.id_document.replace(/^\/+/, '')}`}
                                                         target="_blank"
                                                         rel="noreferrer"
                                                         style={{ color: '#60a5fa', textDecoration: 'none' }}
@@ -640,7 +589,7 @@ const MemberApplication = () => {
                                             <Typography>
                                                 {selectedApplication.other_document ? (
                                                     <a
-                                                        href={`http://localhost:5000${selectedApplication.other_document}`}
+                                                        href={`http://localhost:5000/${selectedApplication.other_document.replace(/^\/+/, '')}`}
                                                         target="_blank"
                                                         rel="noreferrer"
                                                         style={{ color: '#60a5fa', textDecoration: 'none' }}
@@ -661,7 +610,7 @@ const MemberApplication = () => {
                                         Applied At
                                     </Typography>
                                     <Typography sx={{ color: 'white' }}>
-                                        {formatDateTime(selectedApplication.created_at)}
+                                        {formatDateTime(selectedApplication.createdAt)}
                                     </Typography>
                                 </Grid>
                             </Grid>
@@ -674,7 +623,7 @@ const MemberApplication = () => {
                             variant="contained"
                             startIcon={<Check />}
                             onClick={() => {
-                                handleAcceptApplication(selectedApplication.id);
+                                handleAcceptApplication(selectedApplication._id);
                                 setViewDialogOpen(false);
                             }}
                             sx={{

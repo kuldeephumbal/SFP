@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
 import Navbar from '../../components/Navbar';
 import Footer from '../../components/Footer';
 import {
@@ -15,6 +14,7 @@ import {
 } from '@mui/material';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import api from '../../components/BaseURL';
 
 const ListOfDonor = () => {
     const [donations, setDonations] = useState([]);
@@ -22,9 +22,9 @@ const ListOfDonor = () => {
     const [loading, setLoading] = useState(true);
 
     const fetchDonations = () => {
-        axios.get('http://localhost:5000/api/donation')
+        api.get('/donation')
             .then((response) => {
-                setDonations(response.data);
+                setDonations(response.data || []);
                 setLoading(false);
             })
             .catch((error) => {
@@ -90,7 +90,7 @@ const ListOfDonor = () => {
                     ) : filteredDonations.length > 0 ? (
                         <Grid container spacing={3}>
                             {filteredDonations.map((donation) => (
-                                <Grid item xs={12} sm={6} md={4} lg={3} key={donation.id}>
+                                <Grid item xs={12} sm={6} md={4} lg={3} key={donation._id}>
                                     <Card
                                         sx={{
                                             height: '100%',
@@ -110,7 +110,7 @@ const ListOfDonor = () => {
                                         {/* Donor Image */}
                                         <CardMedia
                                             component="img"
-                                            image={`http://localhost:5000${donation.photo}`}
+                                            image={donation.photo ? `http://localhost:5000/${donation.photo.replace(/^\/+/, '')}` : ''}
                                             alt={donation.full_name}
                                             sx={{
                                                 height: 200,
