@@ -134,6 +134,20 @@ const UserLandingPage = () => {
             });
     }, []);
 
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            if (typeof window === 'undefined') return;
+            if (typeof window.Event === 'function') {
+                window.dispatchEvent(new window.Event('resize'));
+                return;
+            }
+            const legacyEvent = document.createEvent('UIEvents');
+            legacyEvent.initUIEvent('resize', true, false, window, 0);
+            window.dispatchEvent(legacyEvent);
+        }, 150);
+        return () => clearTimeout(timer);
+    }, [sliderImages.length, youtubeVideos.length, galleryItems.length]);
+
     const getEmbedUrl = (url) => {
         if (!url) return '';
         if (url.includes('embed/')) return url;
@@ -160,6 +174,8 @@ const UserLandingPage = () => {
         }
     };
 
+    const sectionSpacing = { xs: 3, md: 6 };
+
     // Slider settings
     const heroSliderSettings = {
         dots: true,
@@ -180,9 +196,28 @@ const UserLandingPage = () => {
         autoplay: false,
         arrows: true,
         responsive: [
-            { breakpoint: 1024, settings: { slidesToShow: 3 } },
-            { breakpoint: 768, settings: { slidesToShow: 2 } },
-            { breakpoint: 480, settings: { slidesToShow: 1 } }
+            {
+                breakpoint: 1024,
+                settings: {
+                    slidesToShow: 3,
+                    slidesToScroll: 1,
+                }
+            },
+            {
+                breakpoint: 768,
+                settings: {
+                    slidesToShow: 2,
+                    slidesToScroll: 1,
+                }
+            },
+            {
+                breakpoint: 600,
+                settings: {
+                    slidesToShow: 1,
+                    slidesToScroll: 1,
+                    arrows: true
+                }
+            }
         ]
     };
 
@@ -211,14 +246,33 @@ const UserLandingPage = () => {
         ]
     };
 
+    const youtubeSliderSettings = {
+        infinite: true,
+        speed: 300,
+        slidesToShow: 3,
+        slidesToScroll: 1,
+        autoplay: false,
+        arrows: true,
+        responsive: [
+            { breakpoint: 1024, settings: { slidesToShow: 2, slidesToScroll: 1 } },
+            { breakpoint: 600, settings: { slidesToShow: 1, slidesToScroll: 1, arrows: true } }
+        ]
+    };
+
     return (
         <>
             <Navbar />
-            <Box sx={{ bgcolor: '#f5f5f5', minHeight: '100vh' }}>
+            <Box sx={{
+                bgcolor: '#f5f5f5',
+                minHeight: '100vh',
+                pb: sectionSpacing,
+                overflowX: 'hidden',
+                '& .slick-list': { margin: 0 }
+            }}>
 
                 {/* Hero Slider Section */}
-                <Box sx={{ bgcolor: '#f5f5f5', py: 3 }}>
-                    <Container maxWidth="lg">
+                <Box sx={{ bgcolor: '#f5f5f5', py: { xs: 2, md: 3 } }}>
+                    <Container maxWidth="lg" sx={{ px: { xs: 2, sm: 3 } }}>
                         <Box sx={{
                             position: 'relative',
                             bgcolor: 'white',
@@ -250,10 +304,15 @@ const UserLandingPage = () => {
                             <Slider {...heroSliderSettings}>
                                 {sliderImages.map((slider) => (
                                     <Box key={slider.id} sx={{ position: 'relative' }}>
-                                        <img
+                                        <Box
+                                            component="img"
                                             src={slider.photo}
                                             alt={slider.topic}
-                                            style={{ width: '100%', height: '400px', objectFit: 'cover' }}
+                                            sx={{
+                                                width: '100%',
+                                                height: { xs: 220, sm: 300, md: 400 },
+                                                objectFit: 'cover'
+                                            }}
                                         />
                                         <Box sx={{
                                             position: 'absolute',
@@ -262,7 +321,7 @@ const UserLandingPage = () => {
                                             right: 0,
                                             background: 'linear-gradient(to top, rgba(0,0,0,0.7), transparent)',
                                             color: 'white',
-                                            p: 3,
+                                            p: { xs: 2, md: 3 },
                                             display: { xs: 'none', md: 'block' }
                                         }}>
                                             <Typography variant="h5" sx={{ fontWeight: 600 }}>
@@ -277,60 +336,113 @@ const UserLandingPage = () => {
                 </Box>
 
                 {/* Quick Action Cards */}
-                <Container maxWidth="lg" sx={{
-                    mt: -3,
+                <Container maxWidth="lg"
+                    className="mt-3"
+                    sx={{
+                    mt: { xs: 2, md: 3 },
+                    mb: sectionSpacing,
                     position: 'relative',
                     zIndex: 1,
+                    px: { xs: 2, sm: 3 },
+                    '& .slick-slider': {
+                        position: 'relative',
+                        px: { xs: 5, md: 0 } // Keep cards centered on mobile
+                    },
                     '& .slick-prev, & .slick-next': {
+                        width: '20px',
+                        height: '20px',
+                        top: '50%',
+                        transform: 'translateY(-50%)',
+                        backgroundColor: 'white',
+                        borderRadius: '50%',
+                        boxShadow: 1,
                         '&:before': {
                             color: '#1976d2',
-                            fontSize: '30px'
+                            fontSize: { xs: '20px', md: '24px' },
+                            opacity: 1
                         }
                     },
                     '& .slick-prev': {
-                        left: '-30px'
+                        left: { xs: 0, md: -28 },
+                        zIndex: 1
                     },
                     '& .slick-next': {
-                        right: '-30px'
+                        right: { xs: 0, md: -28 },
+                        zIndex: 1
                     }
                 }}>
                     <Slider {...quickActionSettings}>
                         <Box sx={{ px: 1 }}>
-                            <Card sx={{ textAlign: 'center', py: 2, cursor: 'pointer', '&:hover': { boxShadow: 6, transform: 'translateY(-4px)' }, transition: 'all 0.3s' }}>
-                                <PersonAdd sx={{ fontSize: 40, color: '#1976d2', mb: 1 }} />
-                                <Typography variant="body1" fontWeight={500}>Add person</Typography>
+                            <Card sx={{
+                                textAlign: 'center',
+                                py: { xs: 4, md: 2 }, // Taller on mobile
+                                cursor: 'pointer',
+                                '&:hover': { boxShadow: 6, transform: 'translateY(-4px)' },
+                                transition: 'all 0.3s',
+                                height: '100%'
+                            }}>
+                                <PersonAdd sx={{ fontSize: { xs: 60, md: 40 }, color: '#1976d2', mb: 2 }} />
+                                <Typography variant="h6" fontWeight={600} sx={{ fontSize: { xs: '1.1rem', md: '1rem' } }}>Add person</Typography>
                             </Card>
                         </Box>
                         <Box sx={{ px: 1 }}>
-                            <Card sx={{ textAlign: 'center', py: 2, cursor: 'pointer', '&:hover': { boxShadow: 6, transform: 'translateY(-4px)' }, transition: 'all 0.3s' }}>
-                                <Event sx={{ fontSize: 40, color: '#1976d2', mb: 1 }} />
-                                <Typography variant="body1" fontWeight={500}>Upcoming events</Typography>
+                            <Card sx={{
+                                textAlign: 'center',
+                                py: { xs: 4, md: 2 },
+                                cursor: 'pointer',
+                                '&:hover': { boxShadow: 6, transform: 'translateY(-4px)' },
+                                transition: 'all 0.3s',
+                                height: '100%'
+                            }}>
+                                <Event sx={{ fontSize: { xs: 60, md: 40 }, color: '#1976d2', mb: 2 }} />
+                                <Typography variant="h6" fontWeight={600} sx={{ fontSize: { xs: '1.1rem', md: '1rem' } }}>Upcoming events</Typography>
                             </Card>
                         </Box>
                         <Box sx={{ px: 1 }}>
-                            <Card sx={{ textAlign: 'center', py: 2, cursor: 'pointer', '&:hover': { boxShadow: 6, transform: 'translateY(-4px)' }, transition: 'all 0.3s' }}>
-                                <Groups sx={{ fontSize: 40, color: '#1976d2', mb: 1 }} />
-                                <Typography variant="body1" fontWeight={500}>Management team</Typography>
+                            <Card sx={{
+                                textAlign: 'center',
+                                py: { xs: 4, md: 2 },
+                                cursor: 'pointer',
+                                '&:hover': { boxShadow: 6, transform: 'translateY(-4px)' },
+                                transition: 'all 0.3s',
+                                height: '100%'
+                            }}>
+                                <Groups sx={{ fontSize: { xs: 60, md: 40 }, color: '#1976d2', mb: 2 }} />
+                                <Typography variant="h6" fontWeight={600} sx={{ fontSize: { xs: '1.1rem', md: '1rem' } }}>Management team</Typography>
                             </Card>
                         </Box>
                         <Box sx={{ px: 1 }}>
-                            <Card sx={{ textAlign: 'center', py: 2, cursor: 'pointer', '&:hover': { boxShadow: 6, transform: 'translateY(-4px)' }, transition: 'all 0.3s' }}>
-                                <YouTube sx={{ fontSize: 40, color: '#1976d2', mb: 1 }} />
-                                <Typography variant="body1" fontWeight={500}>Donate</Typography>
+                            <Card sx={{
+                                textAlign: 'center',
+                                py: { xs: 4, md: 2 },
+                                cursor: 'pointer',
+                                '&:hover': { boxShadow: 6, transform: 'translateY(-4px)' },
+                                transition: 'all 0.3s',
+                                height: '100%'
+                            }}>
+                                <YouTube sx={{ fontSize: { xs: 60, md: 40 }, color: '#1976d2', mb: 2 }} />
+                                <Typography variant="h6" fontWeight={600} sx={{ fontSize: { xs: '1.1rem', md: '1rem' } }}>Donate</Typography>
                             </Card>
                         </Box>
                         <Box sx={{ px: 1 }}>
-                            <Card sx={{ textAlign: 'center', py: 2, cursor: 'pointer', '&:hover': { boxShadow: 6, transform: 'translateY(-4px)' }, transition: 'all 0.3s' }}>
-                                <Groups sx={{ fontSize: 40, color: '#1976d2', mb: 1 }} />
-                                <Typography variant="body1" fontWeight={500}>Crowd funding</Typography>
+                            <Card sx={{
+                                textAlign: 'center',
+                                py: { xs: 4, md: 2 },
+                                cursor: 'pointer',
+                                '&:hover': { boxShadow: 6, transform: 'translateY(-4px)' },
+                                transition: 'all 0.3s',
+                                height: '100%'
+                            }}>
+                                <Groups sx={{ fontSize: { xs: 60, md: 40 }, color: '#1976d2', mb: 2 }} />
+                                <Typography variant="h6" fontWeight={600} sx={{ fontSize: { xs: '1.1rem', md: '1rem' } }}>Crowd funding</Typography>
                             </Card>
                         </Box>
                     </Slider>
                 </Container>
 
                 {/* Recent Activity Section */}
-                <Container maxWidth="lg" sx={{ mt: 4 }}>
-                    <Grid container spacing={3}>
+                <Container maxWidth="lg" sx={{ mt: sectionSpacing, px: { xs: 2, sm: 3 } }}>
+                    <Grid container spacing={{ xs: 2, md: 3 }}>
                         <Grid size={{ xs: 12, md: 3 }}>
                             <Paper sx={{ p: 0, overflow: 'hidden' }}>
                                 <Box sx={{ bgcolor: '#1565c0', color: 'white', p: 1.5 }}>
@@ -369,7 +481,7 @@ const UserLandingPage = () => {
                                         startIcon={<PersonAdd />}
                                         sx={{ bgcolor: '#ff9800', mb: 1.5, py: 1.2, '&:hover': { bgcolor: '#f57c00' } }}
                                     >
-                                        Apply for Membership
+                                        Apply Membership
                                     </Button>
                                     <Button
                                         fullWidth
@@ -383,18 +495,17 @@ const UserLandingPage = () => {
                             </Paper>
                         </Grid>
                         <Grid size={{ xs: 12, md: 9 }}>
-                            <Paper sx={{ p: 3, minHeight: 200 }}>
+                            <Paper sx={{ p: { xs: 2, md: 3 }, minHeight: 200 }}>
                                 {latestActivities && latestActivities.length > 0 ? (
-                                    <Grid container spacing={3}>
+                                    <Grid container spacing={{ xs: 2, md: 3 }}>
                                         {latestActivities.map((activity) => (
                                             <Grid size={{ xs: 12, md: 6 }} key={activity._id || activity.id}>
                                                 <Card sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
                                                     <CardMedia
                                                         component="img"
-                                                        height="200"
+                                                        sx={{ height: { xs: 160, sm: 180, md: 200 }, objectFit: 'cover' }}
                                                         image={activity.photo?.startsWith('http') ? activity.photo : `http://localhost:5000${activity.photo}`}
                                                         alt={activity.activity_detail}
-                                                        sx={{ objectFit: 'cover' }}
                                                     />
                                                     <CardContent sx={{ flexGrow: 1 }}>
                                                         <Typography variant="body1" sx={{ fontWeight: 500, mb: 1 }}>
@@ -423,72 +534,106 @@ const UserLandingPage = () => {
                 </Container>
 
                 {/* About Us Section */}
-                <Container maxWidth="lg" sx={{ mt: 5 }}>
-                    <Paper sx={{ p: { xs: 3, md: 5 }, borderRadius: 3, boxShadow: 3 }}>
-                        <Box
-                            sx={{
-                                display: 'grid',
-                                gridTemplateColumns: { xs: '1fr', md: '1fr 1.05fr' },
-                                gap: { xs: 3, md: 4 },
-                                alignItems: 'start'
-                            }}
-                        >
-                            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }} lg={3}>
-                                <Box sx={{ textAlign: { xs: 'center', md: 'left' } }}>
-                                    <img
-                                        src="/assets/img/Shankhnad-logo.png"
-                                        alt="Shankhnad Foundation"
-                                        style={{ width: '100%', maxWidth: 180, display: 'inline-block' }}
-                                    />
+                <Container maxWidth="lg" sx={{ mt: sectionSpacing, mb: sectionSpacing, px: { xs: 2, sm: 3 } }}>
+                    <Paper sx={{ p: { xs: 2.5, md: 5 }, borderRadius: 3, boxShadow: 3 }}>
+                        <Grid container spacing={{ xs: 4, md: 6 }} alignItems="start">
+                            <Grid size={{ xs: 12, md: 4, lg: 3 }}>
+                                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+                                    <Box sx={{ textAlign: { xs: 'center', md: 'left' } }}>
+                                        <Box
+                                            component="img"
+                                            src="/assets/img/Shankhnad-logo.png"
+                                            alt="Shankhnad Foundation"
+                                            sx={{ width: '100%', maxWidth: { xs: 150, md: 180 }, display: 'inline-block' }}
+                                        />
+                                    </Box>
+                                    <Box sx={{ maxWidth: { xs: '280px', md: '100%' }, mx: 'auto', width: '100%' }}>
+                                        {members.length > 0 ? (
+                                            <Slider {...memberSliderSettings}>
+                                                {members.map(member => (
+                                                    <Box key={member._id} sx={{ textAlign: 'center', p: 1 }}>
+                                                        <Card sx={{ p: 2, borderRadius: 2, boxShadow: 1 }}>
+                                                            <CardMedia
+                                                                component="img"
+                                                                image={member.photo ? `http://localhost:5000/${member.photo.replace(/^\/+/, '')}` : '/assets/img/default-member.png'}
+                                                                alt={member.name}
+                                                                sx={{ width: { xs: 120, md: 150 }, height: { xs: 120, md: 150 }, objectFit: 'cover', borderRadius: 2, mx: 'auto', mb: 1 }}
+                                                            />
+                                                            <Typography variant="subtitle1" sx={{ fontWeight: 700, fontSize: { xs: '0.9rem', md: '1rem' } }}>{member.name}</Typography>
+                                                            <Typography variant="body2" color="text.secondary" sx={{ fontSize: { xs: '0.8rem', md: '0.875rem' } }}>{member.status}</Typography>
+                                                        </Card>
+                                                    </Box>
+                                                ))}
+                                            </Slider>
+                                        ) : (
+                                            <Typography variant="body2" color="text.secondary" textAlign="center">
+                                                No members found.
+                                            </Typography>
+                                        )}
+                                    </Box>
                                 </Box>
-                                <Box sx={{ maxWidth: 200 }}>
-                                    {members.length > 0 ? (
-                                        <Slider {...memberSliderSettings}>
-                                            {members.map(member => (
-                                                <Box key={member._id} sx={{ textAlign: 'center' }}>
-                                                    <Card sx={{ p: 2, borderRadius: 2, boxShadow: 1 }}>
-                                                        <CardMedia
-                                                            component="img"
-                                                            image={member.photo ? `http://localhost:5000/${member.photo.replace(/^\/+/, '')}` : '/assets/img/default-member.png'}
-                                                            alt={member.name}
-                                                            sx={{ width: 150, height: 150, objectFit: 'cover', borderRadius: 2, mx: 'auto', mb: 1 }}
-                                                        />
-                                                        <Typography variant="subtitle1" sx={{ fontWeight: 700 }}>{member.name}</Typography>
-                                                        <Typography variant="body2" color="text.secondary">{member.status}</Typography>
-                                                    </Card>
-                                                </Box>
-                                            ))}
-                                        </Slider>
-                                    ) : (
-                                        <Typography variant="body2" color="text.secondary" textAlign="center">
-                                            No members found.
-                                        </Typography>
-                                    )}
-                                </Box>
-                            </Box>
-                            <Box lg={9}>
-                                <Typography variant="h4" sx={{ fontWeight: 700, mb: 2 }}>About Us</Typography>
-                                <Typography paragraph color="text.secondary" sx={{ fontSize: '1.05rem', lineHeight: 1.7 }}>
+                            </Grid>
+                            <Grid size={{ xs: 12, md: 8, lg: 9 }}>
+                                <Typography variant="h4" sx={{
+                                    fontWeight: 700,
+                                    mb: 2,
+                                    fontSize: { xs: '1.75rem', md: '2.125rem' },
+                                    textAlign: { xs: 'center', md: 'left' }
+                                }}>
+                                    About Us
+                                </Typography>
+                                <Typography paragraph color="text.secondary" sx={{
+                                    fontSize: { xs: '0.95rem', md: '1.05rem' },
+                                    lineHeight: 1.7,
+                                    textAlign: 'justify'
+                                }}>
                                     Lorem ipsum dolor sit amet consectetur adipisicing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
                                 </Typography>
-                                <Typography paragraph color="text.secondary" sx={{ fontSize: '1.05rem', lineHeight: 1.7 }}>
+                                <Typography paragraph color="text.secondary" sx={{
+                                    fontSize: { xs: '0.95rem', md: '1.05rem' },
+                                    lineHeight: 1.7,
+                                    textAlign: 'justify'
+                                }}>
                                     Quia ratione exercitationem explicabo beatae odio molestiae vero deserunt quo, esse numquam cupiditate aperiam nulla earum tempore ea odit at amet quod.
                                 </Typography>
-                            </Box>
-                        </Box>
+                                 <Typography paragraph color="text.secondary" sx={{
+                                    fontSize: { xs: '0.95rem', md: '1.05rem' },
+                                    lineHeight: 1.7,
+                                    textAlign: 'justify'
+                                }}>
+                                    Quia ratione exercitationem explicabo beatae odio molestiae vero deserunt quo, esse numquam cupiditate aperiam nulla earum tempore ea odit at amet quod.
+                                </Typography>
+                                 <Typography paragraph color="text.secondary" sx={{
+                                    fontSize: { xs: '0.95rem', md: '1.05rem' },
+                                    lineHeight: 1.7,
+                                    textAlign: 'justify'
+                                }}>
+                                    Quia ratione exercitationem explicabo beatae odio molestiae vero deserunt quo, esse numquam cupiditate aperiam nulla earum tempore ea odit at amet quod.
+                                </Typography>
+                                 <Typography paragraph color="text.secondary" sx={{
+                                    fontSize: { xs: '0.95rem', md: '1.05rem' },
+                                    lineHeight: 1.7,
+                                    textAlign: 'justify'
+                                }}>
+                                    Quia ratione exercitationem explicabo beatae odio molestiae vero deserunt quo, esse numquam cupiditate aperiam nulla earum tempore ea odit at amet quod.
+                                </Typography>
+                                
+                            </Grid>
+                        </Grid>
                     </Paper>
                 </Container>
 
                 {/* Our Objectives Section */}
-                <Container maxWidth="lg" sx={{ mt: 5 }}>
-                    <Box sx={{ bgcolor: '#1565c0', color: 'white', p: 2, textAlign: 'center', mb: 3, borderRadius: 1 }}>
-                        <Typography variant="h5" sx={{ fontWeight: 600 }}>Our Objectives</Typography>
+                <Container maxWidth="lg" sx={{ mt: sectionSpacing, mb: sectionSpacing, px: { xs: 2, sm: 3 } }}>
+                    <Box sx={{ bgcolor: '#1565c0', color: 'white', p: { xs: 1.5, md: 2 }, textAlign: 'center', mb: { xs: 2, md: 3 }, borderRadius: 1 }}>
+                        <Typography variant="h5" sx={{ fontWeight: 600, fontSize: { xs: '1.25rem', md: '1.5rem' } }}>Our Objectives</Typography>
                     </Box>
                     <Grid container spacing={2}>
                         {objectives.map((obj, index) => (
-                            <Grid size={{ xs: 12, sm: 6, md: 2.4 }} key={index}>
+                            <Grid size={{ xs: 6, sm: 4, md: 2.4 }} key={index}>
                                 <Card sx={{
                                     cursor: 'pointer',
+                                    height: '100%',
                                     overflow: 'hidden',
                                     '&:hover': {
                                         transform: 'translateY(-8px)',
@@ -498,12 +643,12 @@ const UserLandingPage = () => {
                                 }}>
                                     <CardMedia
                                         component="img"
-                                        height="140"
+                                        sx={{ height: { xs: 120, sm: 140 }, objectFit: 'cover' }}
                                         image={obj.image}
                                         alt={obj.title}
                                     />
-                                    <CardContent>
-                                        <Typography variant="body2" textAlign="center" fontWeight={500}>
+                                    <CardContent sx={{ p: 1.5 }}>
+                                        <Typography variant="body2" textAlign="center" fontWeight={600} sx={{ fontSize: { xs: '0.75rem', md: '0.875rem' } }}>
                                             {obj.title}
                                         </Typography>
                                     </CardContent>
@@ -514,9 +659,9 @@ const UserLandingPage = () => {
                 </Container>
 
                 {/* YouTube Videos Section */}
-                <Container maxWidth="lg" sx={{ mt: 5 }}>
-                    <Box sx={{ bgcolor: '#1565c0', color: 'white', p: 2, textAlign: 'center', mb: 3, borderRadius: 1 }}>
-                        <Typography variant="h5" sx={{ fontWeight: 600 }}>Youtube Videos</Typography>
+                <Container maxWidth="lg" sx={{ mt: sectionSpacing, mb: sectionSpacing, px: { xs: 2, sm: 3 } }}>
+                    <Box sx={{ bgcolor: '#1565c0', color: 'white', p: { xs: 1.5, md: 2 }, textAlign: 'center', mb: { xs: 2, md: 3 }, borderRadius: 1 }}>
+                        <Typography variant="h5" sx={{ fontWeight: 600, fontSize: { xs: '1.25rem', md: '1.5rem' } }}>Youtube Videos</Typography>
                     </Box>
                     {videosLoading ? (
                         <Paper sx={{ p: 4, textAlign: 'center' }}>
@@ -527,77 +672,125 @@ const UserLandingPage = () => {
                             <Typography color="text.secondary">No YouTube videos found.</Typography>
                         </Paper>
                     ) : (
-                        <Grid container spacing={3}>
-                            {youtubeVideos.slice(0, 6).map((video) => (
-                                <Grid size={{ xs: 12, sm: 6, md: 4 }} key={video._id || video.id}>
-                                    <Card sx={{
-                                        overflow: 'hidden',
-                                        '&:hover': {
-                                            transform: 'translateY(-4px)',
-                                            boxShadow: 6,
-                                            transition: 'all 0.3s'
-                                        }
-                                    }}>
-                                        <Box sx={{ position: 'relative', paddingTop: '56.25%', bgcolor: '#000' }}>
-                                            {getEmbedUrl(video.url) && (
-                                                <Box
-                                                    component="iframe"
-                                                    src={getEmbedUrl(video.url)}
-                                                    title={video.url}
-                                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                                                    allowFullScreen
-                                                    sx={{
-                                                        position: 'absolute',
-                                                        top: 0,
-                                                        left: 0,
-                                                        width: '100%',
-                                                        height: '100%',
-                                                        border: 0
-                                                    }}
-                                                />
-                                            )}
-                                        </Box>
-                                        <CardContent>
-                                            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                                                <Typography variant="body2" sx={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', flex: 1 }}>
-                                                    {video.url}
-                                                </Typography>
-                                                <YouTube sx={{ color: '#ff0000', ml: 1 }} />
+                        <Box sx={{
+                            position: 'relative',
+                            px: { xs: 2, md: 2 },
+                            '& .slick-prev, & .slick-next': {
+                                width: '20px',
+                                height: '20px',
+                                top: '50%',
+                                transform: 'translateY(-50%)',
+                                backgroundColor: 'white',
+                                borderRadius: '50%',
+                                boxShadow: 1,
+                                '&:before': {
+                                    color: '#1976d2',
+                                    fontSize: { xs: '20px', md: '24px' },
+                                    opacity: 1
+                                }
+                            },
+                            '& .slick-prev': {
+                                left: { xs: -24, md: -28 },
+                                zIndex: 1
+                            },
+                            '& .slick-next': {
+                                right: { xs: -24, md: -28 },
+                                zIndex: 1
+                            }
+                        }}>
+                            <Slider key={`youtube-${youtubeVideos.length}`} {...youtubeSliderSettings}>
+                                {youtubeVideos.slice(0, 6).map((video) => (
+                                    <Box key={video._id || video.id} sx={{ px: 1.5 }}>
+                                        <Card sx={{
+                                            overflow: 'hidden',
+                                            '&:hover': {
+                                                transform: 'translateY(-4px)',
+                                                boxShadow: 6,
+                                                transition: 'all 0.3s'
+                                            }
+                                        }}>
+                                            <Box sx={{ position: 'relative', paddingTop: '56.25%', bgcolor: '#000' }}>
+                                                {getEmbedUrl(video.url) && (
+                                                    <Box
+                                                        component="iframe"
+                                                        src={getEmbedUrl(video.url)}
+                                                        title={video.url}
+                                                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                                        allowFullScreen
+                                                        sx={{
+                                                            position: 'absolute',
+                                                            top: 0,
+                                                            left: 0,
+                                                            width: '100%',
+                                                            height: '100%',
+                                                            border: 0
+                                                        }}
+                                                    />
+                                                )}
                                             </Box>
-                                        </CardContent>
-                                    </Card>
-                                </Grid>
-                            ))}
-                        </Grid>
+                                            <CardContent sx={{ p: { xs: 1.5, md: 2 } }}>
+                                                <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                                                    <Typography variant="body2" sx={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', flex: 1, fontSize: { xs: '0.8rem', md: '0.875rem' } }}>
+                                                        {video.url}
+                                                    </Typography>
+                                                    <YouTube sx={{ color: '#ff0000', ml: 1 }} />
+                                                </Box>
+                                            </CardContent>
+                                        </Card>
+                                    </Box>
+                                ))}
+                            </Slider>
+                        </Box>
                     )}
                 </Container>
 
                 {/* Gallery Section */}
-                <Container maxWidth="lg" sx={{ mt: 5 }}>
-                    <Box sx={{ bgcolor: '#1565c0', color: 'white', p: 2, textAlign: 'center', mb: 3, borderRadius: 1 }}>
-                        <Typography variant="h5" sx={{ fontWeight: 600 }}>Gallery</Typography>
+                <Container maxWidth="lg" sx={{ mt: sectionSpacing, mb: sectionSpacing, px: { xs: 2, sm: 3 } }}>
+                    <Box sx={{ bgcolor: '#1565c0', color: 'white', p: { xs: 1.5, md: 2 }, textAlign: 'center', mb: { xs: 2, md: 3 }, borderRadius: 1 }}>
+                        <Typography variant="h5" sx={{ fontWeight: 600, fontSize: { xs: '1.25rem', md: '1.5rem' } }}>Gallery</Typography>
                     </Box>
                     <Box sx={{
+                        position: 'relative',
+                        px: { xs: 2, md: 2 },
                         '& .slick-prev, & .slick-next': {
+                            width: '20px',
+                            height: '20px',
+                            top: '50%',
+                            transform: 'translateY(-50%)',
+                            backgroundColor: 'white',
+                            borderRadius: '50%',
+                            boxShadow: 1,
                             '&:before': {
                                 color: '#1976d2',
-                                fontSize: '30px'
+                                fontSize: { xs: '20px', md: '24px' },
+                                opacity: 1
                             }
+                        },
+                        '& .slick-prev': {
+                            left: { xs: -24, md: -28 },
+                            zIndex: 1
+                        },
+                        '& .slick-next': {
+                            right: { xs: -24, md: -28 },
+                            zIndex: 1
                         }
                     }}>
-                        <Slider {...gallerySliderSettings}>
+                        <Slider key={`gallery-${galleryItems.length}`} {...gallerySliderSettings}>
                             {galleryItems.map(item => (
-                                <Box key={item._id} sx={{ px: 1 }}>
+                                <Box key={item._id} sx={{ px: 1.5, py: 1 }}>
                                     <Card
                                         sx={{
                                             cursor: 'pointer',
-                                            '&:hover': { transform: 'scale(1.05)', transition: 'all 0.3s' }
+                                            borderRadius: 2,
+                                            overflow: 'hidden',
+                                            boxShadow: 2,
+                                            '&:hover': { transform: 'scale(1.03)', boxShadow: 6, transition: 'all 0.3s' }
                                         }}
                                         onClick={() => setSelectedImage(item.photo)}
                                     >
                                         <CardMedia
                                             component="img"
-                                            height="200"
+                                            sx={{ height: { xs: 200, md: 220 }, objectFit: 'cover' }}
                                             image={`http://localhost:5000/${item.photo.replace(/^\/+/, '')}`}
                                             alt="Gallery item"
                                         />
@@ -606,88 +799,83 @@ const UserLandingPage = () => {
                             ))}
                         </Slider>
                     </Box>
-                    {selectedImage && (
-                        <Box
-                            className="image-modal"
-                            onClick={handleModalBackgroundClick}
-                            sx={{
-                                position: 'fixed',
-                                top: 0,
-                                left: 0,
-                                width: '100%',
-                                height: '100%',
-                                bgcolor: 'rgba(0,0,0,0.8)',
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                zIndex: 1300
-                            }}
-                        >
-                            <Box sx={{ position: 'relative', maxWidth: '90%', maxHeight: '90%' }}>
-                                <img
-                                    src={selectedImage}
-                                    alt="Enlarged"
-                                    style={{ maxWidth: '100%', maxHeight: '90vh', objectFit: 'contain' }}
-                                />
-                                <IconButton
-                                    onClick={(e) => {
-                                        e.stopPropagation();
-                                        setSelectedImage(null);
-                                    }}
-                                    sx={{
-                                        position: 'absolute',
-                                        top: -10,
-                                        right: -10,
-                                        bgcolor: 'white',
-                                        '&:hover': { bgcolor: 'grey.300' }
-                                    }}
-                                >
-                                    <Typography sx={{ fontSize: '20px', fontWeight: 'bold' }}>✕</Typography>
-                                </IconButton>
-                            </Box>
-                        </Box>
-                    )}
                 </Container>
 
                 {/* President Message Section */}
-                <Container maxWidth="lg" sx={{ mt: 5, mb: 5 }}>
-                    <Box sx={{ bgcolor: '#1565c0', color: 'white', p: 2, textAlign: 'center', mb: 3, borderRadius: 1 }}>
-                        <Typography variant="h5" sx={{ fontWeight: 600 }}>President Message</Typography>
+                <Container maxWidth="lg" sx={{ mt: sectionSpacing, mb: sectionSpacing, px: { xs: 2, sm: 3 } }}>
+                    <Box sx={{ bgcolor: '#1565c0', color: 'white', p: { xs: 1.5, md: 2 }, textAlign: 'center', mb: { xs: 2, md: 3 }, borderRadius: 1 }}>
+                        <Typography variant="h5" sx={{ fontWeight: 600, fontSize: { xs: '1.25rem', md: '1.5rem' } }}>President Message</Typography>
                     </Box>
-                    <Grid container spacing={3}>
+                    <Grid container spacing={{ xs: 2, md: 4 }} alignItems="center">
                         <Grid size={{ xs: 12, md: 3 }}>
-                            <Box sx={{ textAlign: 'center', bgcolor: 'white', p: 3, borderRadius: 2 }}>
-                                <img
+                            <Box sx={{ textAlign: 'center', bgcolor: 'white', p: { xs: 2, md: 3 }, borderRadius: 2 }}>
+                                <Box
+                                    component="img"
                                     src="/assets/img/kuldeepMember.png"
                                     alt="President"
-                                    style={{ width: '100%', maxWidth: 200, borderRadius: '8px' }}
+                                    sx={{ width: '100%', maxWidth: { xs: 180, md: 200 }, borderRadius: '8px', boxShadow: 2 }}
                                 />
+                                <Typography variant="h6" sx={{ mt: 2, fontWeight: 700, fontSize: '1rem' }}>President Name</Typography>
                             </Box>
                         </Grid>
                         <Grid size={{ xs: 12, md: 9 }}>
-                            <Paper sx={{ p: 3 }}>
-                                <Typography variant="h6" sx={{ fontWeight: 600, color: '#1565c0', mb: 1 }}>
+                            <Paper sx={{ p: { xs: 2.5, md: 4 }, height: '100%', borderRadius: 2 }}>
+                                <Typography variant="h6" sx={{ fontWeight: 600, color: '#1565c0', mb: 2, fontSize: { xs: '1.1rem', md: '1.25rem' } }}>
                                     Dear Friends,
                                 </Typography>
-                                <Typography paragraph color="text.secondary">
-                                    Lorem ipsum dolor sit amet consectetur adipisicing elit.
+                                <Typography paragraph color="text.secondary" sx={{ fontSize: { xs: '0.9rem', md: '1rem' }, lineHeight: 1.7, textAlign: 'justify' }}>
+                                    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
                                 </Typography>
-                                <Typography paragraph color="text.secondary">
-                                    Lorem ipsum dolor sit amet consectetur adipisicing elit. Quia ratione exercitationem explicabo beatae odio molestiae vero deserunt quo, esse numquam cupiditate aperiam nulla earum tempore ea odit at amet quod.
-                                </Typography>
-                                <Typography paragraph color="text.secondary">
-                                    Lorem ipsum dolor sit amet consectetur adipisicing elit. Quia ratione exercitationem explicabo beatae odio molestiae vero deserunt quo, esse numquam cupiditate aperiam nulla earum tempore ea odit at amet quod.
-                                </Typography>
-                                <Typography paragraph color="text.secondary">
-                                    Lorem ipsum dolor sit amet consectetur adipisicing elit. Quia ratione exercitationem explicabo beatae odio molestiae vero deserunt quo, esse numquam cupiditate aperiam nulla earum tempore ea odit at amet quod.
-                                </Typography>
-                                <Typography paragraph color="text.secondary">
-                                    Lorem ipsum dolor sit amet consectetur adipisicing elit amet consectetur.
+                                <Typography paragraph color="text.secondary" sx={{ fontSize: { xs: '0.9rem', md: '1rem' }, lineHeight: 1.7, textAlign: 'justify', mb: 0 }}>
+                                    Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
                                 </Typography>
                             </Paper>
                         </Grid>
                     </Grid>
                 </Container>
+
+                {selectedImage && (
+                    <Box
+                        className="image-modal"
+                        onClick={handleModalBackgroundClick}
+                        sx={{
+                            position: 'fixed',
+                            top: 0,
+                            left: 0,
+                            width: '100%',
+                            height: '100%',
+                            bgcolor: 'rgba(0,0,0,0.8)',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            zIndex: 1300
+                        }}
+                    >
+                        <Box sx={{ position: 'relative', maxWidth: '90%', maxHeight: '90%' }}>
+                            <img
+                                src={`http://localhost:5000/${selectedImage.replace(/^\/+/, '')}`}
+                                alt="Enlarged"
+                                style={{ maxWidth: '100%', maxHeight: '90vh', objectFit: 'contain' }}
+                            />
+                            <IconButton
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    setSelectedImage(null);
+                                }}
+                                sx={{
+                                    position: 'absolute',
+                                    top: { xs: -40, md: -10 },
+                                    right: { xs: 0, md: -40 },
+                                    bgcolor: 'white',
+                                    color: 'black',
+                                    '&:hover': { bgcolor: 'grey.300' }
+                                }}
+                            >
+                                <Typography sx={{ fontSize: '20px', fontWeight: 'bold' }}>✕</Typography>
+                            </IconButton>
+                        </Box>
+                    </Box>
+                )}
 
             </Box>
             <Footer />
