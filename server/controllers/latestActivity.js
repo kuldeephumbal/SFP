@@ -26,7 +26,7 @@ exports.createLatestActivity = async (req, res) => {
 
         const newActivity = new LatestActivity({
             activity_detail,
-            photo: `/uploads/slider/${req.file.filename}`
+            photo: `/uploads/latest-activity/${req.file.filename}`
         });
 
         await newActivity.save();
@@ -50,7 +50,7 @@ exports.updateLatestActivity = async (req, res) => {
         }
 
         if (req.file) {
-            updateData.photo = `/uploads/slider/${req.file.filename}`;
+            updateData.photo = `/uploads/latest-activity/${req.file.filename}`;
         }
 
         const updatedActivity = await LatestActivity.findByIdAndUpdate(

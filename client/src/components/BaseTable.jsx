@@ -6,455 +6,165 @@ import {
     TableContainer,
     TableHead,
     TableRow,
-    TablePagination,
-    TableSortLabel,
     Paper,
-    Box,
-    Chip,
     IconButton,
-    TextField,
-    InputAdornment,
+    InputBase,
+    Box,
     Typography,
+    TablePagination,
+    Chip,
+    Avatar,
     useTheme,
     useMediaQuery,
-    Stack,
     Collapse,
-    Pagination,
+    Button,
 } from '@mui/material';
 import {
-    Search,
-    KeyboardArrowDown,
-    KeyboardArrowUp
+    Search as SearchIcon,
+    KeyboardArrowDown as KeyboardArrowDownIcon,
+    KeyboardArrowUp as KeyboardArrowUpIcon,
+    FilterList as FilterListIcon,
 } from '@mui/icons-material';
 
 const BaseTable = ({
-    columns = [],
-    data = [],
-    title = '',
+    columns,
+    data,
     searchable = true,
-    sortable = true,
-    paginated = true,
+    renderActions,
+    title,
+    loading = false,
+    rowsPerPageOptions = [5, 10, 25],
     defaultRowsPerPage = 10,
-    onRowClick = null,
-    renderActions = null,
-    emptyMessage = 'No data available',
-    primaryColumn = null // The most important column to show in mobile accordion header
 }) => {
-    const theme = useTheme();
-    const isMobile = useMediaQuery(theme.breakpoints.down('md'));
-
     const [page, setPage] = useState(0);
-    const [rowsPerPage] = useState(defaultRowsPerPage);
+    const [rowsPerPage, setRowsPerPage] = useState(defaultRowsPerPage);
     const [searchQuery, setSearchQuery] = useState('');
     const [orderBy, setOrderBy] = useState('');
     const [order, setOrder] = useState('asc');
+    const [openRow, setOpenRow] = useState(null);
 
-    // Handle search
-    const filteredData = searchable
-        ? data.filter((row) =>
-            columns.some((column) => {
-                const value = row[column.field];
-                return value?.toString().toLowerCase().includes(searchQuery.toLowerCase());
-            })
+    const theme = useTheme();
+    const isMobile = useMediaQuery(theme.breakpoints.down('md'));
+
+    // Filter data based on search
+    const filteredData = data.filter((row) =>
+        Object.values(row).some(
+            (val) =>
+                val &&
+                val.toString().toLowerCase().includes(searchQuery.toLowerCase())
         )
-        : data;
-
-    // Handle sorting
-    const sortedData = sortable && orderBy
-        ? [...filteredData].sort((a, b) => {
-            const aValue = a[orderBy];
-            const bValue = b[orderBy];
-
-            if (aValue === bValue) return 0;
-
-            const comparison = aValue < bValue ? -1 : 1;
-            return order === 'asc' ? comparison : -comparison;
-        })
-        : filteredData;
-
-    // Handle pagination
-    const paginatedData = paginated
-        ? sortedData.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-        : sortedData;
+    );
 
     const handleChangePage = (event, newPage) => {
         setPage(newPage);
     };
 
-    const handleRequestSort = (property) => {
-        if (!sortable) return;
-
-        const isAsc = orderBy === property && order === 'asc';
-        setOrder(isAsc ? 'desc' : 'asc');
-        setOrderBy(property);
-    };
-
-    const handleSearchChange = (event) => {
-        setSearchQuery(event.target.value);
+    const handleChangeRowsPerPage = (event) => {
+        setRowsPerPage(parseInt(event.target.value, 10));
         setPage(0);
     };
 
-    // Render cell content based on column type
-    const renderCellContent = (column, row) => {
-        const value = row[column.field];
-
-        if (column.renderCell) {
-            return column.renderCell(row);
-        }
-
-        if (column.type === 'status') {
-            return (
-                <Chip
-                    label={value}
-                    size="small"
-                    color={column.statusColors?.[value] || 'default'}
-                    sx={{
-                        fontSize: '0.75rem',
-                        fontWeight: 500,
-                        minWidth: '80px'
-                    }}
-                />
-            );
-        }
-
-        if (column.type === 'date') {
-            return value ? new Date(value).toLocaleDateString() : '-';
-        }
-
-        if (column.type === 'currency') {
-            return value ? `$${parseFloat(value).toLocaleString()}` : '$0';
-        }
-
-        if (column.type === 'percentage') {
-            return value ? `${value}%` : '0%';
-        }
-
-        return value || '-';
+    const handleRowClick = (index) => {
+        setOpenRow(openRow === index ? null : index);
     };
 
-    // Mobile Accordion View
-    const MobileAccordionView = ({ row }) => {
-        const [isExpanded, setIsExpanded] = useState(false);
+    const emptyRows =
+        rowsPerPage - Math.min(rowsPerPage, filteredData.length - page * rowsPerPage);
 
-        // Get primary column (first column if not specified)
-        const primaryCol = primaryColumn || columns[0];
+    const paginatedData = filteredData.slice(
+        page * rowsPerPage,
+        page * rowsPerPage + rowsPerPage
+    );
 
+    if (loading) {
         return (
-            <Box
-                sx={{
-                    borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
-                    '&:last-child': {
-                        borderBottom: 'none'
-                    }
-                }}
-            >
-                {/* Accordion Header Row */}
-                <Box
-                    sx={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'space-between',
-                        p: 1.5,
-                        cursor: 'pointer',
-                        '&:hover': {
-                            backgroundColor: 'rgba(255, 255, 255, 0.03)'
-                        }
-                    }}
-                    onClick={() => setIsExpanded(!isExpanded)}
-                >
-                    {/* Expand Icon */}
-                    <IconButton
-                        size="small"
-                        sx={{
-                            color: 'rgba(255, 255, 255, 0.7)',
-                            p: 0,
-                            mr: 1
-                        }}
-                    >
-                        {isExpanded ? <KeyboardArrowUp fontSize="small" /> : <KeyboardArrowDown fontSize="small" />}
-                    </IconButton>
-
-                    {/* Primary Column Value */}
-                    <Box sx={{ flex: 1, minWidth: 0 }}>
-                        <Box sx={{
-                            color: 'rgba(255, 255, 255, 0.9)',
-                            fontSize: '0.875rem',
-                            fontWeight: 500,
-                            overflow: 'hidden',
-                            textOverflow: 'ellipsis',
-                            whiteSpace: 'nowrap'
-                        }}>
-                            {renderCellContent(primaryCol, row)}
-                        </Box>
-                    </Box>
-
-                    {/* Actions */}
-                    {renderActions && (
-                        <Box
-                            sx={{ display: 'flex', gap: 0.5, ml: 1 }}
-                            onClick={(e) => e.stopPropagation()}
-                        >
-                            {renderActions(row)}
-                        </Box>
-                    )}
-                </Box>
-
-                {/* Accordion Expanded Content */}
-                <Collapse in={isExpanded}>
-                    <Box sx={{
-                        p: 2,
-                        pt: 1.5,
-                        borderTop: '1px solid rgba(255, 255, 255, 0.05)'
-                    }}>
-                        <Stack spacing={1.5}>
-                            {columns.map((column, colIndex) => (
-                                <Box key={colIndex} sx={{ display: 'flex', flexDirection: 'column' }}>
-                                    <Typography
-                                        variant="caption"
-                                        sx={{
-                                            color: 'rgba(255, 255, 255, 0.6)',
-                                            fontSize: '0.7rem',
-                                            fontWeight: 600,
-                                            display: 'block',
-                                            mb: 0.5,
-                                            textTransform: 'uppercase',
-                                            letterSpacing: '0.5px'
-                                        }}
-                                    >
-                                        {column.headerName}
-                                    </Typography>
-                                    <Box
-                                        sx={{
-                                            color: 'rgba(255, 255, 255, 0.9)',
-                                            fontSize: '0.875rem'
-                                        }}
-                                    >
-                                        {renderCellContent(column, row)}
-                                    </Box>
-                                </Box>
-                            ))}
-                        </Stack>
-                    </Box>
-                </Collapse>
+            <Box sx={{ display: 'flex', justifyContent: 'center', p: 3 }}>
+                <Typography>Loading...</Typography>
             </Box>
         );
-    };
+    }
 
     return (
-        <Box
-            sx={{
-                width: '100%'
-            }}
-        >
-            {/* Header Section */}
-            {(title || searchable) && (
+        <Box sx={{ width: '100%' }}>
+            {searchable && (
                 <Box
                     sx={{
+                        p: 2,
                         display: 'flex',
-                        flexDirection: { xs: 'column', sm: 'row' },
-                        justifyContent: 'space-between',
-                        alignItems: { xs: 'stretch', sm: 'center' },
+                        alignItems: 'center',
                         gap: 2,
-                        mb: 3
+                        flexWrap: 'wrap',
                     }}
                 >
-                    {title && (
-                        <Typography
-                            variant="h6"
-                            sx={{
-                                fontWeight: 'bold',
-                                fontSize: { xs: '1rem', sm: '1.25rem' },
-                                color: 'rgba(255, 255, 255, 0.9)'
-                            }}
-                        >
-                            {title}
-                        </Typography>
-                    )}
-                    {searchable && (
-                        <TextField
-                            size="small"
-                            placeholder="Search..."
+                    <Paper
+                        component="form"
+                        sx={{
+                            p: '2px 4px',
+                            display: 'flex',
+                            alignItems: 'center',
+                            width: { xs: '100%', sm: 400 },
+                            background: 'rgba(255, 255, 255, 0.05)',
+                            border: '1px solid rgba(255, 255, 255, 0.1)',
+                            boxShadow: 'none',
+                        }}
+                    >
+                        <IconButton sx={{ p: '10px', color: 'rgba(255, 255, 255, 0.5)' }}>
+                            <SearchIcon />
+                        </IconButton>
+                        <InputBase
+                            sx={{ ml: 1, flex: 1, color: 'white' }}
+                            placeholder="Search table..."
                             value={searchQuery}
-                            onChange={handleSearchChange}
-                            InputProps={{
-                                startAdornment: (
-                                    <InputAdornment position="start">
-                                        <Search sx={{ color: 'rgba(255, 255, 255, 0.5)' }} />
-                                    </InputAdornment>
-                                )
-                            }}
-                            sx={{
-                                width: { xs: '100%', sm: '300px' },
-                                '& .MuiOutlinedInput-root': {
-                                    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-                                    color: 'white',
-                                    borderRadius: '12px',
-                                    '& fieldset': {
-                                        borderColor: 'rgba(255, 255, 255, 0.2)'
-                                    },
-                                    '&:hover fieldset': {
-                                        borderColor: 'rgba(255, 255, 255, 0.3)'
-                                    },
-                                    '&.Mui-focused fieldset': {
-                                        borderColor: '#60a5fa'
-                                    }
-                                },
-                                '& .MuiInputBase-input::placeholder': {
-                                    color: 'rgba(255, 255, 255, 0.5)',
-                                    opacity: 1
-                                }
-                            }}
+                            onChange={(e) => setSearchQuery(e.target.value)}
                         />
-                    )}
+                    </Paper>
                 </Box>
             )}
 
-            {/* Mobile View */}
-            {isMobile ? (
-                <Box>
-                    {paginatedData.length === 0 ? (
-                        <Box
-                            sx={{
-                                p: 4,
-                                textAlign: 'center'
-                            }}
-                        >
-                            <Typography sx={{ color: 'rgba(255, 255, 255, 0.6)' }}>
-                                {emptyMessage}
-                            </Typography>
-                        </Box>
-                    ) : (
-                        <Box>
-                            {/* Table Header for Mobile */}
-                            <Box
-                                sx={{
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    justifyContent: 'space-between',
-                                    p: 1.5,
-                                    mb: 2,
-                                    borderBottom: '1px solid rgba(255, 255, 255, 0.1)'
-                                }}
-                            >
-                                <Box sx={{ display: 'flex', alignItems: 'center', flex: 1 }}>
-                                    <Box sx={{ width: 24, mr: 1 }} /> {/* Spacer for expand icon */}
-                                    <Typography
-                                        sx={{
-                                            color: 'rgba(255, 255, 255, 0.9)',
-                                            fontSize: '0.875rem',
-                                            fontWeight: 'bold',
-                                            textTransform: 'uppercase',
-                                            letterSpacing: '0.5px'
-                                        }}
-                                    >
-                                        {(primaryColumn || columns[0])?.headerName}
-                                    </Typography>
-                                </Box>
-                                {renderActions && (
-                                    <Typography
-                                        sx={{
-                                            color: 'rgba(255, 255, 255, 0.9)',
-                                            fontSize: '0.875rem',
-                                            fontWeight: 'bold',
-                                            textTransform: 'uppercase',
-                                            letterSpacing: '0.5px',
-                                            ml: 1
-                                        }}
-                                    >
-                                        Actions
-                                    </Typography>
-                                )}
-                            </Box>
-
-                            {/* Accordion Rows Container */}
-                            <Box>
-                                {paginatedData.map((row, index) => (
-                                    <MobileAccordionView key={row.id || index} row={row} />
-                                ))}
-                            </Box>
-                        </Box>
-                    )}
-                </Box>
-            ) : (
+            {!isMobile ? (
                 /* Desktop/Tablet Table View */
                 <TableContainer
-                    component={Paper}
                     sx={{
                         background: 'transparent',
                         boxShadow: 'none',
-                        '&::-webkit-scrollbar': {
-                            width: '8px',
-                            height: '8px'
-                        },
-                        '&::-webkit-scrollbar-track': {
-                            background: 'rgba(255, 255, 255, 0.05)',
-                            borderRadius: '10px'
-                        },
-                        '&::-webkit-scrollbar-thumb': {
-                            background: 'rgba(255, 255, 255, 0.2)',
-                            borderRadius: '10px',
-                            '&:hover': {
-                                background: 'rgba(255, 255, 255, 0.3)'
-                            }
-                        }
+                        width: '100%',
+                        overflowX: 'auto',
+                        position: 'relative'
                     }}
                 >
-                    <Table>
+                    <Table sx={{ minWidth: 1000, tableLayout: 'auto' }}>
                         <TableHead>
-                            <TableRow>
+                            <TableRow sx={{ borderBottom: '1px solid rgba(255, 255, 255, 0.1)' }}>
                                 {columns.map((column) => (
                                     <TableCell
                                         key={column.field}
                                         align={column.align || 'left'}
                                         sx={{
-                                            backgroundColor: 'rgba(255, 255, 255, 0.05)',
-                                            borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
-                                            color: 'rgba(255, 255, 255, 0.9)',
-                                            fontWeight: 'bold',
-                                            fontSize: { xs: '0.75rem', sm: '0.875rem' },
-                                            whiteSpace: 'nowrap',
-                                            minWidth: column.minWidth || 'auto',
-                                            width: column.width || 'auto'
+                                            color: 'rgba(255, 255, 255, 0.6)',
+                                            fontWeight: '600',
+                                            textTransform: 'uppercase',
+                                            fontSize: '0.75rem',
+                                            letterSpacing: '0.05em',
+                                            borderBottom: 'none',
+                                            py: 2,
+                                            whiteSpace: 'nowrap'
                                         }}
                                     >
-                                        {sortable && column.sortable !== false ? (
-                                            <TableSortLabel
-                                                active={orderBy === column.field}
-                                                direction={orderBy === column.field ? order : 'asc'}
-                                                onClick={() => handleRequestSort(column.field)}
-                                                sx={{
-                                                    color: 'rgba(255, 255, 255, 0.9) !important',
-                                                    '&:hover': {
-                                                        color: 'white !important'
-                                                    },
-                                                    '& .MuiTableSortLabel-icon': {
-                                                        color: 'rgba(255, 255, 255, 0.7) !important'
-                                                    },
-                                                    '&.Mui-active': {
-                                                        color: 'white !important',
-                                                        '& .MuiTableSortLabel-icon': {
-                                                            color: 'white !important'
-                                                        }
-                                                    }
-                                                }}
-                                            >
-                                                {column.headerName}
-                                            </TableSortLabel>
-                                        ) : (
-                                            column.headerName
-                                        )}
+                                        {column.headerName}
                                     </TableCell>
                                 ))}
                                 {renderActions && (
                                     <TableCell
-                                        align="center"
+                                        align="right"
                                         sx={{
-                                            backgroundColor: 'rgba(255, 255, 255, 0.05)',
-                                            borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
-                                            color: 'rgba(255, 255, 255, 0.9)',
-                                            fontWeight: 'bold',
-                                            fontSize: { xs: '0.75rem', sm: '0.875rem' },
-                                            minWidth: '100px'
+                                            color: 'rgba(255, 255, 255, 0.6)',
+                                            fontWeight: '600',
+                                            textTransform: 'uppercase',
+                                            fontSize: '0.75rem',
+                                            letterSpacing: '0.05em',
+                                            borderBottom: 'none',
+                                            py: 2,
+                                            whiteSpace: 'nowrap'
                                         }}
                                     >
                                         Actions
@@ -463,111 +173,173 @@ const BaseTable = ({
                             </TableRow>
                         </TableHead>
                         <TableBody>
-                            {paginatedData.length === 0 ? (
-                                <TableRow>
-                                    <TableCell
-                                        colSpan={columns.length + (renderActions ? 1 : 0)}
-                                        align="center"
-                                        sx={{
-                                            color: 'rgba(255, 255, 255, 0.6)',
-                                            py: 8,
-                                            borderBottom: 'none'
-                                        }}
-                                    >
-                                        {emptyMessage}
-                                    </TableCell>
-                                </TableRow>
-                            ) : (
-                                paginatedData.map((row, index) => (
-                                    <TableRow
-                                        key={row.id || index}
-                                        hover
-                                        onClick={() => onRowClick && onRowClick(row)}
-                                        sx={{
-                                            cursor: onRowClick ? 'pointer' : 'default',
-                                            '&:hover': {
-                                                backgroundColor: 'rgba(255, 255, 255, 0.05)'
-                                            },
-                                            '&:last-child td': {
-                                                borderBottom: 'none'
-                                            }
-                                        }}
-                                    >
-                                        {columns.map((column) => (
-                                            <TableCell
-                                                key={column.field}
-                                                align={column.align || 'left'}
-                                                sx={{
-                                                    color: 'rgba(255, 255, 255, 0.8)',
-                                                    borderBottom: '1px solid rgba(255, 255, 255, 0.05)',
-                                                    fontSize: { xs: '0.75rem', sm: '0.875rem' }
-                                                }}
-                                            >
-                                                {renderCellContent(column, row)}
-                                            </TableCell>
-                                        ))}
-                                        {renderActions && (
-                                            <TableCell
-                                                align="center"
-                                                sx={{
-                                                    color: 'rgba(255, 255, 255, 0.8)',
-                                                    borderBottom: '1px solid rgba(255, 255, 255, 0.05)'
-                                                }}
-                                            >
+                            {paginatedData.map((row, rowIndex) => (
+                                <TableRow
+                                    key={row._id || rowIndex}
+                                    sx={{
+                                        '&:hover': {
+                                            backgroundColor: 'rgba(255, 255, 255, 0.02)',
+                                        },
+                                        transition: 'background-color 0.2s ease',
+                                        borderBottom: '1px solid rgba(255, 255, 255, 0.05)',
+                                    }}
+                                >
+                                    {columns.map((column) => (
+                                        <TableCell
+                                            key={column.field}
+                                            align={column.align || 'left'}
+                                            sx={{
+                                                color: 'rgba(255, 255, 255, 0.9)',
+                                                borderBottom: 'none',
+                                                py: 2.5,
+                                            }}
+                                        >
+                                            {column.renderCell ? column.renderCell(row) : row[column.field]}
+                                        </TableCell>
+                                    ))}
+                                    {renderActions && (
+                                        <TableCell
+                                            align="right"
+                                            sx={{
+                                                borderBottom: 'none',
+                                                py: 2.5,
+                                                whiteSpace: 'nowrap'
+                                            }}
+                                        >
+                                            <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 1 }}>
                                                 {renderActions(row)}
-                                            </TableCell>
-                                        )}
-                                    </TableRow>
-                                ))
-                            )}
+                                            </Box>
+                                        </TableCell>
+                                    )}
+                                </TableRow>
+                            ))}
                         </TableBody>
                     </Table>
                 </TableContainer>
-            )}
+            ) : (
+                /* Combined Mobile View (Accordion Style) */
+                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, p: 2 }}>
+                    {paginatedData.map((row, rowIndex) => (
+                        <Paper
+                            key={row._id || rowIndex}
+                            sx={{
+                                background: 'rgba(255, 255, 255, 0.05)',
+                                border: '1px solid rgba(255, 255, 255, 0.1)',
+                                borderRadius: 2,
+                                p: 2,
+                                color: 'white'
+                            }}
+                        >
+                            <Box sx={{
+                                display: 'flex',
+                                flexDirection: isMobile ? 'column' : 'row',
+                                justifyContent: 'space-between',
+                                gap: 2,
+                                mb: 2
+                            }}>
+                                {columns.slice(0, 2).map((column, idx) => (
+                                    <Box key={idx} sx={{ minWidth: 0, flex: 1 }}>
+                                        <Typography variant="caption" sx={{ color: 'rgba(255, 255, 255, 0.5)', display: 'block', mb: 0.5 }}>
+                                            {column.headerName}
+                                        </Typography>
+                                        <Box sx={{
+                                            color: 'white',
+                                            '& img, & iframe': {
+                                                maxWidth: '100%',
+                                                height: 'auto',
+                                                borderRadius: '8px',
+                                                border: 'none'
+                                            },
+                                            overflowWrap: 'anywhere',
+                                            wordBreak: 'break-word'
+                                        }}>
+                                            {column.renderCell ? column.renderCell(row) : row[column.field]}
+                                        </Box>
+                                    </Box>
+                                ))}
+                            </Box>
 
-            {/* Pagination */}
-            {paginated && filteredData.length > 0 && (
-                <Box
-                    sx={{
-                        display: 'flex',
-                        justifyContent: 'center',
-                        alignItems: 'center',
-                        mt: 3,
-                        gap: 2,
-                        flexWrap: 'wrap'
-                    }}
-                >
-                    <Pagination
-                        count={Math.ceil(filteredData.length / rowsPerPage)}
-                        page={page + 1}
-                        onChange={(event, value) => handleChangePage(event, value - 1)}
-                        showFirstButton
-                        showLastButton
-                        variant="outlined"
-                        shape="rounded"
-                        siblingCount={1}
-                        boundaryCount={1}
-                        sx={{
-                            '& .MuiPaginationItem-root': {
-                                color: 'rgba(255, 255, 255, 0.7)',
-                                borderColor: 'rgba(255, 255, 255, 0.2)',
-                                '&:hover': {
-                                    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-                                    borderColor: 'rgba(255, 255, 255, 0.3)'
-                                },
-                                '&.Mui-selected': {
-                                    backgroundColor: 'rgba(255, 255, 255, 0.15)',
-                                    borderColor: 'rgba(255, 255, 255, 0.3)',
-                                    color: 'white',
-                                    '&:hover': {
-                                        backgroundColor: 'rgba(255, 255, 255, 0.2)'
-                                    }
-                                }
-                            }
-                        }}
-                    />
+                            <Collapse in={openRow === rowIndex}>
+                                <Box sx={{
+                                    display: 'grid',
+                                    gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr',
+                                    gap: 2,
+                                    mt: 2,
+                                    py: 2,
+                                    borderTop: '1px solid rgba(255, 255, 255, 0.1)'
+                                }}>
+                                    {columns.slice(2).map((column, idx) => (
+                                        <Box key={idx} sx={{ minWidth: 0 }}>
+                                            <Typography variant="caption" sx={{ color: 'rgba(255, 255, 255, 0.5)', display: 'block' }}>
+                                                {column.headerName}
+                                            </Typography>
+                                            <Box sx={{
+                                                color: 'white',
+                                                '& img': {
+                                                    maxWidth: '100%',
+                                                    height: 'auto !important',
+                                                    borderRadius: '8px'
+                                                }
+                                            }}>
+                                                {column.renderCell ? column.renderCell(row) : row[column.field]}
+                                            </Box>
+                                        </Box>
+                                    ))}
+                                </Box>
+                            </Collapse>
+
+                            <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 1, alignItems: 'center' }}>
+                                <Button
+                                    size="small"
+                                    onClick={() => handleRowClick(rowIndex)}
+                                    color="primary"
+                                    startIcon={openRow === rowIndex ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
+                                    sx={{ textTransform: 'none', color: '#60a5fa' }}
+                                >
+                                    {openRow === rowIndex ? 'Less info' : 'More info'}
+                                </Button>
+                                {renderActions && (
+                                    <Box sx={{ display: 'flex', gap: 1 }}>
+                                        {renderActions(row)}
+                                    </Box>
+                                )}
+                            </Box>
+                        </Paper>
+                    ))}
                 </Box>
             )}
+
+            <TablePagination
+                rowsPerPageOptions={rowsPerPageOptions}
+                component="div"
+                count={filteredData.length}
+                rowsPerPage={rowsPerPage}
+                page={page}
+                onPageChange={handleChangePage}
+                onRowsPerPageChange={handleChangeRowsPerPage}
+                labelRowsPerPage={isMobile ? "" : "Rows per page:"}
+                sx={{
+                    color: 'rgba(255, 255, 255, 0.6)',
+                    borderTop: isMobile ? 'none' : '1px solid rgba(255, 255, 255, 0.05)',
+                    '.MuiTablePagination-selectIcon': { color: 'rgba(255, 255, 255, 0.6)' },
+                    '.MuiTablePagination-actions': { color: 'rgba(255, 255, 255, 0.6)' },
+                    '.MuiTablePagination-selectRoot': { margin: '0 8px' },
+                    '.MuiTablePagination-toolbar': isMobile ? {
+                        px: 1,
+                        justifyContent: 'center',
+                        flexWrap: 'wrap',
+                        gap: 1
+                    } : {
+                        alignItems: 'baseline'
+                    },
+                    '.MuiTablePagination-selectLabel': isMobile ? { display: 'none' } : {},
+                    '.MuiTablePagination-spacer': isMobile ? { display: 'none' } : {},
+                    '.MuiTablePagination-displayedRows': isMobile ? {
+                        margin: 0,
+                        fontSize: '0.85rem'
+                    } : {}
+                }}
+            />
         </Box>
     );
 };

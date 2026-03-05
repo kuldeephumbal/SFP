@@ -190,15 +190,15 @@ const AdminOurProjects = () => {
                     boxShadow: '0 8px 32px rgba(0, 0, 0, 0.3)'
                 }}
             >
-                <CardContent>
+                <CardContent sx={{ p: { xs: 1.5, sm: 3 } }}>
                     {/* Action Bar */}
-                    <Box sx={{ display: 'flex', gap: 2, mb: 3, flexWrap: 'wrap' }}>
+                    <Box sx={{ display: 'flex', gap: 2, mb: 3, flexWrap: 'wrap', alignItems: 'center' }}>
                         <TextField
-                            placeholder="Search projects..."
+                            placeholder="Search here..."
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
                             sx={{
-                                minWidth: 300,
+                                width: { xs: '100%', sm: 300 },
                                 '& .MuiOutlinedInput-root': {
                                     color: 'white',
                                     '& fieldset': { borderColor: 'rgba(255, 255, 255, 0.3)' },
@@ -236,12 +236,9 @@ const AdminOurProjects = () => {
                                 setAddDialogOpen(true);
                             }}
                             sx={{
-                                background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                                color: 'white',
-                                fontWeight: 'bold',
-                                px: 3,
+                                background: 'linear-gradient(135deg, #60a5fa 0%, #3b82f6 100%)',
                                 '&:hover': {
-                                    background: 'linear-gradient(135deg, #764ba2 0%, #667eea 100%)'
+                                    background: 'linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%)'
                                 }
                             }}
                         >
@@ -439,9 +436,10 @@ const AdminOurProjects = () => {
                         onClick={handleAddProject}
                         variant="contained"
                         sx={{
-                            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                            color: 'white',
-                            fontWeight: 'bold'
+                            background: 'linear-gradient(135deg, #60a5fa 0%, #3b82f6 100%)',
+                            '&:hover': {
+                                background: 'linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%)'
+                            }
                         }}
                     >
                         Add Project
@@ -551,9 +549,10 @@ const AdminOurProjects = () => {
                         onClick={handleEditProject}
                         variant="contained"
                         sx={{
-                            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                            color: 'white',
-                            fontWeight: 'bold'
+                            background: 'linear-gradient(135deg, #60a5fa 0%, #3b82f6 100%)',
+                            '&:hover': {
+                                background: 'linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%)'
+                            }
                         }}
                     >
                         Update Project

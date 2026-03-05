@@ -49,6 +49,9 @@ const Donate = () => {
             ...formData,
             [name]: e.target.files[0],
         });
+        if (errors[name]) {
+            setErrors({ ...errors, [name]: '' });
+        }
     };
 
     const validateForm = () => {
@@ -68,6 +71,14 @@ const Donate = () => {
             newErrors.amount = 'Amount is required';
         } else if (isNaN(formData.amount) || formData.amount <= 0) {
             newErrors.amount = 'Please enter a valid amount';
+        }
+
+        if (!formData.address.trim()) {
+            newErrors.address = 'Address is required';
+        }
+
+        if (!formData.paymentReceipt) {
+            newErrors.paymentReceipt = 'Payment Receipt is required';
         }
 
         if (formData.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
@@ -147,10 +158,11 @@ const Donate = () => {
                         <form onSubmit={handleSubmit}>
                             <Grid container spacing={{ xs: 2, sm: 3 }}>
                                 {/* Full Name */}
-                                <Grid item xs={12} sm={6}>
+                                <Grid size={{ xs: 12, sm: 6 }}>
                                     <TextField
                                         fullWidth
-                                        label="Full Name*"
+                                        label="Full Name"
+                                        required
                                         name="fullName"
                                         placeholder="Enter your full name"
                                         value={formData.fullName}
@@ -163,10 +175,11 @@ const Donate = () => {
                                 </Grid>
 
                                 {/* Mobile Number */}
-                                <Grid item xs={12} sm={6}>
+                                <Grid size={{ xs: 12, sm: 6 }}>
                                     <TextField
                                         fullWidth
-                                        label="Mobile No.*"
+                                        label="Mobile No."
+                                        required
                                         name="mobileNo"
                                         placeholder="Enter your mobile number"
                                         value={formData.mobileNo}
@@ -179,7 +192,7 @@ const Donate = () => {
                                 </Grid>
 
                                 {/* Email */}
-                                <Grid item xs={12} sm={6}>
+                                <Grid size={{ xs: 12, sm: 6 }}>
                                     <TextField
                                         fullWidth
                                         label="Email (optional)"
@@ -196,7 +209,7 @@ const Donate = () => {
                                 </Grid>
 
                                 {/* Pancard Number */}
-                                <Grid item xs={12} sm={6}>
+                                <Grid size={{ xs: 12, sm: 6 }}>
                                     <TextField
                                         fullWidth
                                         label="Pancard No. (optional)"
@@ -210,30 +223,38 @@ const Donate = () => {
                                 </Grid>
 
                                 {/* Photo Upload */}
-                                <Grid item xs={12} sm={6}>
+                                <Grid size={{ xs: 12, sm: 6 }}>
                                     <Typography variant="body2" sx={{ mb: 1, fontWeight: 500 }}>Photo (optional)</Typography>
-                                    <Button
-                                        variant="outlined"
-                                        component="label"
+                                    <TextField
                                         fullWidth
-                                        sx={{ justifyContent: 'flex-start', textTransform: 'none' }}
-                                    >
-                                        {formData.photo ? formData.photo.name : 'Choose File'}
-                                        <input
-                                            type="file"
-                                            hidden
-                                            name="photo"
-                                            onChange={handleFileChange}
-                                            accept="image/*"
-                                        />
-                                    </Button>
+                                        type="file"
+                                        name="photo"
+                                        onChange={handleFileChange}
+                                        inputProps={{ accept: "image/*" }}
+                                    />
+                                </Grid>
+
+                                  {/* Payment Receipt Upload */}
+                                <Grid size={{ xs: 12, sm: 6 }}>
+                                    <Typography variant="body2" sx={{ mb: 1, fontWeight: 500 }}>Payment Receipt Upload *</Typography>
+                                    <TextField
+                                        fullWidth
+                                        type="file"
+                                        name="paymentReceipt"
+                                        required
+                                        onChange={handleFileChange}
+                                        inputProps={{ accept: ".pdf,.jpg,.jpeg,.png" }}
+                                        error={!!errors.paymentReceipt}
+                                        helperText={errors.paymentReceipt}
+                                    />
                                 </Grid>
 
                                 {/* Amount */}
-                                <Grid item xs={12} sm={6}>
+                                <Grid size={{ xs: 12, sm: 6 }}>
                                     <TextField
                                         fullWidth
-                                        label="Amount*"
+                                        label="Amount"
+                                        required
                                         name="amount"
                                         placeholder="Enter donation amount"
                                         value={formData.amount}
@@ -247,10 +268,11 @@ const Donate = () => {
                                 </Grid>
 
                                 {/* Address */}
-                                <Grid item xs={12}>
+                                <Grid size={12}>
                                     <TextField
                                         fullWidth
-                                        label="Address*"
+                                        label="Address"
+                                        required
                                         name="address"
                                         placeholder="Enter your address"
                                         value={formData.address}
@@ -263,29 +285,8 @@ const Donate = () => {
                                     />
                                 </Grid>
 
-                                {/* Payment Receipt Upload */}
-                                <Grid item xs={12}>
-                                    <Typography variant="body2" sx={{ mb: 1, fontWeight: 500 }}>Payment Receipt Upload*</Typography>
-                                    <Button
-                                        variant="outlined"
-                                        component="label"
-                                        fullWidth
-                                        required
-                                        sx={{ justifyContent: 'flex-start', textTransform: 'none' }}
-                                    >
-                                        {formData.paymentReceipt ? formData.paymentReceipt.name : 'Choose File'}
-                                        <input
-                                            type="file"
-                                            hidden
-                                            name="paymentReceipt"
-                                            onChange={handleFileChange}
-                                            accept=".pdf,.jpg,.jpeg,.png"
-                                        />
-                                    </Button>
-                                </Grid>
-
                                 {/* UPI QR Code Section */}
-                                <Grid item xs={12} sm={6}>
+                                <Grid size={{ xs: 12, sm: 6 }}>
                                     <Box
                                         sx={{
                                             border: '1px solid #e0e0e0',
@@ -321,7 +322,7 @@ const Donate = () => {
                                 </Grid>
 
                                 {/* Submit Button */}
-                                <Grid item xs={12} sx={{ textAlign: 'center' }}>
+                                <Grid size={12} sx={{ textAlign: 'center' }}>
                                     <Button
                                         type="submit"
                                         variant="contained"

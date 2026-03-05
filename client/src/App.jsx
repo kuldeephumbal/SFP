@@ -4,7 +4,8 @@ import {
     Box,
     ThemeProvider,
     createTheme,
-    CssBaseline
+    CssBaseline,
+    useMediaQuery
 } from '@mui/material';
 import Header from './components/header';
 import Sidebar from './components/Sidebar';
@@ -17,26 +18,9 @@ const App = ({ children }) => {
     const [isDarkMode, setIsDarkMode] = useState(true);
     const [backgroundImage, setBackgroundImage] = useState('');
     const location = useLocation();
+    const isMobile = useMediaQuery('(max-width:900px)');
 
-    // Load background image from localStorage
-    useEffect(() => {
-        const savedBg = localStorage.getItem('backgroundImage');
-        if (savedBg) {
-            setBackgroundImage(savedBg);
-        }
-    }, []);
-
-    // TODO: Add authentication check here when needed
-    // useEffect(() => {
-    //     const isLoggedIn = localStorage.getItem('isLoggedIn');
-    //     const adminToken = localStorage.getItem('adminToken');
-    //     const adminData = localStorage.getItem('adminData');
-    //     
-    //     if (!isLoggedIn || !adminToken || !adminData) {
-    //         navigate('/login');
-    //     }
-    // }, [navigate]);
-
+    // Correct theme configuration
     const theme = createTheme({
         palette: {
             mode: 'dark',
@@ -50,8 +34,33 @@ const App = ({ children }) => {
         },
         typography: {
             fontFamily: 'Inter, system-ui, -apple-system, sans-serif'
+        },
+        components: {
+            MuiCssBaseline: {
+                styleOverrides: {
+                    '*::-webkit-scrollbar': {
+                        width: '8px',
+                        height: '8px',
+                    },
+                    '*::-webkit-scrollbar-track': {
+                        background: 'rgba(0, 0, 0, 0.1)',
+                    },
+                    '*::-webkit-scrollbar-thumb': {
+                        background: 'rgba(255, 255, 255, 0.2)',
+                        borderRadius: '10px',
+                        '&:hover': {
+                            background: 'rgba(255, 255, 255, 0.3)',
+                        }
+                    }
+                }
+            }
         }
     });
+
+    useEffect(() => {
+        const savedBg = localStorage.getItem('backgroundImage');
+        if (savedBg) setBackgroundImage(savedBg);
+    }, []);
 
     const handleSidebarToggle = () => {
         const newState = !sidebarOpen;
@@ -59,11 +68,8 @@ const App = ({ children }) => {
         localStorage.setItem('sidebarOpen', JSON.stringify(newState));
     };
 
-    const handleThemeToggle = () => {
-        setIsDarkMode(!isDarkMode);
-    };
+    const handleThemeToggle = () => setIsDarkMode(!isDarkMode);
 
-    // Don't show layout for 404 or other special pages
     const showLayout = !location.pathname.includes('404');
 
     if (!showLayout) {
@@ -78,11 +84,10 @@ const App = ({ children }) => {
     return (
         <ThemeProvider theme={theme}>
             <CssBaseline />
-            <Box sx={{ display: 'flex', minHeight: '100vh', overflow: 'hidden' }}>
+            <Box sx={{ display: 'flex', minHeight: '100vh', width: '100vw', overflow: 'hidden' }}>
                 <Sidebar
                     open={sidebarOpen}
                     onClose={handleSidebarToggle}
-                    isDarkMode={isDarkMode}
                 />
 
                 <Box
@@ -91,8 +96,12 @@ const App = ({ children }) => {
                         display: 'flex',
                         flexDirection: 'column',
                         minHeight: '100vh',
+                        // On desktop, the flex container handles the width automatically.
+                        // We don't need manual calculated widths or margins here because
+                        // the sidebar is a sibling in this flex box.
                         width: '100%',
-                        ml: 0
+                        position: 'relative',
+                        transition: 'all 0.3s ease'
                     }}
                 >
                     <Header
@@ -106,8 +115,8 @@ const App = ({ children }) => {
                         component="main"
                         sx={{
                             flexGrow: 1,
-                            p: 3,
-                            pt: '88px', // Add top padding to account for fixed header (64px header + 24px padding)
+                            p: { xs: 2, sm: 3 },
+                            pt: { xs: '80px', sm: '88px' },
                             backgroundColor: backgroundImage ? 'transparent' : 'background.default',
                             backgroundImage: backgroundImage ? `url(http://localhost:5000${backgroundImage})` : 'none',
                             backgroundSize: 'cover',
@@ -115,8 +124,8 @@ const App = ({ children }) => {
                             backgroundRepeat: 'no-repeat',
                             backgroundAttachment: 'fixed',
                             position: 'relative',
-                            overflow: 'auto',
-                            minHeight: '100vh',
+                            overflow: 'auto', // Allow standard scrolling
+                            zIndex: 1,
                             '&::before': backgroundImage ? {
                                 content: '""',
                                 position: 'absolute',
@@ -124,29 +133,9 @@ const App = ({ children }) => {
                                 left: 0,
                                 right: 0,
                                 bottom: 0,
-                                backgroundColor: 'rgba(0, 0, 0, 0.5)', // Dark overlay for better readability
-                                zIndex: 0
-                            } : {},
-                            '& > *': {
-                                position: 'relative',
-                                zIndex: 1
-                            },
-                            '&::-webkit-scrollbar': {
-                                display: 'none !important',
-                                width: '0 !important',
-                                height: '0 !important'
-                            },
-                            scrollbarWidth: 'none !important',
-                            msOverflowStyle: 'none !important',
-                            '& *::-webkit-scrollbar': {
-                                display: 'none !important',
-                                width: '0 !important',
-                                height: '0 !important'
-                            },
-                            '& *': {
-                                scrollbarWidth: 'none !important',
-                                msOverflowStyle: 'none !important'
-                            }
+                                backgroundColor: 'rgba(0, 0, 0, 0.5)',
+                                zIndex: -1
+                            } : {}
                         }}
                     >
                         {children}

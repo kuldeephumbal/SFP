@@ -69,7 +69,7 @@ const ListOfDonor = () => {
                     {/* Search Bar */}
                     <Box sx={{ mb: 4, display: 'flex', justifyContent: 'center' }}>
                         <TextField
-                            placeholder="🔍 Search donor by name..."
+                            placeholder="🔍 Search here..."
                             value={searchText}
                             onChange={(e) => setSearchText(e.target.value)}
                             variant="outlined"
@@ -90,7 +90,7 @@ const ListOfDonor = () => {
                     ) : filteredDonations.length > 0 ? (
                         <Grid container spacing={3}>
                             {filteredDonations.map((donation) => (
-                                <Grid item xs={12} sm={6} md={4} lg={3} key={donation._id}>
+                                <Grid size={{ xs: 12, sm: 6, md: 4, lg: 3 }} key={donation._id}>
                                     <Card
                                         sx={{
                                             height: '100%',
@@ -110,7 +110,7 @@ const ListOfDonor = () => {
                                         {/* Donor Image */}
                                         <CardMedia
                                             component="img"
-                                            image={donation.photo ? `http://localhost:5000/${donation.photo.replace(/^\/+/, '')}` : ''}
+                                            image={donation.photo ? `http://localhost:5000/${donation.photo.replace(/^\/+/, '')}` : '/assets/img/default-profile.jpg'}
                                             alt={donation.full_name}
                                             sx={{
                                                 height: 200,

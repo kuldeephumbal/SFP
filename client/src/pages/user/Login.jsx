@@ -153,7 +153,7 @@ export default function Login() {
                             <form onSubmit={handleSubmit}>
                                 <Grid container spacing={2.5}>
                                     {/* Email Field */}
-                                    <Grid item xs={12}>
+                                    <Grid size={12}>
                                         <TextField
                                             fullWidth
                                             name="email"
@@ -182,7 +182,7 @@ export default function Login() {
                                     </Grid>
 
                                     {/* Password Field */}
-                                    <Grid item xs={12}>
+                                    <Grid size={12}>
                                         <TextField
                                             fullWidth
                                             name="password"
@@ -222,7 +222,7 @@ export default function Login() {
                                     </Grid>
 
                                     {/* Submit Button */}
-                                    <Grid item xs={12}>
+                                    <Grid size={12}>
                                         <Button
                                             type="submit"
                                             fullWidth
@@ -258,7 +258,7 @@ export default function Login() {
                                     </Grid>
 
                                     {/* Forgot Password Link */}
-                                    <Grid item xs={12}>
+                                    <Grid size={12}>
                                         <Box sx={{ textAlign: 'center' }}>
                                             <Typography variant="body2">
                                                 <a

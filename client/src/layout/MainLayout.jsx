@@ -3,7 +3,8 @@ import {
     Box,
     ThemeProvider,
     createTheme,
-    CssBaseline
+    CssBaseline,
+    useMediaQuery
 } from '@mui/material';
 import Header from '../components/header';
 import Sidebar from '../components/Sidebar';
@@ -15,6 +16,7 @@ const MainLayout = ({ children }) => {
         return saved !== null ? JSON.parse(saved) : true;
     });
     const [isDarkMode, setIsDarkMode] = useState(true);
+    const isMobile = useMediaQuery('(max-width:900px)');
     const [backgroundImage, setBackgroundImage] = useState('');
 
     // Load background image from localStorage
@@ -77,9 +79,10 @@ const MainLayout = ({ children }) => {
     return (
         <ThemeProvider theme={theme}>
             <CssBaseline />
-            <Box sx={{ display: 'flex', minHeight: '100vh', overflow: 'hidden' }}>
+            <Box sx={{ minHeight: '100vh', overflow: 'hidden', position: 'relative' }}>
                 <Header
                     onMenuClick={handleSidebarToggle}
+                    sidebarOpen={sidebarOpen}
                     isDarkMode={isDarkMode}
                     onThemeToggle={handleThemeToggle}
                 />
@@ -103,9 +106,14 @@ const MainLayout = ({ children }) => {
                         backgroundRepeat: 'no-repeat',
                         backgroundAttachment: 'fixed',
                         minHeight: 'calc(100vh - 64px)',
-                        width: '100%',
-                        overflow: 'auto',
+                        // Manually position content next to fixed sidebar
+                        marginLeft: !isMobile && sidebarOpen ? '280px' : 0,
+                        width: !isMobile && sidebarOpen ? 'calc(100% - 280px)' : '100%',
+                        transition: 'margin 0.3s ease, width 0.3s ease',
+                        overflowX: 'auto',
+                        overflowY: 'auto',
                         position: 'relative',
+                        boxSizing: 'border-box',
                         '&::before': backgroundImage ? {
                             content: '""',
                             position: 'absolute',
@@ -121,20 +129,23 @@ const MainLayout = ({ children }) => {
                             zIndex: 1
                         },
                         '&::-webkit-scrollbar': {
-                            display: 'none !important',
-                            width: '0 !important',
-                            height: '0 !important'
+                            width: '8px',
+                            height: '8px'
                         },
-                        scrollbarWidth: 'none !important',
-                        msOverflowStyle: 'none !important',
-                        '& *::-webkit-scrollbar': {
-                            display: 'none !important',
-                            width: '0 !important',
-                            height: '0 !important'
+                        '&::-webkit-scrollbar-track': {
+                            background: 'rgba(255, 255, 255, 0.05)',
+                            borderRadius: '10px'
                         },
-                        '& *': {
-                            scrollbarWidth: 'none !important',
-                            msOverflowStyle: 'none !important'
+                        '&::-webkit-scrollbar-thumb': {
+                            background: 'rgba(255, 255, 255, 0.3)', // Brighter thumb
+                            borderRadius: '10px',
+                            border: '2px solid transparent',
+                            backgroundClip: 'padding-box',
+                            '&:hover': {
+                                background: 'rgba(255, 255, 255, 0.4)',
+                                border: '2px solid transparent',
+                                backgroundClip: 'padding-box'
+                            }
                         }
                     }}
                 >

@@ -249,15 +249,15 @@ const LatestActivity = () => {
                     boxShadow: '0 8px 32px rgba(0, 0, 0, 0.3)'
                 }}
             >
-                <CardContent>
+                <CardContent sx={{ p: { xs: 1.5, sm: 3 } }}>
                     {/* Action Bar */}
-                    <Box sx={{ display: 'flex', gap: 2, mb: 3, flexWrap: 'wrap' }}>
+                    <Box sx={{ display: 'flex', gap: 2, mb: 3, flexWrap: 'wrap', alignItems: 'center' }}>
                         <TextField
-                            placeholder="Search activities..."
+                            placeholder="Search here..."
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
                             sx={{
-                                minWidth: 250,
+                                width: { xs: '100%', sm: 250 },
                                 '& .MuiOutlinedInput-root': {
                                     color: 'white',
                                     '& fieldset': { borderColor: 'rgba(255, 255, 255, 0.3)' },
@@ -311,7 +311,7 @@ const LatestActivity = () => {
                                 minWidth: '120px',
                                 renderCell: (row) => (
                                     <Avatar
-                                        src={row.photo?.startsWith('http') ? row.photo : `http://localhost:5000${row.photo}`}
+                                        src={row.photo?.startsWith('http') ? row.photo : `http://localhost:5000${row.photo.replace('/uploads/slider/', '/uploads/latest-activity/')}`}
                                         alt={row.activity_detail}
                                         variant="rounded"
                                         sx={{ width: 80, height: 60, objectFit: 'cover' }}

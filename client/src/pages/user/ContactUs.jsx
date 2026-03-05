@@ -128,11 +128,11 @@ const ContactUs = () => {
                         <form onSubmit={handleSubmit}>
                             <Grid container spacing={{ xs: 2, sm: 3 }}>
                                 {/* Name */}
-                                <Grid item xs={12} sm={6}>
+                                <Grid size={{ xs: 12, sm: 6 }}>
                                     <TextField
                                         fullWidth
                                         required
-                                        label="Name *"
+                                        label="Name"
                                         name="name"
                                         placeholder="Enter your full name"
                                         value={formData.name}
@@ -145,11 +145,11 @@ const ContactUs = () => {
                                 </Grid>
 
                                 {/* Mobile Number */}
-                                <Grid item xs={12} sm={6}>
+                                <Grid size={{ xs: 12, sm: 6 }}>
                                     <TextField
                                         fullWidth
                                         required
-                                        label="Mobile No. *"
+                                        label="Mobile No."
                                         name="mobile"
                                         placeholder="Enter your mobile number"
                                         value={formData.mobile}
@@ -162,12 +162,12 @@ const ContactUs = () => {
                                 </Grid>
 
                                 {/* Email */}
-                                <Grid item xs={12} sm={6}>
+                                <Grid size={{ xs: 12, sm: 6 }}>
                                     <TextField
                                         fullWidth
                                         required
                                         type="email"
-                                        label="Email *"
+                                        label="Email"
                                         name="email"
                                         placeholder="Enter your email"
                                         value={formData.email}
@@ -180,11 +180,11 @@ const ContactUs = () => {
                                 </Grid>
 
                                 {/* Topic */}
-                                <Grid item xs={12} sm={6}>
+                                <Grid size={{ xs: 12, sm: 6 }}>
                                     <TextField
                                         fullWidth
                                         required
-                                        label="Topic *"
+                                        label="Topic"
                                         name="topic"
                                         placeholder="Enter topic"
                                         value={formData.topic}
@@ -197,11 +197,11 @@ const ContactUs = () => {
                                 </Grid>
 
                                 {/* Description */}
-                                <Grid item xs={12}>
+                                <Grid size={12}>
                                     <TextField
                                         fullWidth
                                         required
-                                        label="Description *"
+                                        label="Description"
                                         name="description"
                                         placeholder="Enter your message"
                                         value={formData.description}
@@ -215,7 +215,7 @@ const ContactUs = () => {
                                 </Grid>
 
                                 {/* Submit Button */}
-                                <Grid item xs={12} sx={{ textAlign: 'center' }}>
+                                <Grid size={12} sx={{ textAlign: 'center' }}>
                                     <Button
                                         type="submit"
                                         variant="contained"

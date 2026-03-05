@@ -12,8 +12,7 @@ import {
 import {
   TrendingUp,
   TrendingDown,
-  MoreVert,
-  YouTube
+  MoreVert
 } from '@mui/icons-material';
 import api from '../../components/BaseURL';
 import {
@@ -48,39 +47,49 @@ ChartJS.register(
 );
 
 const Dashboard = () => {
-  const [youtubeVideos, setYoutubeVideos] = useState([]);
-  const [videosLoading, setVideosLoading] = useState(false);
+  const [dashboardData, setDashboardData] = useState({
+    stats: {
+      totalApplications: 0,
+      totalDonationAmount: 0,
+      totalProblemsRaised: 0,
+      totalMembers: 0
+    },
+    monthlyDonations: []
+  });
+  const [statsLoading, setStatsLoading] = useState(true);
+
+  const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
   const stats = [
     {
-      title: '26K',
-      subtitle: 'Users',
-      change: '-12.4%',
-      trend: 'down',
+      title: `${dashboardData.stats.totalApplications}`,
+      subtitle: 'New Applications',
+      change: '+',
+      trend: 'up',
       color: '#8b5cf6',
       chartColor: '#a78bfa'
     },
     {
-      title: '$6.200',
-      subtitle: 'Income',
-      change: '40.9%',
+      title: `₹${dashboardData.stats.totalDonationAmount.toLocaleString()}`,
+      subtitle: 'Total Donation',
+      change: '+',
       trend: 'up',
       color: '#3b82f6',
       chartColor: '#60a5fa'
     },
     {
-      title: '2.49%',
-      subtitle: 'Conversion Rate',
-      change: '84.7%',
+      title: `${dashboardData.stats.totalProblemsRaised}`,
+      subtitle: 'Problem Raised',
+      change: '+',
       trend: 'up',
       color: '#f59e0b',
       chartColor: '#fbbf24'
     },
     {
-      title: '44K',
-      subtitle: 'Sessions',
-      change: '-23.6%',
-      trend: 'down',
+      title: `${dashboardData.stats.totalMembers}`,
+      subtitle: 'Total Members',
+      change: '+',
+      trend: 'up',
       color: '#ef4444',
       chartColor: '#f87171'
     }
@@ -122,15 +131,6 @@ const Dashboard = () => {
           <Typography variant="h6" sx={{ fontWeight: 'bold', fontSize: { xs: '0.9rem', sm: '1.25rem' } }}>
             {title}
           </Typography>
-          <Button
-            variant="outlined"
-            size="small"
-            href={docsLink}
-            target="_blank"
-            sx={{ textTransform: 'none', display: { xs: 'none', sm: 'inline-flex' } }}
-          >
-            docs
-          </Button>
         </Box>
         <Box sx={{ height: { xs: 265, sm: 300 }, width: '100%' }}>
           {getChartComponent()}
@@ -139,80 +139,53 @@ const Dashboard = () => {
     );
   };
 
-  const chartData = {
-    barChart: {
-      labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
-      datasets: [
-        {
-          label: 'GitHub Commits',
-          data: [40, 20, 12, 39, 10, 40, 39, 50, 60, 70, 80, 75],
-          backgroundColor: '#3E84F6',
-          borderColor: '#ffffff',
-          borderWidth: 1
-        }
-      ]
-    },
-    lineChart: {
-      labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
-      datasets: [
-        {
-          label: 'My First dataset',
-          data: [50, 40, 60, 35, 95, 5, 10],
-          borderColor: '#36a2eb',
-          backgroundColor: 'rgba(54, 162, 235, 0.1)',
-          tension: 0.1
-        },
-        {
-          label: 'My Second dataset',
-          data: [20, 50, 35, 45, 35, 85, 75],
-          borderColor: '#4bc0c0',
-          backgroundColor: 'rgba(75, 192, 192, 0.1)',
-          tension: 0.1
-        }
-      ]
-    },
-    doughnutChart: {
-      labels: ['VueJs', 'EmberJs', 'ReactJs', 'AngularJs'],
-      datasets: [
-        {
-          data: [40, 20, 20, 20],
-          backgroundColor: ['#769FCD', '#FCE38A', '#95E1D3', '#F38181']
-        }
-      ]
-    },
-    pieChart: {
-      labels: ['Red', 'Green', 'Yellow'],
-      datasets: [
-        {
-          data: [40, 30, 30],
-          backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56']
-        }
-      ]
+  const generateMonthlyData = () => {
+    const fullData = [];
+    const now = new Date();
+
+    // Generate last 12 months
+    for (let i = 11; i >= 0; i--) {
+      const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+      const month = d.getMonth() + 1;
+      const year = d.getFullYear();
+
+      // Find if API returned data for this month/year
+      const monthEntry = dashboardData.monthlyDonations.find(
+        item => item._id.month === month && item._id.year === year
+      );
+
+      fullData.push({
+        label: `${monthNames[month - 1]} ${year}`,
+        total: monthEntry ? monthEntry.total : 0
+      });
     }
+    return fullData;
   };
 
-  const getEmbedUrl = (url) => {
-    if (!url) return '';
-    if (url.includes('embed/')) return url;
-    let videoId = '';
-    if (url.includes('watch?v=')) {
-      videoId = url.split('watch?v=')[1].split('&')[0];
-    } else if (url.includes('youtu.be/')) {
-      videoId = url.split('youtu.be/')[1].split('?')[0];
-    }
-    return videoId ? `https://www.youtube.com/embed/${videoId}` : url;
+  const fullMonthlyData = generateMonthlyData();
+
+  const monthlyDonationData = {
+    labels: fullMonthlyData.map(d => d.label),
+    datasets: [
+      {
+        label: 'Donation Amount (₹)',
+        data: fullMonthlyData.map(d => d.total),
+        backgroundColor: 'rgba(59, 130, 246, 0.8)',
+        borderColor: '#ffffff',
+        borderWidth: 1,
+        borderRadius: 4
+      }
+    ]
   };
+
+
 
   useEffect(() => {
-    setVideosLoading(true);
-    api
-      .get('/youtube-video')
-      .then((res) => setYoutubeVideos(res.data || []))
-      .catch((err) => {
-        console.error('Failed to load youtube videos', err);
-        setYoutubeVideos([]);
-      })
-      .finally(() => setVideosLoading(false));
+    setStatsLoading(true);
+    api.get('/dashboard')
+      .then(res => setDashboardData(res.data))
+      .catch(err => console.error('Error fetching dashboard stats', err))
+      .finally(() => setStatsLoading(false));
   }, []);
 
   const StatCard = ({ stat }) => (
@@ -352,15 +325,14 @@ const Dashboard = () => {
 
         <Box sx={{
           display: 'grid',
-          gridTemplateColumns: { xs: '1fr', lg: 'repeat(12, 1fr)' },
+          gridTemplateColumns: '1fr',
           gap: { xs: 1.5, sm: 2 }
         }}>
-          <Box sx={{ gridColumn: { xs: '1', lg: 'span 8' } }}>
+          <Box sx={{ gridColumn: '1' }}>
             <ChartComponent
               type="bar"
-              data={chartData.barChart}
-              title="Bar Chart"
-              docsLink="#"
+              data={monthlyDonationData}
+              title="Monthly Donation Analysis"
               options={{
                 responsive: true,
                 maintainAspectRatio: false,
@@ -373,67 +345,9 @@ const Dashboard = () => {
                 scales: {
                   y: {
                     beginAtZero: true,
-                    max: 80
-                  }
-                }
-              }}
-            />
-          </Box>
-          <Box sx={{ gridColumn: { xs: '1', lg: 'span 4' } }}>
-            <ChartComponent
-              type="doughnut"
-              data={chartData.doughnutChart}
-              title="Doughnut Chart"
-              docsLink="#"
-              options={{
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                  legend: {
-                    display: true,
-                    position: 'bottom'
-                  }
-                }
-              }}
-            />
-          </Box>
-          <Box sx={{ gridColumn: { xs: '1', lg: 'span 4' } }}>
-            <ChartComponent
-              type="pie"
-              data={chartData.pieChart}
-              title="Pie Chart"
-              docsLink="#"
-              options={{
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                  legend: {
-                    display: true,
-                    position: 'bottom'
-                  }
-                }
-              }}
-            />
-          </Box>
-          <Box sx={{ gridColumn: { xs: '1', lg: 'span 8' } }}>
-            <ChartComponent
-              type="line"
-              data={chartData.lineChart}
-              title="Line Chart"
-              docsLink="#"
-              options={{
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                  legend: {
-                    display: true,
-                    position: 'top'
-                  }
-                },
-                scales: {
-                  y: {
-                    beginAtZero: true,
-                    max: 100
+                    ticks: {
+                      callback: (value) => `₹${value.toLocaleString()}`
+                    }
                   }
                 }
               }}
@@ -441,92 +355,7 @@ const Dashboard = () => {
           </Box>
         </Box>
 
-        <Box sx={{
-          mt: { xs: 2, sm: 3 },
-          display: 'grid',
-          gridTemplateColumns: { xs: '1fr', md: 'repeat(2, 1fr)', xl: 'repeat(3, 1fr)' },
-          gap: { xs: 1.5, sm: 2 }
-        }}>
-          {videosLoading && (
-            <Card sx={{
-              background: 'rgba(255, 255, 255, 0.05)',
-              backdropFilter: 'blur(20px)',
-              border: '1px solid rgba(255, 255, 255, 0.2)',
-              borderRadius: { xs: '16px', sm: '20px' },
-              boxShadow: '0 8px 32px rgba(0, 0, 0, 0.2)',
-              minHeight: 260
-            }}>
-              <CardContent sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%' }}>
-                <Typography sx={{ color: 'rgba(255, 255, 255, 0.9)', fontWeight: 600 }}>
-                  Loading YouTube videos...
-                </Typography>
-              </CardContent>
-            </Card>
-          )}
 
-          {!videosLoading && youtubeVideos.length === 0 && (
-            <Card sx={{
-              background: 'linear-gradient(135deg, rgba(96, 165, 250, 0.2) 0%, rgba(59, 130, 246, 0.15) 100%)',
-              backdropFilter: 'blur(20px)',
-              border: '1px solid rgba(255, 255, 255, 0.2)',
-              borderRadius: { xs: '16px', sm: '20px' },
-              boxShadow: '0 8px 32px rgba(0, 0, 0, 0.25)',
-              minHeight: 260
-            }}>
-              <CardContent sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%', textAlign: 'center' }}>
-                <YouTube sx={{ fontSize: 40, color: '#ef4444', mb: 1 }} />
-                <Typography variant="h6" sx={{ color: 'rgba(255, 255, 255, 0.9)', mb: 0.5 }}>
-                  No YouTube videos yet
-                </Typography>
-                <Typography variant="body2" sx={{ color: 'rgba(255, 255, 255, 0.7)' }}>
-                  Add videos from the YouTube Videos page to see them here.
-                </Typography>
-              </CardContent>
-            </Card>
-          )}
-
-          {!videosLoading && youtubeVideos.slice(0, 6).map((video) => (
-            <Card
-              key={video._id || video.id}
-              sx={{
-                background: 'rgba(255, 255, 255, 0.05)',
-                backdropFilter: 'blur(20px)',
-                border: '1px solid rgba(255, 255, 255, 0.15)',
-                borderRadius: { xs: '16px', sm: '20px' },
-                boxShadow: '0 8px 32px rgba(0, 0, 0, 0.25)',
-                overflow: 'hidden'
-              }}
-            >
-              <CardContent sx={{ p: 0 }}>
-                <Box sx={{ position: 'relative', paddingTop: '56.25%', background: '#0f172a' }}>
-                  {getEmbedUrl(video.url) && (
-                    <Box
-                      component="iframe"
-                      src={getEmbedUrl(video.url)}
-                      title={video.url}
-                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                      allowFullScreen
-                      sx={{
-                        position: 'absolute',
-                        top: 0,
-                        left: 0,
-                        width: '100%',
-                        height: '100%',
-                        border: 0
-                      }}
-                    />
-                  )}
-                </Box>
-                <Box sx={{ p: { xs: 1.5, sm: 2 }, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                  <Typography sx={{ color: 'rgba(255, 255, 255, 0.9)', fontWeight: 600, mr: 2, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                    {video.url}
-                  </Typography>
-                  <YouTube sx={{ color: '#ef4444' }} />
-                </Box>
-              </CardContent>
-            </Card>
-          ))}
-        </Box>
       </Box>
     </>
   );

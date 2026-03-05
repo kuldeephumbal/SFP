@@ -178,9 +178,9 @@ const Gallery = () => {
                     boxShadow: '0 8px 32px rgba(0, 0, 0, 0.3)'
                 }}
             >
-                <CardContent>
+                <CardContent sx={{ p: { xs: 1.5, sm: 3 } }}>
                     {/* Action Bar */}
-                    <Box sx={{ display: 'flex', gap: 2, mb: 3, flexWrap: 'wrap' }}>
+                    <Box sx={{ display: 'flex', gap: 2, mb: 3, flexWrap: 'wrap', alignItems: 'center' }}>
                         <Chip
                             icon={<PhotoLibrary />}
                             label={`Total: ${galleryItems.length}`}
@@ -217,11 +217,19 @@ const Gallery = () => {
                                 headerName: 'Photo',
                                 minWidth: '280px',
                                 renderCell: (row) => (
-                                    <img
-                                        src={`http://localhost:5000/${row.photo.replace(/^\/+/, '')}`}
-                                        alt="gallery item"
-                                        style={{ width: 240, height: 160, objectFit: 'cover', borderRadius: 8 }}
-                                    />
+                                    <Box sx={{
+                                        width: '100%',
+                                        maxWidth: { xs: '100%', sm: 240 },
+                                        aspectRatio: '3/2',
+                                        borderRadius: 2,
+                                        overflow: 'hidden'
+                                    }}>
+                                        <img
+                                            src={`http://localhost:5000/${row.photo.replace(/^\/+/, '')}`}
+                                            alt="gallery item"
+                                            style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                                        />
+                                    </Box>
                                 )
                             },
                             {

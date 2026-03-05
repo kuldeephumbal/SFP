@@ -280,6 +280,10 @@ const UserLandingPage = () => {
                             overflow: 'hidden',
                             '& .slick-prev, & .slick-next': {
                                 zIndex: 1,
+                                top: '50%',
+                                transform: 'translateY(-50%)',
+                                width: '32px',
+                                height: '32px',
                                 '&:before': {
                                     fontSize: '30px'
                                 }
@@ -336,109 +340,103 @@ const UserLandingPage = () => {
                 </Box>
 
                 {/* Quick Action Cards */}
-                <Container maxWidth="lg"
-                    className="mt-3"
-                    sx={{
-                    mt: { xs: 2, md: 3 },
-                    mb: sectionSpacing,
-                    position: 'relative',
-                    zIndex: 1,
-                    px: { xs: 2, sm: 3 },
-                    '& .slick-slider': {
-                        position: 'relative',
-                        px: { xs: 5, md: 0 } // Keep cards centered on mobile
-                    },
-                    '& .slick-prev, & .slick-next': {
-                        width: '20px',
-                        height: '20px',
-                        top: '50%',
-                        transform: 'translateY(-50%)',
-                        backgroundColor: 'white',
-                        borderRadius: '50%',
-                        boxShadow: 1,
-                        '&:before': {
-                            color: '#1976d2',
-                            fontSize: { xs: '20px', md: '24px' },
-                            opacity: 1
-                        }
-                    },
-                    '& .slick-prev': {
-                        left: { xs: 0, md: -28 },
-                        zIndex: 1
-                    },
-                    '& .slick-next': {
-                        right: { xs: 0, md: -28 },
-                        zIndex: 1
-                    }
-                }}>
-                    <Slider {...quickActionSettings}>
-                        <Box sx={{ px: 1 }}>
-                            <Card sx={{
-                                textAlign: 'center',
-                                py: { xs: 4, md: 2 }, // Taller on mobile
-                                cursor: 'pointer',
-                                '&:hover': { boxShadow: 6, transform: 'translateY(-4px)' },
-                                transition: 'all 0.3s',
-                                height: '100%'
-                            }}>
-                                <PersonAdd sx={{ fontSize: { xs: 60, md: 40 }, color: '#1976d2', mb: 2 }} />
-                                <Typography variant="h6" fontWeight={600} sx={{ fontSize: { xs: '1.1rem', md: '1rem' } }}>Add person</Typography>
-                            </Card>
+                <Box sx={{ mt: { xs: 2, md: 3 }, mb: sectionSpacing }}>
+                    <Container maxWidth="lg">
+                        <Box sx={{
+                            position: 'relative',
+                            px: '40px',
+                            '& .slick-prev, & .slick-next': {
+                                width: '30px',
+                                height: '30px',
+                                top: '50%',
+                                transform: 'translateY(-50%)',
+                                background: 'none',
+                                boxShadow: 'none',
+                                zIndex: 1,
+                                '&:before': {
+                                    color: '#1976d2',
+                                    fontSize: '28px',
+                                    opacity: 0.85,
+                                    lineHeight: '30px',
+                                }
+                            },
+                            '& .slick-prev': {
+                                left: '-36px',
+                            },
+                            '& .slick-next': {
+                                right: '-36px',
+                            }
+                        }}>
+                            <Slider {...quickActionSettings}>
+                                <Box sx={{ px: 1 }}>
+                                    <Card sx={{
+                                        textAlign: 'center',
+                                        py: { xs: 4, md: 2 },
+                                        cursor: 'pointer',
+                                        '&:hover': { boxShadow: 6, transform: 'translateY(-4px)' },
+                                        transition: 'all 0.3s',
+                                        height: '100%'
+                                    }}>
+                                        <PersonAdd sx={{ fontSize: { xs: 60, md: 40 }, color: '#1976d2', mb: 2 }} />
+                                        <Typography variant="h6" fontWeight={600} sx={{ fontSize: { xs: '1.1rem', md: '1rem' } }}>Add person</Typography>
+                                    </Card>
+                                </Box>
+                                <Box sx={{ px: 1 }}>
+                                    <Card sx={{
+                                        textAlign: 'center',
+                                        py: { xs: 4, md: 2 },
+                                        cursor: 'pointer',
+                                        '&:hover': { boxShadow: 6, transform: 'translateY(-4px)' },
+                                        transition: 'all 0.3s',
+                                        height: '100%'
+                                    }}>
+                                        <Event sx={{ fontSize: { xs: 60, md: 40 }, color: '#1976d2', mb: 2 }} />
+                                        <Typography variant="h6" fontWeight={600} sx={{ fontSize: { xs: '1.1rem', md: '1rem' } }}>Upcoming events</Typography>
+                                    </Card>
+                                </Box>
+                                <Box sx={{ px: 1 }}>
+                                    <Card sx={{
+                                        textAlign: 'center',
+                                        py: { xs: 4, md: 2 },
+                                        cursor: 'pointer',
+                                        '&:hover': { boxShadow: 6, transform: 'translateY(-4px)' },
+                                        transition: 'all 0.3s',
+                                        height: '100%'
+                                    }}>
+                                        <Groups sx={{ fontSize: { xs: 60, md: 40 }, color: '#1976d2', mb: 2 }} />
+                                        <Typography variant="h6" fontWeight={600} sx={{ fontSize: { xs: '1.1rem', md: '1rem' } }}>Management team</Typography>
+                                    </Card>
+                                </Box>
+                                <Box sx={{ px: 1 }}>
+                                    <Card sx={{
+                                        textAlign: 'center',
+                                        py: { xs: 4, md: 2 },
+                                        cursor: 'pointer',
+                                        '&:hover': { boxShadow: 6, transform: 'translateY(-4px)' },
+                                        transition: 'all 0.3s',
+                                        height: '100%'
+                                    }}>
+                                        <YouTube sx={{ fontSize: { xs: 60, md: 40 }, color: '#1976d2', mb: 2 }} />
+                                        <Typography variant="h6" fontWeight={600} sx={{ fontSize: { xs: '1.1rem', md: '1rem' } }}>Donate</Typography>
+                                    </Card>
+                                </Box>
+                                <Box sx={{ px: 1 }}>
+                                    <Card sx={{
+                                        textAlign: 'center',
+                                        py: { xs: 4, md: 2 },
+                                        cursor: 'pointer',
+                                        '&:hover': { boxShadow: 6, transform: 'translateY(-4px)' },
+                                        transition: 'all 0.3s',
+                                        height: '100%'
+                                    }}>
+                                        <Groups sx={{ fontSize: { xs: 60, md: 40 }, color: '#1976d2', mb: 2 }} />
+                                        <Typography variant="h6" fontWeight={600} sx={{ fontSize: { xs: '1.1rem', md: '1rem' } }}>Crowd funding</Typography>
+                                    </Card>
+                                </Box>
+                            </Slider>
                         </Box>
-                        <Box sx={{ px: 1 }}>
-                            <Card sx={{
-                                textAlign: 'center',
-                                py: { xs: 4, md: 2 },
-                                cursor: 'pointer',
-                                '&:hover': { boxShadow: 6, transform: 'translateY(-4px)' },
-                                transition: 'all 0.3s',
-                                height: '100%'
-                            }}>
-                                <Event sx={{ fontSize: { xs: 60, md: 40 }, color: '#1976d2', mb: 2 }} />
-                                <Typography variant="h6" fontWeight={600} sx={{ fontSize: { xs: '1.1rem', md: '1rem' } }}>Upcoming events</Typography>
-                            </Card>
-                        </Box>
-                        <Box sx={{ px: 1 }}>
-                            <Card sx={{
-                                textAlign: 'center',
-                                py: { xs: 4, md: 2 },
-                                cursor: 'pointer',
-                                '&:hover': { boxShadow: 6, transform: 'translateY(-4px)' },
-                                transition: 'all 0.3s',
-                                height: '100%'
-                            }}>
-                                <Groups sx={{ fontSize: { xs: 60, md: 40 }, color: '#1976d2', mb: 2 }} />
-                                <Typography variant="h6" fontWeight={600} sx={{ fontSize: { xs: '1.1rem', md: '1rem' } }}>Management team</Typography>
-                            </Card>
-                        </Box>
-                        <Box sx={{ px: 1 }}>
-                            <Card sx={{
-                                textAlign: 'center',
-                                py: { xs: 4, md: 2 },
-                                cursor: 'pointer',
-                                '&:hover': { boxShadow: 6, transform: 'translateY(-4px)' },
-                                transition: 'all 0.3s',
-                                height: '100%'
-                            }}>
-                                <YouTube sx={{ fontSize: { xs: 60, md: 40 }, color: '#1976d2', mb: 2 }} />
-                                <Typography variant="h6" fontWeight={600} sx={{ fontSize: { xs: '1.1rem', md: '1rem' } }}>Donate</Typography>
-                            </Card>
-                        </Box>
-                        <Box sx={{ px: 1 }}>
-                            <Card sx={{
-                                textAlign: 'center',
-                                py: { xs: 4, md: 2 },
-                                cursor: 'pointer',
-                                '&:hover': { boxShadow: 6, transform: 'translateY(-4px)' },
-                                transition: 'all 0.3s',
-                                height: '100%'
-                            }}>
-                                <Groups sx={{ fontSize: { xs: 60, md: 40 }, color: '#1976d2', mb: 2 }} />
-                                <Typography variant="h6" fontWeight={600} sx={{ fontSize: { xs: '1.1rem', md: '1rem' } }}>Crowd funding</Typography>
-                            </Card>
-                        </Box>
-                    </Slider>
-                </Container>
+                    </Container>
+                </Box>
 
                 {/* Recent Activity Section */}
                 <Container maxWidth="lg" sx={{ mt: sectionSpacing, px: { xs: 2, sm: 3 } }}>
@@ -497,32 +495,53 @@ const UserLandingPage = () => {
                         <Grid size={{ xs: 12, md: 9 }}>
                             <Paper sx={{ p: { xs: 2, md: 3 }, minHeight: 200 }}>
                                 {latestActivities && latestActivities.length > 0 ? (
-                                    <Grid container spacing={{ xs: 2, md: 3 }}>
-                                        {latestActivities.map((activity) => (
-                                            <Grid size={{ xs: 12, md: 6 }} key={activity._id || activity.id}>
-                                                <Card sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
-                                                    <CardMedia
-                                                        component="img"
-                                                        sx={{ height: { xs: 160, sm: 180, md: 200 }, objectFit: 'cover' }}
-                                                        image={activity.photo?.startsWith('http') ? activity.photo : `http://localhost:5000${activity.photo}`}
-                                                        alt={activity.activity_detail}
-                                                    />
-                                                    <CardContent sx={{ flexGrow: 1 }}>
-                                                        <Typography variant="body1" sx={{ fontWeight: 500, mb: 1 }}>
-                                                            {activity.activity_detail}
-                                                        </Typography>
-                                                        <Typography variant="caption" color="text.secondary">
-                                                            {new Date(activity.createdAt || activity.created_at).toLocaleDateString('en-US', {
-                                                                year: 'numeric',
-                                                                month: 'long',
-                                                                day: 'numeric'
-                                                            })}
-                                                        </Typography>
-                                                    </CardContent>
-                                                </Card>
-                                            </Grid>
-                                        ))}
-                                    </Grid>
+                                    <Box sx={{
+                                        maxHeight: { xs: '600px', md: '750px' },
+                                        overflowY: 'auto',
+                                        overflowX: 'hidden',
+                                        pr: 1, // spacing for scrollbar
+                                        '&::-webkit-scrollbar': {
+                                            width: '8px',
+                                        },
+                                        '&::-webkit-scrollbar-track': {
+                                            background: '#f1f1f1',
+                                            borderRadius: '4px',
+                                        },
+                                        '&::-webkit-scrollbar-thumb': {
+                                            background: '#ccc',
+                                            borderRadius: '4px',
+                                        },
+                                        '&::-webkit-scrollbar-thumb:hover': {
+                                            background: '#1976d2',
+                                        },
+                                    }}>
+                                        <Grid container spacing={{ xs: 2, md: 3 }}>
+                                            {latestActivities.map((activity) => (
+                                                <Grid size={{ xs: 12, md: 6 }} key={activity._id || activity.id}>
+                                                    <Card sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+                                                        <CardMedia
+                                                            component="img"
+                                                            sx={{ height: { xs: 160, sm: 180, md: 200 }, objectFit: 'cover' }}
+                                                            image={activity.photo?.startsWith('http') ? activity.photo : `http://localhost:5000${activity.photo.replace('/uploads/slider/', '/uploads/latest-activity/')}`}
+                                                            alt={activity.activity_detail}
+                                                        />
+                                                        <CardContent sx={{ flexGrow: 1 }}>
+                                                            <Typography variant="body1" sx={{ fontWeight: 500, mb: 1 }}>
+                                                                {activity.activity_detail}
+                                                            </Typography>
+                                                            <Typography variant="caption" color="text.secondary">
+                                                                {new Date(activity.createdAt || activity.created_at).toLocaleDateString('en-US', {
+                                                                    year: 'numeric',
+                                                                    month: 'long',
+                                                                    day: 'numeric'
+                                                                })}
+                                                            </Typography>
+                                                        </CardContent>
+                                                    </Card>
+                                                </Grid>
+                                            ))}
+                                        </Grid>
+                                    </Box>
                                 ) : (
                                     <Typography variant="body1" color="text.secondary" textAlign="center">
                                         No latest activities found.
@@ -596,28 +615,28 @@ const UserLandingPage = () => {
                                 }}>
                                     Quia ratione exercitationem explicabo beatae odio molestiae vero deserunt quo, esse numquam cupiditate aperiam nulla earum tempore ea odit at amet quod.
                                 </Typography>
-                                 <Typography paragraph color="text.secondary" sx={{
+                                <Typography paragraph color="text.secondary" sx={{
                                     fontSize: { xs: '0.95rem', md: '1.05rem' },
                                     lineHeight: 1.7,
                                     textAlign: 'justify'
                                 }}>
                                     Quia ratione exercitationem explicabo beatae odio molestiae vero deserunt quo, esse numquam cupiditate aperiam nulla earum tempore ea odit at amet quod.
                                 </Typography>
-                                 <Typography paragraph color="text.secondary" sx={{
+                                <Typography paragraph color="text.secondary" sx={{
                                     fontSize: { xs: '0.95rem', md: '1.05rem' },
                                     lineHeight: 1.7,
                                     textAlign: 'justify'
                                 }}>
                                     Quia ratione exercitationem explicabo beatae odio molestiae vero deserunt quo, esse numquam cupiditate aperiam nulla earum tempore ea odit at amet quod.
                                 </Typography>
-                                 <Typography paragraph color="text.secondary" sx={{
+                                <Typography paragraph color="text.secondary" sx={{
                                     fontSize: { xs: '0.95rem', md: '1.05rem' },
                                     lineHeight: 1.7,
                                     textAlign: 'justify'
                                 }}>
                                     Quia ratione exercitationem explicabo beatae odio molestiae vero deserunt quo, esse numquam cupiditate aperiam nulla earum tempore ea odit at amet quod.
                                 </Typography>
-                                
+
                             </Grid>
                         </Grid>
                     </Paper>
@@ -674,28 +693,27 @@ const UserLandingPage = () => {
                     ) : (
                         <Box sx={{
                             position: 'relative',
-                            px: { xs: 2, md: 2 },
+                            px: '40px',
                             '& .slick-prev, & .slick-next': {
-                                width: '20px',
-                                height: '20px',
+                                width: '30px',
+                                height: '30px',
                                 top: '50%',
                                 transform: 'translateY(-50%)',
-                                backgroundColor: 'white',
-                                borderRadius: '50%',
-                                boxShadow: 1,
+                                background: 'none',
+                                boxShadow: 'none',
+                                zIndex: 1,
                                 '&:before': {
                                     color: '#1976d2',
-                                    fontSize: { xs: '20px', md: '24px' },
-                                    opacity: 1
+                                    fontSize: '28px',
+                                    opacity: 0.85,
+                                    lineHeight: '30px',
                                 }
                             },
                             '& .slick-prev': {
-                                left: { xs: -24, md: -28 },
-                                zIndex: 1
+                                left: '-36px',
                             },
                             '& .slick-next': {
-                                right: { xs: -24, md: -28 },
-                                zIndex: 1
+                                right: '-36px',
                             }
                         }}>
                             <Slider key={`youtube-${youtubeVideos.length}`} {...youtubeSliderSettings}>
@@ -751,28 +769,27 @@ const UserLandingPage = () => {
                     </Box>
                     <Box sx={{
                         position: 'relative',
-                        px: { xs: 2, md: 2 },
+                        px: '40px',
                         '& .slick-prev, & .slick-next': {
-                            width: '20px',
-                            height: '20px',
+                            width: '30px',
+                            height: '30px',
                             top: '50%',
                             transform: 'translateY(-50%)',
-                            backgroundColor: 'white',
-                            borderRadius: '50%',
-                            boxShadow: 1,
+                            background: 'none',
+                            boxShadow: 'none',
+                            zIndex: 1,
                             '&:before': {
                                 color: '#1976d2',
-                                fontSize: { xs: '20px', md: '24px' },
-                                opacity: 1
+                                fontSize: '28px',
+                                opacity: 0.85,
+                                lineHeight: '30px',
                             }
                         },
                         '& .slick-prev': {
-                            left: { xs: -24, md: -28 },
-                            zIndex: 1
+                            left: '-36px',
                         },
                         '& .slick-next': {
-                            right: { xs: -24, md: -28 },
-                            zIndex: 1
+                            right: '-36px',
                         }
                     }}>
                         <Slider key={`gallery-${galleryItems.length}`} {...gallerySliderSettings}>

@@ -21,6 +21,7 @@ const memberApplicationRoutes = require('./routes/memberApply');
 const enquiryRoutes = require('./routes/Enquiry');
 const achievementRoutes = require('./routes/achievement');
 const uploadRoutes = require('./routes/upload');
+const dashboardRoutes = require('./routes/dashboard');
 
 // Middleware
 swaggerDocs(app);
@@ -58,6 +59,7 @@ app.use('/api/member-application', memberApplicationRoutes);
 app.use('/api/enquiry', enquiryRoutes);
 app.use('/api/achievement', achievementRoutes);
 app.use('/api/upload', uploadRoutes);
+app.use('/api/dashboard', dashboardRoutes);
 
 // Start the server
 const PORT = process.env.PORT || 8000;

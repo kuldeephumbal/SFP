@@ -279,7 +279,8 @@ const Sidebar = ({ open, onClose }) => {
                 <Typography variant="h6" sx={{
                     color: '#60a5fa',
                     fontWeight: '700',
-                    fontSize: '1.3rem',
+                    fontSize: { xs: '1.1rem', sm: '1.3rem' },
+                    lineHeight: 1.2
                 }}>
                     Shankhnad Foundation
                 </Typography>
@@ -323,7 +324,7 @@ const Sidebar = ({ open, onClose }) => {
                     border: 'none',
                     position: 'fixed',
                     height: '100vh',
-                    zIndex: theme.zIndex.drawer,
+                    zIndex: isMobile ? 1300 : theme.zIndex.drawer,
                     transform: open ? 'translateX(0)' : `translateX(-${drawerWidth}px)`,
                     transition: 'transform 0.3s ease',
                     background: 'rgba(30, 41, 59, 0.95) !important',

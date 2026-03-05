@@ -85,7 +85,7 @@ const Header = ({ onMenuClick, sidebarOpen }) => {
                 borderTop: 'none',
                 color: 'rgba(255, 255, 255, 0.9)',
                 boxShadow: '0 8px 32px rgba(0, 0, 0, 0.1)',
-                zIndex: theme.zIndex.drawer + 1,
+                zIndex: theme.zIndex.appBar,
                 // Responsive behavior: full width on mobile, adjust for sidebar on desktop
                 left: isMobile ? 0 : (sidebarOpen ? '280px' : '0px'),
                 width: isMobile ? '100%' : (sidebarOpen ? 'calc(100% - 280px)' : '100%'),

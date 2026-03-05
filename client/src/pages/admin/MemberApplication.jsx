@@ -143,18 +143,19 @@ const MemberApplication = () => {
                     backdropFilter: 'blur(20px)',
                     border: '1px solid rgba(255, 255, 255, 0.2)',
                     borderRadius: '20px',
-                    boxShadow: '0 8px 32px rgba(0, 0, 0, 0.3)'
+                    boxShadow: '0 8px 32px rgba(0, 0, 0, 0.3)',
+                    width: '100%'
                 }}
             >
-                <CardContent>
+                <CardContent sx={{ p: { xs: 1.5, sm: 3 } }}>
                     {/* Action Bar */}
-                    <Box sx={{ display: 'flex', gap: 2, mb: 3, flexWrap: 'wrap' }}>
+                    <Box sx={{ display: 'flex', gap: 2, mb: 3, flexWrap: 'wrap', alignItems: 'center' }}>
                         <TextField
-                            placeholder="Search applications..."
+                            placeholder="Search here..."
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
                             sx={{
-                                minWidth: 250,
+                                width: { xs: '100%', sm: 250 },
                                 '& .MuiOutlinedInput-root': {
                                     color: 'white',
                                     '& fieldset': { borderColor: 'rgba(255, 255, 255, 0.3)' },
@@ -171,7 +172,7 @@ const MemberApplication = () => {
                             }}
                         />
 
-                        <FormControl sx={{ minWidth: 120 }}>
+                        <FormControl sx={{ width: { xs: '100%', sm: 150 } }}>
                             <InputLabel sx={{ color: 'rgba(255, 255, 255, 0.7)' }}>Status</InputLabel>
                             <Select
                                 value={filterStatus}

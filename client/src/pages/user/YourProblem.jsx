@@ -157,11 +157,11 @@ const YourProblem = () => {
                         <form onSubmit={handleSubmit}>
                             <Grid container spacing={{ xs: 2, sm: 3 }}>
                                 {/* Name */}
-                                <Grid item xs={12} sm={6}>
+                                <Grid size={{ xs: 12, sm: 6 }}>
                                     <TextField
                                         fullWidth
                                         required
-                                        label="Name *"
+                                        label="Name"
                                         name="name"
                                         placeholder="Enter your name"
                                         value={formData.name}
@@ -174,11 +174,11 @@ const YourProblem = () => {
                                 </Grid>
 
                                 {/* Mobile Number */}
-                                <Grid item xs={12} sm={6}>
+                                <Grid size={{ xs: 12, sm: 6 }}>
                                     <TextField
                                         fullWidth
                                         required
-                                        label="Mobile Number *"
+                                        label="Mobile Number"
                                         name="mobile_number"
                                         placeholder="Enter your mobile number"
                                         value={formData.mobile_number}
@@ -191,11 +191,11 @@ const YourProblem = () => {
                                 </Grid>
 
                                 {/* City */}
-                                <Grid item xs={12} sm={6}>
+                                <Grid size={{ xs: 12, sm: 6 }}>
                                     <TextField
                                         fullWidth
                                         required
-                                        label="City *"
+                                        label="City"
                                         name="city"
                                         placeholder="Enter your city"
                                         value={formData.city}
@@ -208,11 +208,11 @@ const YourProblem = () => {
                                 </Grid>
 
                                 {/* Message */}
-                                <Grid item xs={12} sm={6}>
+                                <Grid size={{ xs: 12, sm: 6 }}>
                                     <TextField
                                         fullWidth
                                         required
-                                        label="Message *"
+                                        label="Message"
                                         name="message"
                                         placeholder="Enter your message"
                                         value={formData.message}
@@ -225,11 +225,11 @@ const YourProblem = () => {
                                 </Grid>
 
                                 {/* Description */}
-                                <Grid item xs={12}>
+                                <Grid size={12}>
                                     <TextField
                                         fullWidth
                                         required
-                                        label="Description *"
+                                        label="Description"
                                         name="description"
                                         placeholder="Enter a description"
                                         value={formData.description}
@@ -243,11 +243,11 @@ const YourProblem = () => {
                                 </Grid>
 
                                 {/* Video URL */}
-                                <Grid item xs={12} sm={6}>
+                                <Grid size={{ xs: 12, sm: 6 }}>
                                     <TextField
                                         fullWidth
                                         required
-                                        label="Video URL *"
+                                        label="Video URL"
                                         name="video_url"
                                         placeholder="Enter video URL"
                                         value={formData.video_url}
@@ -261,29 +261,19 @@ const YourProblem = () => {
                                 </Grid>
 
                                 {/* Document Upload */}
-                                <Grid item xs={12} sm={6}>
+                                <Grid size={12}>
                                     <Typography variant="body2" sx={{ mb: 1, fontWeight: 500 }}>
                                         Document *
                                     </Typography>
-                                    <Button
-                                        variant="outlined"
-                                        component="label"
+                                    <TextField
                                         fullWidth
-                                        sx={{
-                                            justifyContent: 'flex-start',
-                                            textTransform: 'none',
-                                            borderColor: errors.document ? '#d32f2f' : '#ccc',
-                                            color: errors.document ? '#d32f2f' : '#666',
-                                        }}
-                                    >
-                                        {documentFile ? documentFile.name : 'Choose File'}
-                                        <input
-                                            type="file"
-                                            hidden
-                                            accept="application/pdf,image/*"
-                                            onChange={handleFileChange}
-                                        />
-                                    </Button>
+                                        type="file"
+                                        name="document"
+                                        required
+                                        onChange={handleFileChange}
+                                        error={!!errors.document}
+                                        inputProps={{ accept: "application/pdf,image/*" }}
+                                    />
                                     {errors.document && (
                                         <Typography variant="caption" sx={{ color: '#d32f2f' }}>
                                             {errors.document}
@@ -292,7 +282,7 @@ const YourProblem = () => {
                                 </Grid>
 
                                 {/* Submit Button */}
-                                <Grid item xs={12} sx={{ textAlign: 'center' }}>
+                                <Grid size={12} sx={{ textAlign: 'center' }}>
                                     <Button
                                         type="submit"
                                         variant="contained"

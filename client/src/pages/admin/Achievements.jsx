@@ -273,15 +273,15 @@ const AdminAchievements = () => {
                     boxShadow: '0 8px 32px rgba(0, 0, 0, 0.3)'
                 }}
             >
-                <CardContent>
+                <CardContent sx={{ p: { xs: 1.5, sm: 3 } }}>
                     {/* Action Bar */}
                     <Box sx={{ display: 'flex', gap: 2, mb: 3, flexWrap: 'wrap', alignItems: 'center' }}>
                         <TextField
-                            placeholder="Search by year, title, or description..."
+                            placeholder="Search here..."
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
                             sx={{
-                                minWidth: 300,
+                                width: { xs: '100%', sm: 300 },
                                 '& .MuiOutlinedInput-root': {
                                     color: 'white',
                                     '& fieldset': { borderColor: 'rgba(255, 255, 255, 0.3)' },
@@ -305,12 +305,10 @@ const AdminAchievements = () => {
                             startIcon={<Add />}
                             onClick={handleAddClick}
                             sx={{
-                                background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                                background: 'linear-gradient(135deg, #60a5fa 0%, #3b82f6 100%)',
                                 '&:hover': {
-                                    background: 'linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%)',
-                                    transform: 'translateY(-2px)'
-                                },
-                                transition: 'all 0.3s ease'
+                                    background: 'linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%)'
+                                }
                             }}
                         >
                             Add Achievement
@@ -377,7 +375,18 @@ const AdminAchievements = () => {
                 </DialogContent>
                 <DialogActions sx={{ p: 2 }}>
                     <Button onClick={() => setAddDialogOpen(false)}>Cancel</Button>
-                    <Button onClick={handleAddAchievement} variant="contained">Add</Button>
+                    <Button
+                        onClick={handleAddAchievement}
+                        variant="contained"
+                        sx={{
+                            background: 'linear-gradient(135deg, #60a5fa 0%, #3b82f6 100%)',
+                            '&:hover': {
+                                background: 'linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%)'
+                            }
+                        }}
+                    >
+                        Add
+                    </Button>
                 </DialogActions>
             </Dialog>
 
@@ -425,7 +434,18 @@ const AdminAchievements = () => {
                 </DialogContent>
                 <DialogActions sx={{ p: 2 }}>
                     <Button onClick={() => setEditDialogOpen(false)}>Cancel</Button>
-                    <Button onClick={handleUpdateAchievement} variant="contained">Update</Button>
+                    <Button
+                        onClick={handleUpdateAchievement}
+                        variant="contained"
+                        sx={{
+                            background: 'linear-gradient(135deg, #60a5fa 0%, #3b82f6 100%)',
+                            '&:hover': {
+                                background: 'linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%)'
+                            }
+                        }}
+                    >
+                        Update
+                    </Button>
                 </DialogActions>
             </Dialog>
         </>

@@ -200,15 +200,15 @@ const AdminYoutubeVideos = () => {
                     boxShadow: '0 8px 32px rgba(0, 0, 0, 0.3)'
                 }}
             >
-                <CardContent>
+                <CardContent sx={{ p: { xs: 1.5, sm: 3 } }}>
                     {/* Action Bar */}
-                    <Box sx={{ display: 'flex', gap: 2, mb: 3, flexWrap: 'wrap' }}>
+                    <Box sx={{ display: 'flex', gap: 2, mb: 3, flexWrap: 'wrap', alignItems: 'center' }}>
                         <TextField
-                            placeholder="Search videos..."
+                            placeholder="Search here..."
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
                             sx={{
-                                minWidth: 250,
+                                width: { xs: '100%', sm: 250 },
                                 '& .MuiOutlinedInput-root': {
                                     color: 'white',
                                     '& fieldset': { borderColor: 'rgba(255, 255, 255, 0.3)' },
@@ -261,16 +261,23 @@ const AdminYoutubeVideos = () => {
                                 headerName: 'Preview',
                                 minWidth: '280px',
                                 renderCell: (row) => (
-                                    <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                                    <Box sx={{
+                                        width: '100%',
+                                        maxWidth: { xs: '100%', sm: 240 },
+                                        aspectRatio: '16/9',
+                                        borderRadius: 2,
+                                        overflow: 'hidden',
+                                        border: '1px solid rgba(255, 255, 255, 0.1)'
+                                    }}>
                                         <iframe
-                                            width="240"
-                                            height="135"
+                                            width="100%"
+                                            height="100%"
                                             src={getEmbedUrl(row.url)}
                                             title="YouTube video player"
                                             frameBorder="0"
                                             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                                             allowFullScreen
-                                            style={{ borderRadius: 8 }}
+                                            style={{ display: 'block' }}
                                         />
                                     </Box>
                                 )
