@@ -15,11 +15,11 @@ import {
     MenuItem,
     Tabs,
     Tab,
-    Snackbar,
     IconButton,
     Card,
     CardContent
 } from '@mui/material';
+import { toast } from 'react-toastify';
 import {
     Save,
     Notifications,
@@ -35,7 +35,6 @@ import api from '../../components/BaseURL';
 const Settings = () => {
     const [loading, setLoading] = useState(false);
     const [loadingProfile, setLoadingProfile] = useState(true);
-    const [notification, setNotification] = useState({ open: false, message: '', type: 'success' });
     const [activeTab, setActiveTab] = useState(0);
 
     // Profile settings state
@@ -91,11 +90,7 @@ const Settings = () => {
             });
         } catch (error) {
             console.error('Error fetching profile:', error);
-            setNotification({
-                open: true,
-                message: error.response?.data?.message || 'Failed to fetch profile',
-                type: 'error'
-            });
+            toast.error(error.response?.data?.message || 'Failed to fetch profile');
         } finally {
             setLoadingProfile(false);
         }
@@ -163,18 +158,10 @@ const Settings = () => {
                 sessionStorage.setItem('user', JSON.stringify(storedUser));
             }
 
-            setNotification({
-                open: true,
-                message: response.data.message || 'Profile updated successfully',
-                type: 'success'
-            });
+            toast.success(response.data.message || 'Profile updated successfully');
         } catch (error) {
             console.error('Error updating profile:', error);
-            setNotification({
-                open: true,
-                message: error.response?.data?.message || 'Failed to update profile',
-                type: 'error'
-            });
+            toast.error(error.response?.data?.message || 'Failed to update profile');
         } finally {
             setLoading(false);
         }
@@ -183,20 +170,12 @@ const Settings = () => {
     const handleChangePassword = async () => {
         // Validate passwords
         if (passwordData.newPassword !== passwordData.confirmPassword) {
-            setNotification({
-                open: true,
-                message: 'New passwords do not match',
-                type: 'error'
-            });
+            toast.error('New passwords do not match');
             return;
         }
 
         if (passwordData.newPassword.length < 6) {
-            setNotification({
-                open: true,
-                message: 'Password must be at least 6 characters',
-                type: 'error'
-            });
+            toast.error('Password must be at least 6 characters');
             return;
         }
 
@@ -222,18 +201,10 @@ const Settings = () => {
                 confirmPassword: ''
             });
 
-            setNotification({
-                open: true,
-                message: response.data.message || 'Password changed successfully',
-                type: 'success'
-            });
+            toast.success(response.data.message || 'Password changed successfully');
         } catch (error) {
             console.error('Error changing password:', error);
-            setNotification({
-                open: true,
-                message: error.response?.data?.message || 'Failed to change password',
-                type: 'error'
-            });
+            toast.error(error.response?.data?.message || 'Failed to change password');
         } finally {
             setLoading(false);
         }
@@ -278,50 +249,20 @@ const Settings = () => {
                 window.location.reload();
             }, 1500);
 
-            setNotification({
-                open: true,
-                message: 'Background image updated successfully. Page will reload...',
-                type: 'success'
-            });
+            toast.success('Background image updated successfully. Page will reload...');
 
             setSelectedFile(null);
             setPreviewUrl('');
         } catch (error) {
             console.error('Error saving preferences:', error);
-            setNotification({
-                open: true,
-                message: error.response?.data?.message || 'Failed to save preferences',
-                type: 'error'
-            });
+            toast.error(error.response?.data?.message || 'Failed to save preferences');
         } finally {
             setLoading(false);
         }
     };
 
     return (
-        <>
-            <Snackbar
-                open={notification.open}
-                autoHideDuration={6000}
-                onClose={() => setNotification({ ...notification, open: false })}
-                anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
-            >
-                <Alert
-                    severity={notification.type}
-                    action={
-                        <IconButton
-                            size="small"
-                            aria-label="close"
-                            color="inherit"
-                            onClick={() => setNotification({ ...notification, open: false })}
-                        >
-                            <Close fontSize="small" />
-                        </IconButton>
-                    }
-                >
-                    {notification.message}
-                </Alert>
-            </Snackbar>
+        <Box sx={{ width: '100%' }}>
 
             <Paper
                 sx={{
@@ -919,7 +860,7 @@ const Settings = () => {
                     )}
                 </div>
             )}
-        </>
+        </Box>
     );
 };
 

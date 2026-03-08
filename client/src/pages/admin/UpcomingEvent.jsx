@@ -307,7 +307,7 @@ const UpcomingEvent = () => {
                                 minWidth: '220px',
                                 renderCell: (row) => (
                                     <img
-                                        src={`http://localhost:5000/${row.photo.replace(/^\/+/, '')}`}
+                                        src={`${IMAGE_BASE_URL}/${row.photo.replace(/^\/+/, '')}`}
                                         alt={row.topic}
                                         style={{ width: 180, height: 120, objectFit: 'cover', borderRadius: 8 }}
                                     />

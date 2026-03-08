@@ -25,7 +25,7 @@ import {
 } from '@mui/icons-material';
 import axios from 'axios';
 import { toast } from 'react-toastify';
-import api from '../../components/BaseURL';
+import api, { IMAGE_BASE_URL } from '../../components/BaseURL';
 import BaseTable from '../../components/BaseTable';
 
 const Slider = () => {
@@ -293,7 +293,7 @@ const Slider = () => {
                                 minWidth: '120px',
                                 renderCell: (row) => (
                                     <Avatar
-                                        src={row.photo.startsWith('http') ? row.photo : `http://localhost:5000${row.photo}`}
+                                        src={row.photo.startsWith('http') ? row.photo : `${IMAGE_BASE_URL}${row.photo}`}
                                         alt={row.topic}
                                         variant="rounded"
                                         sx={{ width: 80, height: 60, objectFit: 'cover' }}

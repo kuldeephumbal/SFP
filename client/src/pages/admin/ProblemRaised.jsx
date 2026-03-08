@@ -202,7 +202,7 @@ const AdminProblem = () => {
                                                 label={row.document.endsWith('.pdf') ? 'PDF' : 'Image'}
                                                 size="small"
                                                 component="a"
-                                                href={`http://localhost:5000/${row.document.replace(/^\/+/, '')}`}
+                                                href={`${IMAGE_BASE_URL}/${row.document.replace(/^\/+/, '')}`}
                                                 target="_blank"
                                                 rel="noopener noreferrer"
                                                 clickable
@@ -342,7 +342,7 @@ const AdminProblem = () => {
                                 <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
                                     {selectedProblem.document && (
                                         <Link
-                                            href={`http://localhost:5000${selectedProblem.document}`}
+                                            href={`${IMAGE_BASE_URL}${selectedProblem.document}`}
                                             target="_blank"
                                             rel="noopener noreferrer"
                                             sx={{

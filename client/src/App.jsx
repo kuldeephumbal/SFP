@@ -9,6 +9,7 @@ import {
 } from '@mui/material';
 import Header from './components/Header';
 import Sidebar from './components/Sidebar';
+import { IMAGE_BASE_URL } from './components/BaseURL';
 
 const App = ({ children }) => {
     const [sidebarOpen, setSidebarOpen] = useState(() => {
@@ -118,7 +119,7 @@ const App = ({ children }) => {
                             p: { xs: 2, sm: 3 },
                             pt: { xs: '80px', sm: '88px' },
                             backgroundColor: backgroundImage ? 'transparent' : 'background.default',
-                            backgroundImage: backgroundImage ? `url(http://localhost:5000${backgroundImage})` : 'none',
+                            backgroundImage: backgroundImage ? `url(${IMAGE_BASE_URL}${backgroundImage})` : 'none',
                             backgroundSize: 'cover',
                             backgroundPosition: 'center',
                             backgroundRepeat: 'no-repeat',
@@ -145,5 +146,6 @@ const App = ({ children }) => {
         </ThemeProvider>
     );
 };
+
 
 export default App;

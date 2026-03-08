@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import Navbar from '../../components/Navbar';
 import Footer from '../../components/Footer';
-import api from '../../components/BaseURL';
+import api, { IMAGE_BASE_URL } from '../../components/BaseURL';
 import {
     Box,
     Container,
@@ -150,7 +150,7 @@ const UpcomingEvents = () => {
                                         {/* Image Section */}
                                         <CardMedia
                                             component="img"
-                                            image={`http://localhost:5000/${event.photo.replace(/^\/+/, '')}`}
+                                            image={`${IMAGE_BASE_URL}/${event.photo.replace(/^\/+/, '')}`}
                                             alt={event.topic}
                                             sx={{
                                                 width: { xs: '100%', md: '40%' },

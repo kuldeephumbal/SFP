@@ -235,7 +235,7 @@ const MemberApplication = () => {
                                 minWidth: '100px',
                                 renderCell: (row) => (
                                     <Avatar
-                                        src={row.profile_picture ? `http://localhost:5000/${row.profile_picture.replace(/^\/+/, '')}` : ''}
+                                        src={row.profile_picture ? `${IMAGE_BASE_URL}/${row.profile_picture.replace(/^\/+/, '')}` : ''}
                                         alt={row.name}
                                         sx={{ width: 50, height: 50 }}
                                     />
@@ -425,7 +425,7 @@ const MemberApplication = () => {
                                 {/* Profile Picture */}
                                 <Grid item xs={12} md={4} sx={{ textAlign: 'center' }}>
                                     <Avatar
-                                        src={selectedApplication.profile_picture ? `http://localhost:5000/${selectedApplication.profile_picture.replace(/^\/+/, '')}` : ''}
+                                        src={selectedApplication.profile_picture ? `${IMAGE_BASE_URL}/${selectedApplication.profile_picture.replace(/^\/+/, '')}` : ''}
                                         alt={selectedApplication.name}
                                         sx={{ width: 150, height: 150, margin: '0 auto', mb: 2 }}
                                     />
@@ -600,7 +600,7 @@ const MemberApplication = () => {
                                             <Typography>
                                                 {selectedApplication.id_document ? (
                                                     <a
-                                                        href={`http://localhost:5000/${selectedApplication.id_document.replace(/^\/+/, '')}`}
+                                                        href={`${IMAGE_BASE_URL}/${selectedApplication.id_document.replace(/^\/+/, '')}`}
                                                         target="_blank"
                                                         rel="noreferrer"
                                                         style={{ color: '#60a5fa', textDecoration: 'none' }}
@@ -619,7 +619,7 @@ const MemberApplication = () => {
                                             <Typography>
                                                 {selectedApplication.other_document ? (
                                                     <a
-                                                        href={`http://localhost:5000/${selectedApplication.other_document.replace(/^\/+/, '')}`}
+                                                        href={`${IMAGE_BASE_URL}/${selectedApplication.other_document.replace(/^\/+/, '')}`}
                                                         target="_blank"
                                                         rel="noreferrer"
                                                         style={{ color: '#60a5fa', textDecoration: 'none' }}

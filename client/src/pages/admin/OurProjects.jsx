@@ -155,7 +155,7 @@ const AdminOurProjects = () => {
         if (preview.startsWith('data:') || preview.startsWith('blob:') || preview.startsWith('http')) {
             return preview;
         }
-        return `http://localhost:5000/${preview.replace(/^\/+/, '')}`;
+        return `${IMAGE_BASE_URL}/${preview.replace(/^\/+/, '')}`;
     };
 
     const filteredProjects = projects.filter(
@@ -255,7 +255,7 @@ const AdminOurProjects = () => {
                                 minWidth: '150px',
                                 renderCell: (row) => (
                                     <img
-                                        src={`http://localhost:5000/${row.photo.replace(/^\/+/, '')}`}
+                                        src={`${IMAGE_BASE_URL}/${row.photo.replace(/^\/+/, '')}`}
                                         alt={row.topic}
                                         style={{
                                             width: '120px',

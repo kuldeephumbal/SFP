@@ -131,7 +131,7 @@ const OurTeam = () => {
                                 >
                                     <CardMedia
                                         component="img"
-                                        image={member.photo ? `http://localhost:5000/${member.photo.replace(/^\/*/, '')}` : '/assets/img/default-member.png'}
+                                        image={member.photo ? `${IMAGE_BASE_URL}/${member.photo.replace(/^\/+/, '')}` : '/assets/img/default-member.png'}
                                         alt={member.name}
                                         sx={{
                                             height: { xs: 200, sm: 220 },

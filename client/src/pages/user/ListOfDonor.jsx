@@ -15,7 +15,7 @@ import {
 } from '@mui/material';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import api from '../../components/BaseURL';
+import api, { IMAGE_BASE_URL } from '../../components/BaseURL';
 
 const ListOfDonor = () => {
     const { t } = useTranslation();
@@ -123,7 +123,7 @@ const ListOfDonor = () => {
                                     {/* Donor Image */}
                                     <CardMedia
                                         component="img"
-                                        image={donation.photo ? `http://localhost:5000/${donation.photo.replace(/^\/+/, '')}` : '/assets/img/default-profile.jpg'}
+                                        image={donation.photo ? `${IMAGE_BASE_URL}/${donation.photo.replace(/^\/+/, '')}` : '/assets/img/default-profile.jpg'}
                                         alt={donation.full_name}
                                         sx={{
                                             height: { xs: 140, sm: 160, md: 180 },

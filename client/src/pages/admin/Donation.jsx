@@ -158,7 +158,7 @@ const AdminDonation = () => {
                                 renderCell: (row) => (
                                     row.photo ? (
                                         <Avatar
-                                            src={`http://localhost:5000/${row.photo.replace(/^\/+/, '')}`}
+                                            src={`${IMAGE_BASE_URL}/${row.photo.replace(/^\/+/, '')}`}
                                             alt={row.full_name}
                                             sx={{
                                                 width: 60,
@@ -219,13 +219,13 @@ const AdminDonation = () => {
                                 renderCell: (row) => (
                                     <Box
                                         component="a"
-                                        href={`http://localhost:5000/${row.payment_receipt.replace(/^\/+/, '')}`}
+                                        href={`${IMAGE_BASE_URL}/${row.payment_receipt.replace(/^\/+/, '')}`}
                                         target="_blank"
                                         rel="noopener noreferrer"
                                         sx={{ display: 'inline-block', textDecoration: 'none' }}
                                     >
                                         <img
-                                            src={`http://localhost:5000/${row.payment_receipt.replace(/^\/+/, '')}`}
+                                            src={`${IMAGE_BASE_URL}/${row.payment_receipt.replace(/^\/+/, '')}`}
                                             alt="Receipt"
                                             style={{
                                                 width: '80px',

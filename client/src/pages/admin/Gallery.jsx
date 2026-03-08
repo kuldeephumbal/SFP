@@ -225,7 +225,7 @@ const Gallery = () => {
                                         overflow: 'hidden'
                                     }}>
                                         <img
-                                            src={`http://localhost:5000/${row.photo.replace(/^\/+/, '')}`}
+                                            src={`${IMAGE_BASE_URL}/${row.photo.replace(/^\/+/, '')}`}
                                             alt="gallery item"
                                             style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                                         />

@@ -21,7 +21,7 @@ import {
     TrendingUp,
     Search
 } from '@mui/icons-material';
-import axios from 'axios';
+
 import { toast } from 'react-toastify';
 import api from '../../components/BaseURL';
 import BaseTable from '../../components/BaseTable';

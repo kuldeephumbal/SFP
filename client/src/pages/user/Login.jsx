@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import api from '../../components/BaseURL';
 import { toast } from 'react-toastify';
 import {
     Box,
@@ -85,8 +86,8 @@ export default function Login() {
 
         setLoading(true);
 
-        axios
-            .post('http://localhost:5000/api/auth/login', {
+        api
+            .post('/auth/login', {
                 email: formData.email,
                 password: formData.password
             })

@@ -320,7 +320,7 @@ const Member = () => {
                                 minWidth: '120px',
                                 renderCell: (row) => (
                                     <Avatar
-                                        src={`http://localhost:5000${row.photo}`}
+                                        src={`${IMAGE_BASE_URL}${row.photo}`}
                                         alt={row.name}
                                         variant="rounded"
                                         sx={{ width: 80, height: 60, objectFit: 'cover' }}

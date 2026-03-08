@@ -6,8 +6,9 @@ import {
     CssBaseline,
     useMediaQuery
 } from '@mui/material';
-import Header from '../components/header';
+import Header from '../components/Header';
 import Sidebar from '../components/Sidebar';
+import { IMAGE_BASE_URL } from '../components/BaseURL';
 
 const MainLayout = ({ children }) => {
     // Initialize sidebar as open by default
@@ -100,7 +101,7 @@ const MainLayout = ({ children }) => {
                         p: 3,
                         mt: 8,
                         backgroundColor: backgroundImage ? 'transparent' : 'background.default',
-                        backgroundImage: backgroundImage ? `url(http://localhost:5000${backgroundImage})` : 'none',
+                        backgroundImage: backgroundImage ? `url(${IMAGE_BASE_URL}${backgroundImage})` : 'none',
                         backgroundSize: 'cover',
                         backgroundPosition: 'center',
                         backgroundRepeat: 'no-repeat',

@@ -311,7 +311,7 @@ const LatestActivity = () => {
                                 minWidth: '120px',
                                 renderCell: (row) => (
                                     <Avatar
-                                        src={row.photo?.startsWith('http') ? row.photo : `http://localhost:5000${row.photo.replace('/uploads/slider/', '/uploads/latest-activity/')}`}
+                                        src={row.photo?.startsWith('http') ? row.photo : `${IMAGE_BASE_URL}${row.photo}`}
                                         alt={row.activity_detail}
                                         variant="rounded"
                                         sx={{ width: 80, height: 60, objectFit: 'cover' }}
