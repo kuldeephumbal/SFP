@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import Navbar from '../../components/Navbar';
 import Footer from '../../components/Footer';
@@ -42,6 +43,7 @@ const formatDate = (date) => {
 };
 
 const CrowdFunding = () => {
+    const { t } = useTranslation();
     const navigate = useNavigate();
     const [items, setItems] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -57,7 +59,7 @@ const CrowdFunding = () => {
             })
             .catch((error) => {
                 console.error('Error fetching crowdfunding items:', error);
-                toast.error('Error loading crowdfunding items');
+                toast.error(t('crowdfunding.error_loading'));
             })
             .finally(() => setLoading(false));
     };
@@ -90,7 +92,7 @@ const CrowdFunding = () => {
                         }}
                     >
                         <Typography variant="h5" sx={{ fontWeight: 600 }}>
-                            CrowdFunding Projects
+                            {t('crowdfunding.title')}
                         </Typography>
                     </Box>
 
@@ -102,7 +104,7 @@ const CrowdFunding = () => {
                     ) : items.length === 0 ? (
                         <Box sx={{ textAlign: 'center', py: 6 }}>
                             <Typography variant="body1" color="textSecondary">
-                                No crowdfunding items found.
+                                {t('common.no_items')}
                             </Typography>
                         </Box>
                     ) : (
@@ -140,7 +142,7 @@ const CrowdFunding = () => {
                                             <Stack direction="row" spacing={1} sx={{ flexWrap: 'wrap', gap: 1 }}>
                                                 {item.location && <Chip label={item.location} size="small" color="primary" />}
                                                 {item.end_date && (
-                                                    <Chip label={`End: ${formatDate(item.end_date)}`} size="small" variant="outlined" />
+                                                    <Chip label={`${t('crowdfunding.end')} ${formatDate(item.end_date)}`} size="small" variant="outlined" />
                                                 )}
                                             </Stack>
 
@@ -153,7 +155,7 @@ const CrowdFunding = () => {
                                             </Typography>
 
                                             <Typography variant="caption" sx={{ color: '#999' }}>
-                                                <strong>Last updated:</strong> {formatDateTime(item.createdAt)}
+                                                <strong>{t('common.last_updated')}</strong> {formatDateTime(item.createdAt)}
                                             </Typography>
 
                                             <Box sx={{ mt: 1.5 }}>
@@ -163,7 +165,7 @@ const CrowdFunding = () => {
                                                     onClick={() => handleDonate(item._id)}
                                                     sx={{ textTransform: 'none', fontWeight: 600 }}
                                                 >
-                                                    Donate
+                                                    {t('crowdfunding.donate')}
                                                 </Button>
                                             </Box>
                                         </CardContent>

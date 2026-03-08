@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import Navbar from '../../components/Navbar';
 import Footer from '../../components/Footer';
 import api from '../../components/BaseURL';
@@ -17,6 +18,7 @@ import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 const OurTeam = () => {
+    const { t } = useTranslation();
     const [members, setMembers] = useState([]);
     const [searchText, setSearchText] = useState('');
     const [loading, setLoading] = useState(true);
@@ -37,7 +39,7 @@ const OurTeam = () => {
             })
             .catch((error) => {
                 console.error('Error fetching members:', error);
-                toast.error('Error loading team');
+                toast.error(t('team.error_loading'));
                 setLoading(false);
             });
     };
@@ -65,20 +67,27 @@ const OurTeam = () => {
                         }}
                     >
                         <Typography variant="h5" sx={{ fontWeight: 600 }}>
-                            Our Team
+                            {t('team.title')}
                         </Typography>
                     </Box>
 
                     {/* Search Bar */}
-                    <Box sx={{ mb: 4, display: 'flex', justifyContent: 'center' }}>
+                    <Box
+                        sx={{
+                            mb: 4,
+                            display: 'flex',
+                            justifyContent: 'center'
+                        }}
+                    >
                         <TextField
-                            placeholder="🔍 Search here..."
+                            placeholder={t('common.search')}
                             value={searchText}
                             onChange={(e) => setSearchText(e.target.value)}
                             variant="outlined"
                             size="small"
                             sx={{
-                                width: { xs: '100%', sm: '80%', md: '50%' },
+                                width: '100%',
+                                maxWidth: { xs: 340, sm: 400, md: 480 },
                                 backgroundColor: 'white',
                                 borderRadius: 1,
                             }}
@@ -91,50 +100,73 @@ const OurTeam = () => {
                             <CircularProgress />
                         </Box>
                     ) : filteredMembers.length > 0 ? (
-                        <Grid container spacing={3}>
+                        <Box
+                            sx={{
+                                display: 'grid',
+                                gridTemplateColumns: {
+                                    xs: 'repeat(2, minmax(0, 1fr))',
+                                    sm: 'repeat(3, minmax(0, 1fr))',
+                                    md: 'repeat(4, minmax(0, 1fr))',
+                                },
+                                gap: { xs: 2, sm: 3 },
+                            }}
+                        >
                             {filteredMembers.map((member) => (
-                                <Grid item xs={12} sm={6} md={4} lg={3} key={member._id}>
-                                    <Card
+                                <Card
+                                    key={member._id}
+                                    sx={{
+                                        height: '100%',
+                                        display: 'flex',
+                                        flexDirection: 'column',
+                                        textAlign: 'center',
+                                        boxShadow: 2,
+                                        borderRadius: 1,
+                                        overflow: 'hidden',
+                                        transition: 'all 0.3s ease-in-out',
+                                        '&:hover': {
+                                            boxShadow: 4,
+                                            transform: 'translateY(-5px)',
+                                        },
+                                    }}
+                                >
+                                    <CardMedia
+                                        component="img"
+                                        image={member.photo ? `http://localhost:5000/${member.photo.replace(/^\/*/, '')}` : '/assets/img/default-member.png'}
+                                        alt={member.name}
                                         sx={{
-                                            height: '100%',
-                                            display: 'flex',
-                                            flexDirection: 'column',
-                                            textAlign: 'center',
-                                            boxShadow: 2,
-                                            borderRadius: 1,
-                                            overflow: 'hidden',
-                                            transition: 'all 0.3s ease-in-out',
-                                            '&:hover': {
-                                                boxShadow: 4,
-                                                transform: 'translateY(-5px)',
-                                            },
+                                            height: { xs: 200, sm: 220 },
+                                            objectFit: 'cover',
                                         }}
-                                    >
-                                        <CardMedia
-                                            component="img"
-                                            image={member.photo ? `http://localhost:5000/${member.photo.replace(/^\/*/, '')}` : '/assets/img/default-member.png'}
-                                            alt={member.name}
-                                            sx={{ height: 200, objectFit: 'cover' }}
-                                        />
-                                        <CardContent sx={{ flexGrow: 1 }}>
-                                            <Typography
-                                                variant="h6"
-                                                sx={{ fontWeight: 600, color: '#333', mb: 0.5 }}
-                                            >
-                                                {member.name}
-                                            </Typography>
-                                            <Typography variant="body2" sx={{ color: '#666' }}>
-                                                ({member.status})
-                                            </Typography>
-                                        </CardContent>
-                                    </Card>
-                                </Grid>
+                                    />
+                                    <CardContent sx={{ flexGrow: 1 }}>
+                                        <Typography
+                                            variant="h6"
+                                            sx={{
+                                                fontWeight: 600,
+                                                color: '#333',
+                                                mb: 0.5,
+                                                fontSize: { xs: '0.95rem', sm: '1rem', md: '1.1rem' }
+                                            }}
+                                        >
+                                            {member.name}
+                                        </Typography>
+                                        <Typography
+                                            variant="body2"
+                                            sx={{
+                                                color: '#666',
+                                                fontSize: { xs: '0.8rem', sm: '0.85rem', md: '0.9rem' }
+                                            }}
+                                        >
+                                            ({member.status})
+                                        </Typography>
+                                    </CardContent>
+                                </Card>
                             ))}
-                        </Grid>
+                        </Box>
                     ) : (
                         <Box sx={{ textAlign: 'center', py: 6 }}>
                             <Typography variant="body1" color="textSecondary">
-                                No user registered by this name.
+                                {t('team.no_user')}
                             </Typography>
                         </Box>
                     )}

@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import Navbar from '../../components/Navbar';
 import Footer from '../../components/Footer';
 import api from '../../components/BaseURL';
@@ -16,6 +17,7 @@ import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 const UpcomingEvents = () => {
+    const { t } = useTranslation();
     const [events, setEvents] = useState([]);
     const [loading, setLoading] = useState(true);
 
@@ -33,7 +35,7 @@ const UpcomingEvents = () => {
             })
             .catch((error) => {
                 console.error('Error fetching events:', error);
-                toast.error('Error loading events');
+                toast.error(t('events.error_loading'));
                 setEvents([]);
                 setLoading(false);
             });
@@ -113,7 +115,7 @@ const UpcomingEvents = () => {
                         }}
                     >
                         <Typography variant="h5" sx={{ fontWeight: 600 }}>
-                            Upcoming Events
+                            {t('events.title')}
                         </Typography>
                     </Box>
 
@@ -125,7 +127,7 @@ const UpcomingEvents = () => {
                     ) : events.length === 0 ? (
                         <Box sx={{ textAlign: 'center', py: 6 }}>
                             <Typography variant="body1" color="textSecondary">
-                                No upcoming events found.
+                                {t('common.no_items')}
                             </Typography>
                         </Box>
                     ) : (
@@ -175,7 +177,7 @@ const UpcomingEvents = () => {
                                                     fontWeight: 500,
                                                 }}
                                             >
-                                                📍 Location: <strong>{event.location}</strong> | 📅 Date:{' '}
+                                                📍 {t('events.location')}: <strong>{event.location}</strong> | 📅 {t('events.date')}:{' '}
                                                 <strong>{formatDateTime(event.event_date, event.event_time)}</strong>
                                             </Typography>
 
@@ -210,7 +212,7 @@ const UpcomingEvents = () => {
                                                     color: '#999',
                                                 }}
                                             >
-                                                <strong>Last updated:</strong> {formatDateTime2(event.createdAt)}
+                                                <strong>{t('common.last_updated')}</strong> {formatDateTime2(event.createdAt)}
                                             </Typography>
                                         </CardContent>
                                     </Card>

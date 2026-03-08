@@ -26,7 +26,8 @@ import {
     Check,
     Delete,
     PersonAdd,
-    FilterList
+    FilterList,
+    Close
 } from '@mui/icons-material';
 import { toast } from 'react-toastify';
 import BaseTable from '../../components/BaseTable';
@@ -103,6 +104,19 @@ const MemberApplication = () => {
         }
     };
 
+    const handleRejectApplication = async (id) => {
+        try {
+            const data = new FormData();
+            data.append('status', 'rejected');
+            await api.put(`/member-application/${id}`, data);
+            toast.success('Application rejected successfully.');
+            fetchApplications();
+        } catch (error) {
+            console.error('Error rejecting application:', error);
+            toast.error('Failed to reject application');
+        }
+    };
+
     const handleViewDetails = (application) => {
         setSelectedApplication(application);
         setViewDialogOpen(true);
@@ -115,8 +129,8 @@ const MemberApplication = () => {
             app.mobile_number?.includes(searchQuery);
         const matchesStatus =
             filterStatus === 'all' ||
-            (filterStatus === 'accepted' && app.status === 'accepted') ||
-            (filterStatus === 'pending' && app.status !== 'accepted');
+            app.status === filterStatus ||
+            (filterStatus === 'pending' && !app.status); // Default for old applications if status is null
         return matchesSearch && matchesStatus;
     });
 
@@ -194,6 +208,7 @@ const MemberApplication = () => {
                                 <MenuItem value="all">All Applications</MenuItem>
                                 <MenuItem value="pending">Pending</MenuItem>
                                 <MenuItem value="accepted">Accepted</MenuItem>
+                                <MenuItem value="rejected">Rejected</MenuItem>
                             </Select>
                         </FormControl>
 
@@ -308,14 +323,16 @@ const MemberApplication = () => {
                                 },
                                 renderCell: (row) => (
                                     <Chip
-                                        label={row.status === 'accepted' ? 'Approved' : 'Pending'}
+                                        label={row.status === 'accepted' ? 'Approved' : row.status === 'rejected' ? 'Rejected' : 'Pending'}
                                         size="small"
                                         sx={{
                                             backgroundColor:
                                                 row.status === 'accepted'
                                                     ? 'rgba(34, 197, 94, 0.2)'
-                                                    : 'rgba(245, 158, 11, 0.2)',
-                                            color: row.status === 'accepted' ? '#4ade80' : '#f59e0b',
+                                                    : row.status === 'rejected'
+                                                        ? 'rgba(239, 68, 68, 0.2)'
+                                                        : 'rgba(245, 158, 11, 0.2)',
+                                            color: row.status === 'accepted' ? '#4ade80' : row.status === 'rejected' ? '#ef4444' : '#f59e0b',
                                             fontWeight: 'bold'
                                         }}
                                     />
@@ -344,25 +361,35 @@ const MemberApplication = () => {
                                 >
                                     <Visibility fontSize="small" />
                                 </IconButton>
-                                {row.status !== 'accepted' && (
+                                {row.status !== 'accepted' && row.status !== 'rejected' && (
                                     <>
                                         <IconButton
                                             size="small"
                                             sx={{ color: '#4ade80' }}
                                             onClick={() => handleAcceptApplication(row._id)}
-                                            title="Accept Application"
+                                            title="Approve Application"
                                         >
                                             <Check fontSize="small" />
                                         </IconButton>
                                         <IconButton
                                             size="small"
                                             sx={{ color: '#f87171' }}
-                                            onClick={() => handleDeleteApplication(row._id)}
-                                            title="Delete Application"
+                                            onClick={() => handleRejectApplication(row._id)}
+                                            title="Disagree Application"
                                         >
-                                            <Delete fontSize="small" />
+                                            <Close fontSize="small" />
                                         </IconButton>
                                     </>
+                                )}
+                                {(row.status === 'accepted' || row.status === 'rejected') && (
+                                    <IconButton
+                                        size="small"
+                                        sx={{ color: '#f87171' }}
+                                        onClick={() => handleDeleteApplication(row._id)}
+                                        title="Delete Application"
+                                    >
+                                        <Delete fontSize="small" />
+                                    </IconButton>
                                 )}
                             </>
                         )}
@@ -403,13 +430,15 @@ const MemberApplication = () => {
                                         sx={{ width: 150, height: 150, margin: '0 auto', mb: 2 }}
                                     />
                                     <Chip
-                                        label={selectedApplication.status === 'accepted' ? 'Approved' : 'Pending'}
+                                        label={selectedApplication.status === 'accepted' ? 'Approved' : selectedApplication.status === 'rejected' ? 'Rejected' : 'Pending'}
                                         sx={{
                                             backgroundColor:
                                                 selectedApplication.status === 'accepted'
                                                     ? 'rgba(34, 197, 94, 0.2)'
-                                                    : 'rgba(245, 158, 11, 0.2)',
-                                            color: selectedApplication.status === 'accepted' ? '#4ade80' : '#f59e0b',
+                                                    : selectedApplication.status === 'rejected'
+                                                        ? 'rgba(239, 68, 68, 0.2)'
+                                                        : 'rgba(245, 158, 11, 0.2)',
+                                            color: selectedApplication.status === 'accepted' ? '#4ade80' : selectedApplication.status === 'rejected' ? '#ef4444' : '#f59e0b',
                                             fontWeight: 'bold'
                                         }}
                                     />
@@ -619,22 +648,58 @@ const MemberApplication = () => {
                     )}
                 </DialogContent>
                 <DialogActions sx={{ p: 3 }}>
-                    {selectedApplication && selectedApplication.status !== 'accepted' && (
+                    {selectedApplication && selectedApplication.status !== 'accepted' && selectedApplication.status !== 'rejected' && (
+                        <>
+                            <Button
+                                variant="contained"
+                                startIcon={<Check />}
+                                onClick={() => {
+                                    handleAcceptApplication(selectedApplication._id);
+                                    setViewDialogOpen(false);
+                                }}
+                                sx={{
+                                    background: 'linear-gradient(135deg, #4ade80 0%, #22c55e 100%)',
+                                    '&:hover': {
+                                        background: 'linear-gradient(135deg, #22c55e 0%, #16a34a 100%)'
+                                    }
+                                }}
+                            >
+                                Approve
+                            </Button>
+                            <Button
+                                variant="contained"
+                                startIcon={<Close />}
+                                onClick={() => {
+                                    handleRejectApplication(selectedApplication._id);
+                                    setViewDialogOpen(false);
+                                }}
+                                sx={{
+                                    background: 'linear-gradient(135deg, #f87171 0%, #ef4444 100%)',
+                                    '&:hover': {
+                                        background: 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)'
+                                    }
+                                }}
+                            >
+                                Disagree
+                            </Button>
+                        </>
+                    )}
+                    {(selectedApplication?.status === 'accepted' || selectedApplication?.status === 'rejected') && (
                         <Button
                             variant="contained"
-                            startIcon={<Check />}
+                            startIcon={<Delete />}
                             onClick={() => {
-                                handleAcceptApplication(selectedApplication._id);
+                                handleDeleteApplication(selectedApplication._id);
                                 setViewDialogOpen(false);
                             }}
                             sx={{
-                                background: 'linear-gradient(135deg, #4ade80 0%, #22c55e 100%)',
+                                background: 'linear-gradient(135deg, #f87171 0%, #ef4444 100%)',
                                 '&:hover': {
-                                    background: 'linear-gradient(135deg, #22c55e 0%, #16a34a 100%)'
+                                    background: 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)'
                                 }
                             }}
                         >
-                            Accept Application
+                            Delete Application
                         </Button>
                     )}
                     <Button onClick={() => setViewDialogOpen(false)} sx={{ color: 'rgba(255, 255, 255, 0.7)' }}>

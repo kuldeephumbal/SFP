@@ -2,19 +2,10 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import Navbar from '../../components/Navbar';
 import Footer from '../../components/Footer';
-import { Box, Container, Paper, Typography, List, ListItem, ListItemText, Divider } from '@mui/material';
+import { Box, Container, Paper, Typography } from '@mui/material';
 
-const AboutUs = () => {
+const RefundPolicy = () => {
     const { t } = useTranslation();
-
-    // Using the translated content from our dictionary
-    const aboutParagraphs = [
-        t('about_section.p1'),
-        t('about_section.p2'),
-        t('about_section.p3'),
-        t('about_section.p4'),
-        t('about_section.p5')
-    ];
 
     return (
         <>
@@ -22,7 +13,6 @@ const AboutUs = () => {
             <Box sx={{ bgcolor: '#f5f5f5', minHeight: '100vh', py: 4 }}>
                 <Container maxWidth="md">
                     <Paper sx={{ p: { xs: 3, md: 4 }, borderRadius: 2 }}>
-                        {/* Header */}
                         <Box
                             sx={{
                                 backgroundColor: '#1976d2',
@@ -36,21 +26,20 @@ const AboutUs = () => {
                             }}
                         >
                             <Typography variant="h5" sx={{ fontWeight: 600 }}>
-                                {t('navbar.about')}
+                                {t('refund_policy.title')}
                             </Typography>
                         </Box>
-
-                        {/* Content Section */}
-                        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
-                            <Typography variant="h6" sx={{ fontWeight: 700, mb: 1, color: '#333' }}>
-                                {t('navbar.about')}
-                            </Typography>
-                            {aboutParagraphs.map((para, idx) => (
-                                <Typography key={idx} variant="body1" sx={{ color: '#444', lineHeight: 1.8, textAlign: 'justify' }}>
-                                    {para}
-                                </Typography>
-                            ))}
-                        </Box>
+                        <Typography
+                            variant="body1"
+                            sx={{
+                                color: '#444',
+                                lineHeight: 1.8,
+                                textAlign: 'justify',
+                                whiteSpace: 'pre-line'
+                            }}
+                        >
+                            {t('refund_policy.content')}
+                        </Typography>
                     </Paper>
                 </Container>
             </Box>
@@ -59,4 +48,4 @@ const AboutUs = () => {
     );
 };
 
-export default AboutUs;
+export default RefundPolicy;

@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { toast } from 'react-toastify';
@@ -26,6 +27,7 @@ import Navbar from '../../components/Navbar';
 import Footer from '../../components/Footer';
 
 export default function Login() {
+    const { t } = useTranslation();
     const [formData, setFormData] = useState({
         email: '',
         password: ''
@@ -41,15 +43,15 @@ export default function Login() {
         const newErrors = {};
 
         if (!formData.email.trim()) {
-            newErrors.email = 'Email is required';
+            newErrors.email = t('login.email_required');
         } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
-            newErrors.email = 'Please enter a valid email address';
+            newErrors.email = t('login.email_invalid');
         }
 
         if (!formData.password.trim()) {
-            newErrors.password = 'Password is required';
+            newErrors.password = t('login.password_required');
         } else if (formData.password.length < 6) {
-            newErrors.password = 'Password must be at least 6 characters';
+            newErrors.password = t('login.password_min');
         }
 
         setErrors(newErrors);
@@ -140,11 +142,8 @@ export default function Login() {
                                 textAlign: 'center'
                             }}
                         >
-                            <Typography variant="h5" sx={{ fontWeight: 600, mb: 0.5 }}>
-                                User Login
-                            </Typography>
-                            <Typography variant="body2" sx={{ opacity: 0.9 }}>
-                                Sign in to your account
+                            <Typography variant="h5" sx={{ fontWeight: 600 }}>
+                                {t('login.title')}
                             </Typography>
                         </Paper>
 
@@ -158,7 +157,7 @@ export default function Login() {
                                             fullWidth
                                             name="email"
                                             type="email"
-                                            label="Email Address"
+                                            label={t('login.email')}
                                             value={formData.email}
                                             onChange={handleChange}
                                             error={Boolean(errors.email)}
@@ -187,7 +186,7 @@ export default function Login() {
                                             fullWidth
                                             name="password"
                                             type={showPassword ? 'text' : 'password'}
-                                            label="Password"
+                                            label={t('login.password')}
                                             value={formData.password}
                                             onChange={handleChange}
                                             error={Boolean(errors.password)}
@@ -249,34 +248,14 @@ export default function Login() {
                                             {loading ? (
                                                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                                                     <CircularProgress size={20} sx={{ color: 'white' }} />
-                                                    Signing in...
+                                                    {t('login.signing_in')}
                                                 </Box>
                                             ) : (
-                                                'Login'
+                                                t('login.submit')
                                             )}
                                         </Button>
                                     </Grid>
 
-                                    {/* Forgot Password Link */}
-                                    <Grid size={12}>
-                                        <Box sx={{ textAlign: 'center' }}>
-                                            <Typography variant="body2">
-                                                <a
-                                                    href="/forgot-password"
-                                                    style={{
-                                                        color: '#1976d2',
-                                                        textDecoration: 'none',
-                                                        fontWeight: 500,
-                                                        transition: 'color 0.3s ease'
-                                                    }}
-                                                    onMouseEnter={(e) => (e.target.style.color = '#1565c0')}
-                                                    onMouseLeave={(e) => (e.target.style.color = '#1976d2')}
-                                                >
-                                                    Forgot Password?
-                                                </a>
-                                            </Typography>
-                                        </Box>
-                                    </Grid>
                                 </Grid>
                             </form>
                         </CardContent>

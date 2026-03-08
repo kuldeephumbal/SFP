@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import Navbar from '../../components/Navbar';
 import Footer from '../../components/Footer';
 import {
@@ -16,6 +17,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import api from '../../components/BaseURL';
 
 const Donate = () => {
+    const { t } = useTranslation();
     const [formData, setFormData] = useState({
         fullName: '',
         mobileNo: '',
@@ -58,31 +60,31 @@ const Donate = () => {
         const newErrors = {};
 
         if (!formData.fullName.trim()) {
-            newErrors.fullName = 'Full Name is required';
+            newErrors.fullName = t('donate.name_required');
         }
 
         if (!formData.mobileNo.trim()) {
-            newErrors.mobileNo = 'Mobile Number is required';
+            newErrors.mobileNo = t('donate.mobile_required');
         } else if (!/^\d{10}$/.test(formData.mobileNo)) {
-            newErrors.mobileNo = 'Mobile Number must be 10 digits';
+            newErrors.mobileNo = t('donate.mobile_invalid');
         }
 
         if (!formData.amount.trim()) {
-            newErrors.amount = 'Amount is required';
+            newErrors.amount = t('donate.amount_required');
         } else if (isNaN(formData.amount) || formData.amount <= 0) {
-            newErrors.amount = 'Please enter a valid amount';
+            newErrors.amount = t('donate.amount_invalid');
         }
 
         if (!formData.address.trim()) {
-            newErrors.address = 'Address is required';
+            newErrors.address = t('donate.address_required');
         }
 
         if (!formData.paymentReceipt) {
-            newErrors.paymentReceipt = 'Payment Receipt is required';
+            newErrors.paymentReceipt = t('donate.receipt_required');
         }
 
         if (formData.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
-            newErrors.email = 'Please enter a valid email';
+            newErrors.email = t('donate.email_invalid');
         }
 
         setErrors(newErrors);
@@ -111,7 +113,7 @@ const Donate = () => {
             api.post("/donation", submitData)
                 .then((response) => {
                     console.log('Donation submitted:', response.data);
-                    toast.success('Donation submitted successfully!');
+                    toast.success(t('donate.success'));
                     setFormData({
                         fullName: '',
                         mobileNo: '',
@@ -125,7 +127,7 @@ const Donate = () => {
                 })
                 .catch((error) => {
                     console.error('Error submitting donation:', error.response?.data || error.message);
-                    toast.error('There was an error submitting your donation. Please try again.');
+                    toast.error(t('donate.error'));
                 });
         }
     };
@@ -151,7 +153,7 @@ const Donate = () => {
                             }}
                         >
                             <Typography variant="h5" sx={{ fontWeight: 600 }}>
-                                Donate
+                                {t('donate.title')}
                             </Typography>
                         </Box>
 
@@ -161,10 +163,10 @@ const Donate = () => {
                                 <Grid size={{ xs: 12, sm: 6 }}>
                                     <TextField
                                         fullWidth
-                                        label="Full Name"
+                                        label={t('donate.name')}
                                         required
                                         name="fullName"
-                                        placeholder="Enter your full name"
+                                        placeholder={t('donate.name_placeholder')}
                                         value={formData.fullName}
                                         onChange={handleInputChange}
                                         error={!!errors.fullName}
@@ -178,10 +180,10 @@ const Donate = () => {
                                 <Grid size={{ xs: 12, sm: 6 }}>
                                     <TextField
                                         fullWidth
-                                        label="Mobile No."
+                                        label={t('donate.mobile')}
                                         required
                                         name="mobileNo"
-                                        placeholder="Enter your mobile number"
+                                        placeholder={t('donate.mobile_placeholder')}
                                         value={formData.mobileNo}
                                         onChange={handleInputChange}
                                         error={!!errors.mobileNo}
@@ -195,9 +197,9 @@ const Donate = () => {
                                 <Grid size={{ xs: 12, sm: 6 }}>
                                     <TextField
                                         fullWidth
-                                        label="Email (optional)"
+                                        label={t('donate.email')}
                                         name="email"
-                                        placeholder="Enter your email"
+                                        placeholder={t('donate.email_placeholder')}
                                         value={formData.email}
                                         onChange={handleInputChange}
                                         error={!!errors.email}
@@ -212,9 +214,9 @@ const Donate = () => {
                                 <Grid size={{ xs: 12, sm: 6 }}>
                                     <TextField
                                         fullWidth
-                                        label="Pancard No. (optional)"
+                                        label={t('donate.pancard')}
                                         name="pancard"
-                                        placeholder="Enter your pancard number"
+                                        placeholder={t('donate.pancard_placeholder')}
                                         value={formData.pancard}
                                         onChange={handleInputChange}
                                         variant="outlined"
@@ -224,7 +226,7 @@ const Donate = () => {
 
                                 {/* Photo Upload */}
                                 <Grid size={{ xs: 12, sm: 6 }}>
-                                    <Typography variant="body2" sx={{ mb: 1, fontWeight: 500 }}>Photo (optional)</Typography>
+                                    <Typography variant="body2" sx={{ mb: 1, fontWeight: 500 }}>{t('donate.photo')}</Typography>
                                     <TextField
                                         fullWidth
                                         type="file"
@@ -234,9 +236,9 @@ const Donate = () => {
                                     />
                                 </Grid>
 
-                                  {/* Payment Receipt Upload */}
+                                {/* Payment Receipt Upload */}
                                 <Grid size={{ xs: 12, sm: 6 }}>
-                                    <Typography variant="body2" sx={{ mb: 1, fontWeight: 500 }}>Payment Receipt Upload *</Typography>
+                                    <Typography variant="body2" sx={{ mb: 1, fontWeight: 500 }}>{t('donate.receipt')}</Typography>
                                     <TextField
                                         fullWidth
                                         type="file"
@@ -253,10 +255,10 @@ const Donate = () => {
                                 <Grid size={{ xs: 12, sm: 6 }}>
                                     <TextField
                                         fullWidth
-                                        label="Amount"
+                                        label={t('donate.amount')}
                                         required
                                         name="amount"
-                                        placeholder="Enter donation amount"
+                                        placeholder={t('donate.amount_placeholder')}
                                         value={formData.amount}
                                         onChange={handleInputChange}
                                         error={!!errors.amount}
@@ -271,10 +273,10 @@ const Donate = () => {
                                 <Grid size={12}>
                                     <TextField
                                         fullWidth
-                                        label="Address"
+                                        label={t('donate.address')}
                                         required
                                         name="address"
-                                        placeholder="Enter your address"
+                                        placeholder={t('donate.address_placeholder')}
                                         value={formData.address}
                                         onChange={handleInputChange}
                                         error={!!errors.address}
@@ -300,7 +302,7 @@ const Donate = () => {
                                             variant="body2"
                                             sx={{ fontWeight: 600, mb: 1.5, color: '#333' }}
                                         >
-                                            UPI SCAN:
+                                            {t('donate.upi_scan')}
                                         </Typography>
                                         <Box
                                             sx={{
@@ -340,7 +342,7 @@ const Donate = () => {
                                             },
                                         }}
                                     >
-                                        Donation
+                                        {t('donate.submit')}
                                     </Button>
                                 </Grid>
                             </Grid>

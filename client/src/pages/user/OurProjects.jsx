@@ -1,4 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import {
     Container,
     Paper,
@@ -16,6 +19,7 @@ import Footer from '../../components/Footer';
 import api from '../../components/BaseURL';
 
 export default function OurProjects() {
+    const { t } = useTranslation();
     const [projects, setProjects] = useState([]);
     const [loading, setLoading] = useState(true);
 
@@ -42,6 +46,7 @@ export default function OurProjects() {
             })
             .catch((error) => {
                 console.error('Error fetching projects:', error);
+                toast.error(t('projects.error_loading'));
                 setProjects([]);
             })
             .finally(() => setLoading(false));
@@ -62,6 +67,7 @@ export default function OurProjects() {
                 }}
             >
                 <Container maxWidth="lg">
+                    <ToastContainer position="top-right" autoClose={3000} />
                     {/* Header */}
                     <Paper
                         sx={{
@@ -75,106 +81,114 @@ export default function OurProjects() {
                         }}
                     >
                         <Typography variant="h5" sx={{ fontWeight: 600 }}>
-                            Our Projects
+                            {t('projects.title')}
                         </Typography>
                     </Paper>
 
                     {/* Content */}
-                    <Paper
-                        sx={{
-                            p: { xs: 2, sm: 3, md: 4 },
-                            borderRadius: 1,
-                            minHeight: '400px'
-                        }}
-                    >
-                        {loading ? (
-                            <Stack alignItems="center" justifyContent="center" sx={{ minHeight: '400px' }}>
+                    {loading ? (
+                        <Paper
+                            sx={{
+                                p: { xs: 2, sm: 3, md: 4 },
+                                borderRadius: 1,
+                                minHeight: '400px'
+                            }}
+                        >
+                            <Stack alignItems="center" justifyContent="center" sx={{ minHeight: '360px' }}>
                                 <CircularProgress />
-                                <Typography sx={{ mt: 2 }}>Loading projects...</Typography>
+                                <Typography sx={{ mt: 2 }}>{t('projects.loading')}</Typography>
                             </Stack>
-                        ) : projects.length > 0 ? (
-                            <Grid container spacing={3}>
-                                {projects.map((project) => (
-                                    <Grid item xs={12} key={project._id}>
-                                        <Card
+                        </Paper>
+                    ) : projects.length > 0 ? (
+                        <Grid container spacing={3}>
+                            {projects.map((project) => (
+                                <Grid item xs={12} key={project._id}>
+                                    <Card
+                                        sx={{
+                                            display: 'flex',
+                                            flexDirection: { xs: 'column', md: 'row' },
+                                            boxShadow: 2,
+                                            transition: 'all 0.3s ease',
+                                            '&:hover': {
+                                                boxShadow: 4,
+                                                transform: 'translateY(-2px)'
+                                            }
+                                        }}
+                                    >
+                                        {/* Project Image */}
+                                        <CardMedia
+                                            component="img"
+                                            image={`http://localhost:5000/${project.photo.replace(/^\/+/, '')}`}
+                                            alt={project.topic}
                                             sx={{
+                                                width: { xs: '100%', md: '35%' },
+                                                height: { xs: 200, md: 'auto' },
+                                                objectFit: 'cover'
+                                            }}
+                                        />
+
+                                        {/* Project Details */}
+                                        <CardContent
+                                            sx={{
+                                                flex: 1,
                                                 display: 'flex',
-                                                flexDirection: { xs: 'column', md: 'row' },
-                                                boxShadow: 2,
-                                                transition: 'all 0.3s ease',
-                                                '&:hover': {
-                                                    boxShadow: 4,
-                                                    transform: 'translateY(-2px)'
-                                                }
+                                                flexDirection: 'column',
+                                                justifyContent: 'space-between'
                                             }}
                                         >
-                                            {/* Project Image */}
-                                            <CardMedia
-                                                component="img"
-                                                image={`http://localhost:5000/${project.photo.replace(/^\/+/, '')}`}
-                                                alt={project.topic}
-                                                sx={{
-                                                    width: { xs: '100%', md: '35%' },
-                                                    height: { xs: 200, md: 'auto' },
-                                                    objectFit: 'cover'
-                                                }}
-                                            />
-
-                                            {/* Project Details */}
-                                            <CardContent
-                                                sx={{
-                                                    flex: 1,
-                                                    display: 'flex',
-                                                    flexDirection: 'column',
-                                                    justifyContent: 'space-between'
-                                                }}
-                                            >
-                                                <Box>
-                                                    <Typography
-                                                        variant="h6"
-                                                        sx={{
-                                                            fontWeight: 600,
-                                                            mb: 1.5,
-                                                            color: '#1976d2'
-                                                        }}
-                                                    >
-                                                        {project.topic}
-                                                    </Typography>
-                                                    <Typography
-                                                        variant="body2"
-                                                        color="textSecondary"
-                                                        sx={{
-                                                            mb: 2,
-                                                            lineHeight: 1.6
-                                                        }}
-                                                    >
-                                                        {project.topic_details}
-                                                    </Typography>
-                                                </Box>
-
-                                                {/* Last Updated */}
+                                            <Box>
                                                 <Typography
-                                                    variant="caption"
+                                                    variant="h6"
                                                     sx={{
-                                                        color: '#666',
-                                                        fontStyle: 'italic'
+                                                        fontWeight: 600,
+                                                        mb: 1.5,
+                                                        color: '#1976d2'
                                                     }}
                                                 >
-                                                    <strong>Last updated:</strong> {formatDateTime(project.createdAt)}
+                                                    {project.topic}
                                                 </Typography>
-                                            </CardContent>
-                                        </Card>
-                                    </Grid>
-                                ))}
-                            </Grid>
-                        ) : (
-                            <Stack alignItems="center" justifyContent="center" sx={{ minHeight: '400px' }}>
+                                                <Typography
+                                                    variant="body2"
+                                                    color="textSecondary"
+                                                    sx={{
+                                                        mb: 2,
+                                                        lineHeight: 1.6
+                                                    }}
+                                                >
+                                                    {project.topic_details}
+                                                </Typography>
+                                            </Box>
+
+                                            {/* Last Updated */}
+                                            <Typography
+                                                variant="caption"
+                                                sx={{
+                                                    color: '#666',
+                                                    fontStyle: 'italic'
+                                                }}
+                                            >
+                                                <strong>{t('common.last_updated')}</strong> {formatDateTime(project.createdAt)}
+                                            </Typography>
+                                        </CardContent>
+                                    </Card>
+                                </Grid>
+                            ))}
+                        </Grid>
+                    ) : (
+                        <Paper
+                            sx={{
+                                p: { xs: 2, sm: 3, md: 4 },
+                                borderRadius: 1,
+                                minHeight: '400px'
+                            }}
+                        >
+                            <Stack alignItems="center" justifyContent="center" sx={{ minHeight: '360px' }}>
                                 <Typography variant="body1" color="textSecondary">
-                                    No projects found.
+                                    {t('common.no_items')}
                                 </Typography>
                             </Stack>
-                        )}
-                    </Paper>
+                        </Paper>
+                    )}
                 </Container>
             </Box>
             <Footer />

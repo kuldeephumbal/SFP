@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import Navbar from '../../components/Navbar';
 import Footer from '../../components/Footer';
 import api from '../../components/BaseURL';
@@ -17,6 +18,7 @@ import {
 } from '@mui/material';
 
 const Achievements = () => {
+    const { t } = useTranslation();
     const [achievements, setAchievements] = useState([]);
 
     useEffect(() => {
@@ -29,7 +31,7 @@ const Achievements = () => {
             setAchievements(response.data || []);
         } catch (error) {
             console.error('Error fetching achievements:', error);
-            toast.error('Failed to load achievements');
+            toast.error(t('achievements.error_loading'));
             setAchievements([]);
         }
     };
@@ -53,15 +55,14 @@ const Achievements = () => {
                             }}
                         >
                             <Typography variant="h5" sx={{ fontWeight: 600 }}>
-                                Achievements
+                                {t('achievements.title')}
                             </Typography>
                         </Box>
 
                         {/* Intro */}
                         <Box sx={{ mb: 4 }}>
                             <Typography variant="body1" sx={{ color: '#444', lineHeight: 1.7 }}>
-                                A snapshot of milestones powered by our volunteers, donors, and partners. Each achievement
-                                reflects the collective effort to uplift communities with health, education, and dignity.
+                                {t('achievements.intro')}
                             </Typography>
                         </Box>
 

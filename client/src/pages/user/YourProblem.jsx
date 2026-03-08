@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import Navbar from '../../components/Navbar';
 import Footer from '../../components/Footer';
 import api from '../../components/BaseURL';
@@ -16,6 +17,7 @@ import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 const YourProblem = () => {
+    const { t } = useTranslation();
     const [formData, setFormData] = useState({
         name: '',
         mobile_number: '',
@@ -108,7 +110,7 @@ const YourProblem = () => {
 
             api.post('/problem-raised', data)
                 .then((response) => {
-                    toast.success('Problem submitted successfully!');
+                    toast.success(t('your_problem.success'));
                     setFormData({
                         name: '',
                         mobile_number: '',
@@ -121,7 +123,7 @@ const YourProblem = () => {
                 })
                 .catch((error) => {
                     console.error('Error submitting problem:', error);
-                    toast.error('Error submitting problem. Please try again.');
+                    toast.error(t('your_problem.error'));
                 })
                 .finally(() => {
                     setLoading(false);
@@ -150,7 +152,7 @@ const YourProblem = () => {
                             }}
                         >
                             <Typography variant="h5" sx={{ fontWeight: 600 }}>
-                                Your Problems
+                                {t('your_problem.title')}
                             </Typography>
                         </Box>
 
@@ -161,9 +163,9 @@ const YourProblem = () => {
                                     <TextField
                                         fullWidth
                                         required
-                                        label="Name"
+                                        label={t('your_problem.name')}
                                         name="name"
-                                        placeholder="Enter your name"
+                                        placeholder={t('your_problem.name_placeholder')}
                                         value={formData.name}
                                         onChange={handleInputChange}
                                         error={!!errors.name}
@@ -178,9 +180,9 @@ const YourProblem = () => {
                                     <TextField
                                         fullWidth
                                         required
-                                        label="Mobile Number"
+                                        label={t('your_problem.mobile')}
                                         name="mobile_number"
-                                        placeholder="Enter your mobile number"
+                                        placeholder={t('your_problem.mobile_placeholder')}
                                         value={formData.mobile_number}
                                         onChange={handleInputChange}
                                         error={!!errors.mobile_number}
@@ -195,9 +197,9 @@ const YourProblem = () => {
                                     <TextField
                                         fullWidth
                                         required
-                                        label="City"
+                                        label={t('your_problem.city')}
                                         name="city"
-                                        placeholder="Enter your city"
+                                        placeholder={t('your_problem.city_placeholder')}
                                         value={formData.city}
                                         onChange={handleInputChange}
                                         error={!!errors.city}
@@ -212,9 +214,9 @@ const YourProblem = () => {
                                     <TextField
                                         fullWidth
                                         required
-                                        label="Message"
+                                        label={t('your_problem.message')}
                                         name="message"
-                                        placeholder="Enter your message"
+                                        placeholder={t('your_problem.message_placeholder')}
                                         value={formData.message}
                                         onChange={handleInputChange}
                                         error={!!errors.message}
@@ -229,9 +231,9 @@ const YourProblem = () => {
                                     <TextField
                                         fullWidth
                                         required
-                                        label="Description"
+                                        label={t('your_problem.description')}
                                         name="description"
-                                        placeholder="Enter a description"
+                                        placeholder={t('your_problem.description_placeholder')}
                                         value={formData.description}
                                         onChange={handleInputChange}
                                         error={!!errors.description}
@@ -247,9 +249,9 @@ const YourProblem = () => {
                                     <TextField
                                         fullWidth
                                         required
-                                        label="Video URL"
+                                        label={t('your_problem.video_url')}
                                         name="video_url"
-                                        placeholder="Enter video URL"
+                                        placeholder={t('your_problem.video_url_placeholder')}
                                         value={formData.video_url}
                                         onChange={handleInputChange}
                                         error={!!errors.video_url}
@@ -263,7 +265,7 @@ const YourProblem = () => {
                                 {/* Document Upload */}
                                 <Grid size={12}>
                                     <Typography variant="body2" sx={{ mb: 1, fontWeight: 500 }}>
-                                        Document *
+                                        {t('your_problem.document')}
                                     </Typography>
                                     <TextField
                                         fullWidth
@@ -307,10 +309,10 @@ const YourProblem = () => {
                                         {loading ? (
                                             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                                                 <CircularProgress size={20} sx={{ color: 'white' }} />
-                                                Submitting...
+                                                {t('your_problem.submitting')}
                                             </Box>
                                         ) : (
-                                            'Submit'
+                                            t('your_problem.submit')
                                         )}
                                     </Button>
                                 </Grid>

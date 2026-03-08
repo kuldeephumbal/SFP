@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import Navbar from '../../components/Navbar';
 import Footer from '../../components/Footer';
 import {
@@ -21,6 +22,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import api from '../../components/BaseURL';
 
 const MemberApply = () => {
+    const { t } = useTranslation();
     const [formData, setFormData] = useState({
         organizationName: "",
         name: "",
@@ -76,30 +78,30 @@ const MemberApply = () => {
 
     const validateForm = () => {
         const newErrors = {};
-        if (!formData.name.trim()) newErrors.name = 'Name is required';
-        if (!formData.dob) newErrors.dob = 'Date of Birth is required';
-        if (!formData.relationName.trim()) newErrors.relationName = 'Relation Name is required';
-        if (!formData.bloodGroup) newErrors.bloodGroup = 'Blood Group is required';
-        if (!formData.state) newErrors.state = 'State is required';
-        if (!formData.district) newErrors.district = 'District is required';
+        if (!formData.name.trim()) newErrors.name = t('registration.name_required');
+        if (!formData.dob) newErrors.dob = t('registration.dob_required');
+        if (!formData.relationName.trim()) newErrors.relationName = t('registration.relation_name_required');
+        if (!formData.bloodGroup) newErrors.bloodGroup = t('registration.blood_group_required');
+        if (!formData.state) newErrors.state = t('registration.state_required');
+        if (!formData.district) newErrors.district = t('registration.district_required');
         if (!formData.mobile.trim()) {
-            newErrors.mobile = 'Mobile Number is required';
+            newErrors.mobile = t('registration.mobile_required');
         } else if (!/^\d{10}$/.test(formData.mobile)) {
-            newErrors.mobile = 'Mobile Number must be 10 digits';
+            newErrors.mobile = t('registration.mobile_invalid');
         }
         if (!formData.aadhar.trim()) {
-            newErrors.aadhar = 'Aadhar Number is required';
+            newErrors.aadhar = t('registration.aadhar_required');
         } else if (!/^\d{12}$/.test(formData.aadhar)) {
-            newErrors.aadhar = 'Aadhar Number must be 12 digits';
+            newErrors.aadhar = t('registration.aadhar_invalid');
         }
         if (!formData.pincode.trim()) {
-            newErrors.pincode = 'Pin Code is required';
+            newErrors.pincode = t('registration.pincode_required');
         } else if (!/^\d{6}$/.test(formData.pincode)) {
-            newErrors.pincode = 'Pin Code must be 6 digits';
+            newErrors.pincode = t('registration.pincode_invalid');
         }
-        if (!formData.idType) newErrors.idType = 'Please select an ID type';
-        if (!formData.address.trim()) newErrors.address = 'Address is required';
-        if (!formData.idDocument) newErrors.idDocument = 'ID Document is required';
+        if (!formData.idType) newErrors.idType = t('registration.id_type_required');
+        if (!formData.address.trim()) newErrors.address = t('registration.address_required');
+        if (!formData.idDocument) newErrors.idDocument = t('registration.id_document_required');
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
     };
@@ -110,7 +112,7 @@ const MemberApply = () => {
         if (!validateForm()) return;
 
         if (!formData.declaration) {
-            toast.warning("You must accept the declaration.");
+            toast.warning(t('registration.decl_warning'));
             return;
         }
 
@@ -167,11 +169,11 @@ const MemberApply = () => {
                     otherDocument: null,
                     declaration: false,
                 });
-                toast.success("Member application submitted successfully.");
+                toast.success(t('registration.success'));
             })
             .catch((error) => {
                 console.error("Error submitting member application:", error.response?.data || error.message);
-                toast.error("There was an error submitting your application. Please try again.");
+                toast.error(t('registration.error'));
             });
     };
 
@@ -183,7 +185,7 @@ const MemberApply = () => {
                     <ToastContainer position="top-right" autoClose={3000} />
                     <Paper sx={{ p: 4 }}>
                         <Box sx={{ bgcolor: '#1976d2', color: 'white', p: 2, textAlign: 'center', mb: 3, borderRadius: 1 }}>
-                            <Typography variant="h5" sx={{ fontWeight: 600 }}>Registration</Typography>
+                            <Typography variant="h5" sx={{ fontWeight: 600 }}>{t('registration.title')}</Typography>
                         </Box>
 
                         <form onSubmit={handleSubmit}>
@@ -191,34 +193,34 @@ const MemberApply = () => {
                                 {/* Organization */}
                                 <Grid size={12}>
                                     <Typography variant="body1" sx={{ mb: 1, fontWeight: 500 }}>
-                                        Are you working for any social service organization?
+                                        {t('registration.org_question')}
                                     </Typography>
-                                    <TextField fullWidth placeholder="Organization Name" name="organizationName" value={formData.organizationName} onChange={handleChange} />
+                                    <TextField fullWidth placeholder={t('registration.org_placeholder')} name="organizationName" value={formData.organizationName} onChange={handleChange} />
                                 </Grid>
 
                                 {/* Name & Gender */}
                                 <Grid size={{ xs: 12, md: 6 }}>
-                                    <TextField fullWidth label="Name" name="name" required placeholder="Enter your name" value={formData.name} onChange={handleChange} error={!!errors.name} helperText={errors.name} />
+                                    <TextField fullWidth label={t('registration.name')} name="name" required placeholder={t('registration.name_placeholder')} value={formData.name} onChange={handleChange} error={!!errors.name} helperText={errors.name} />
                                 </Grid>
                                 <Grid size={{ xs: 12, md: 6 }}>
                                     <FormControl fullWidth required>
-                                        <InputLabel>Gender</InputLabel>
-                                        <Select name="gender" value={formData.gender} onChange={handleChange} label="Gender">
-                                            <MenuItem value="Male">Male</MenuItem>
-                                            <MenuItem value="Female">Female</MenuItem>
-                                            <MenuItem value="Other">Other</MenuItem>
+                                        <InputLabel>{t('registration.gender')}</InputLabel>
+                                        <Select name="gender" value={formData.gender} onChange={handleChange} label={t('registration.gender')}>
+                                            <MenuItem value="Male">{t('registration.male')}</MenuItem>
+                                            <MenuItem value="Female">{t('registration.female')}</MenuItem>
+                                            <MenuItem value="Other">{t('registration.other')}</MenuItem>
                                         </Select>
                                     </FormControl>
                                 </Grid>
 
                                 {/* Date of Birth & Relation */}
                                 <Grid size={{ xs: 12, md: 6 }}>
-                                    <TextField fullWidth label="Date of Birth" type="date" name="dob" required value={formData.dob} onChange={handleChange} InputLabelProps={{ shrink: true }} error={!!errors.dob} helperText={errors.dob} />
+                                    <TextField fullWidth label={t('registration.dob')} type="date" name="dob" required value={formData.dob} onChange={handleChange} InputLabelProps={{ shrink: true }} error={!!errors.dob} helperText={errors.dob} />
                                 </Grid>
                                 <Grid size={{ xs: 12, md: 6 }}>
                                     <FormControl fullWidth required>
-                                        <InputLabel>Relation</InputLabel>
-                                        <Select name="relationType" value={formData.relationType} onChange={handleChange} label="Relation">
+                                        <InputLabel>{t('registration.relation')}</InputLabel>
+                                        <Select name="relationType" value={formData.relationType} onChange={handleChange} label={t('registration.relation')}>
                                             <MenuItem value="S/O">S/O</MenuItem>
                                             <MenuItem value="D/O">D/O</MenuItem>
                                             <MenuItem value="W/O">W/O</MenuItem>
@@ -228,18 +230,18 @@ const MemberApply = () => {
 
                                 {/* Relation Name & Profession */}
                                 <Grid size={{ xs: 12, md: 6 }}>
-                                    <TextField fullWidth label="Relation Name" name="relationName" required placeholder="Relation Name" value={formData.relationName} onChange={handleChange} error={!!errors.relationName} helperText={errors.relationName} />
+                                    <TextField fullWidth label={t('registration.relation_name')} name="relationName" required placeholder={t('registration.relation_name')} value={formData.relationName} onChange={handleChange} error={!!errors.relationName} helperText={errors.relationName} />
                                 </Grid>
                                 <Grid size={{ xs: 12, md: 6 }}>
-                                    <TextField fullWidth label="Profession" name="profession" placeholder="Your profession" value={formData.profession} onChange={handleChange} />
+                                    <TextField fullWidth label={t('registration.profession')} name="profession" placeholder={t('registration.profession_placeholder')} value={formData.profession} onChange={handleChange} />
                                 </Grid>
 
                                 {/* Blood Group & State */}
                                 <Grid size={{ xs: 12, md: 6 }}>
                                     <FormControl fullWidth required error={!!errors.bloodGroup}>
-                                        <InputLabel>Blood Group</InputLabel>
-                                        <Select name="bloodGroup" value={formData.bloodGroup} onChange={handleChange} label="Blood Group">
-                                            <MenuItem value="">Select Blood Group</MenuItem>
+                                        <InputLabel>{t('registration.blood_group')}</InputLabel>
+                                        <Select name="bloodGroup" value={formData.bloodGroup} onChange={handleChange} label={t('registration.blood_group')}>
+                                            <MenuItem value="">{t('registration.select_blood')}</MenuItem>
                                             {bloodGroups.map((group) => <MenuItem key={group} value={group}>{group}</MenuItem>)}
                                         </Select>
                                         {errors.bloodGroup && <Typography variant="caption" color="error" sx={{ mt: 0.5, ml: 1.5 }}>{errors.bloodGroup}</Typography>}
@@ -247,9 +249,9 @@ const MemberApply = () => {
                                 </Grid>
                                 <Grid size={{ xs: 12, md: 6 }}>
                                     <FormControl fullWidth required error={!!errors.state}>
-                                        <InputLabel>State</InputLabel>
-                                        <Select name="state" value={formData.state} onChange={handleChange} label="State">
-                                            <MenuItem value="">Select State</MenuItem>
+                                        <InputLabel>{t('registration.state')}</InputLabel>
+                                        <Select name="state" value={formData.state} onChange={handleChange} label={t('registration.state')}>
+                                            <MenuItem value="">{t('registration.select_state')}</MenuItem>
                                             {Object.keys(statesAndCities).map((state) => <MenuItem key={state} value={state}>{state}</MenuItem>)}
                                         </Select>
                                         {errors.state && <Typography variant="caption" color="error" sx={{ mt: 0.5, ml: 1.5 }}>{errors.state}</Typography>}
@@ -259,39 +261,39 @@ const MemberApply = () => {
                                 {/* District & Mobile */}
                                 <Grid size={{ xs: 12, md: 6 }}>
                                     <FormControl fullWidth required error={!!errors.district}>
-                                        <InputLabel>District</InputLabel>
-                                        <Select name="district" value={formData.district} onChange={handleChange} label="District">
-                                            <MenuItem value="">Select District</MenuItem>
+                                        <InputLabel>{t('registration.district')}</InputLabel>
+                                        <Select name="district" value={formData.district} onChange={handleChange} label={t('registration.district')}>
+                                            <MenuItem value="">{t('registration.select_district')}</MenuItem>
                                             {formData.state && statesAndCities[formData.state]?.map((city) => <MenuItem key={city} value={city}>{city}</MenuItem>)}
                                         </Select>
                                         {errors.district && <Typography variant="caption" color="error" sx={{ mt: 0.5, ml: 1.5 }}>{errors.district}</Typography>}
                                     </FormControl>
                                 </Grid>
                                 <Grid size={{ xs: 12, md: 6 }}>
-                                    <TextField fullWidth label="Mobile No." name="mobile" required placeholder="Mobile Number" value={formData.mobile} onChange={handleChange} error={!!errors.mobile} helperText={errors.mobile} />
+                                    <TextField fullWidth label={t('registration.mobile')} name="mobile" required placeholder={t('registration.mobile')} value={formData.mobile} onChange={handleChange} error={!!errors.mobile} helperText={errors.mobile} />
                                 </Grid>
 
                                 {/* Aadhar & Email */}
                                 <Grid size={{ xs: 12, md: 6 }}>
-                                    <TextField fullWidth label="Aadhar No." name="aadhar" required placeholder="Aadhar Number" value={formData.aadhar} onChange={handleChange} error={!!errors.aadhar} helperText={errors.aadhar} />
+                                    <TextField fullWidth label={t('registration.aadhar')} name="aadhar" required placeholder={t('registration.aadhar')} value={formData.aadhar} onChange={handleChange} error={!!errors.aadhar} helperText={errors.aadhar} />
                                 </Grid>
                                 <Grid size={{ xs: 12, md: 6 }}>
-                                    <TextField fullWidth type="email" label="Email" name="email" placeholder="Email Address" value={formData.email} onChange={handleChange} />
+                                    <TextField fullWidth type="email" label={t('registration.email')} name="email" placeholder={t('registration.email')} value={formData.email} onChange={handleChange} />
                                 </Grid>
 
                                 {/* Pin Code & ID Type */}
                                 <Grid size={{ xs: 12, md: 6 }}>
-                                    <TextField fullWidth label="Pin Code" name="pincode" required placeholder="Pincode" value={formData.pincode} onChange={handleChange} error={!!errors.pincode} helperText={errors.pincode} />
+                                    <TextField fullWidth label={t('registration.pincode')} name="pincode" required placeholder={t('registration.pincode')} value={formData.pincode} onChange={handleChange} error={!!errors.pincode} helperText={errors.pincode} />
                                 </Grid>
                                 <Grid size={{ xs: 12, md: 6 }}>
                                     <FormControl fullWidth required error={!!errors.idType}>
-                                        <InputLabel>Select Your ID</InputLabel>
-                                        <Select name="idType" value={formData.idType} onChange={handleChange} label="Select Your ID">
-                                            <MenuItem value="">Select ID</MenuItem>
-                                            <MenuItem value="Passport">Passport</MenuItem>
-                                            <MenuItem value="Driver License">Driver License</MenuItem>
-                                            <MenuItem value="Voter ID">Voter ID</MenuItem>
-                                            <MenuItem value="Aadhar">Aadhar</MenuItem>
+                                        <InputLabel>{t('registration.select_id')}</InputLabel>
+                                        <Select name="idType" value={formData.idType} onChange={handleChange} label={t('registration.select_id')}>
+                                            <MenuItem value="">{t('registration.select_id')}</MenuItem>
+                                            <MenuItem value="Passport">{t('registration.id_types.passport')}</MenuItem>
+                                            <MenuItem value="Driver License">{t('registration.id_types.driver')}</MenuItem>
+                                            <MenuItem value="Voter ID">{t('registration.id_types.voter')}</MenuItem>
+                                            <MenuItem value="Aadhar">{t('registration.id_types.aadhar')}</MenuItem>
                                         </Select>
                                         {errors.idType && <Typography variant="caption" color="error" sx={{ mt: 0.5, ml: 1.5 }}>{errors.idType}</Typography>}
                                     </FormControl>
@@ -299,19 +301,19 @@ const MemberApply = () => {
 
                                 {/* Address (Full Width for Multi-line) */}
                                 <Grid size={12}>
-                                    <TextField fullWidth label="Address" multiline rows={3} name="address" required placeholder="Your address" value={formData.address} onChange={handleChange} error={!!errors.address} helperText={errors.address} />
+                                    <TextField fullWidth label={t('registration.address')} multiline rows={3} name="address" required placeholder={t('registration.address_placeholder')} value={formData.address} onChange={handleChange} error={!!errors.address} helperText={errors.address} />
                                 </Grid>
 
                                 {/* Profile Picture & Upload ID */}
                                 <Grid size={{ xs: 12, md: 6 }}>
                                     <Box>
-                                        <Typography variant="body2" sx={{ mb: 1, fontWeight: 500 }}>Profile Picture</Typography>
+                                        <Typography variant="body2" sx={{ mb: 1, fontWeight: 500 }}>{t('registration.profile_pic')}</Typography>
                                         <TextField fullWidth type="file" name="profilePicture" onChange={handleChange} InputLabelProps={{ shrink: true }} />
                                     </Box>
                                 </Grid>
                                 <Grid size={{ xs: 12, md: 6 }}>
                                     <Box>
-                                        <Typography variant="body2" sx={{ mb: 1, fontWeight: 500 }}>Upload Your ID *</Typography>
+                                        <Typography variant="body2" sx={{ mb: 1, fontWeight: 500 }}>{t('registration.upload_id')}</Typography>
                                         <TextField fullWidth type="file" name="idDocument" required onChange={handleChange} InputLabelProps={{ shrink: true }} error={!!errors.idDocument} helperText={errors.idDocument} />
                                     </Box>
                                 </Grid>
@@ -319,7 +321,7 @@ const MemberApply = () => {
                                 {/* Other Document */}
                                 <Grid size={{ xs: 12, md: 6 }}>
                                     <Box>
-                                        <Typography variant="body2" sx={{ mb: 1, fontWeight: 500 }}>Other Document</Typography>
+                                        <Typography variant="body2" sx={{ mb: 1, fontWeight: 500 }}>{t('registration.other_doc')}</Typography>
                                         <TextField fullWidth type="file" name="otherDocument" onChange={handleChange} InputLabelProps={{ shrink: true }} />
                                     </Box>
                                 </Grid>
@@ -330,12 +332,12 @@ const MemberApply = () => {
                                 {/* Declaration */}
                                 <Grid size={12}>
                                     <Box sx={{ p: 2, bgcolor: '#f9f9f9', borderRadius: 1, width: '100%' }}>
-                                        <FormControlLabel control={<Checkbox name="declaration" checked={formData.declaration} onChange={handleChange} />} label="I accept the declaration." />
+                                        <FormControlLabel control={<Checkbox name="declaration" checked={formData.declaration} onChange={handleChange} />} label={t('registration.accept_decl')} />
                                         <Box component="ol" sx={{ pl: 3, mt: 1, mb: 0 }}>
-                                            <li>The information provided by me is true and accurate.</li>
-                                            <li>I want to join Shankhnad Foundation and actively participate in its activities.</li>
-                                            <li>I have not been convicted of any criminal offense and am not involved in any illegal activities.</li>
-                                            <li>I will abide by the rules and regulations of Shankhnad Foundation and will not engage in any activity detrimental to the organization.</li>
+                                            <li>{t('registration.decl_1')}</li>
+                                            <li>{t('registration.decl_2')}</li>
+                                            <li>{t('registration.decl_3')}</li>
+                                            <li>{t('registration.decl_4')}</li>
                                         </Box>
                                     </Box>
                                 </Grid>
@@ -344,7 +346,7 @@ const MemberApply = () => {
                                 <Grid size={12}>
                                     <Box sx={{ textAlign: 'center', mt: 2 }}>
                                         <Button type="submit" variant="contained" sx={{ bgcolor: '#1976d2', px: 5, py: 1.5, textTransform: 'uppercase', '&:hover': { bgcolor: '#1565c0' } }}>
-                                            Submit
+                                            {t('registration.submit')}
                                         </Button>
                                     </Box>
                                 </Grid>

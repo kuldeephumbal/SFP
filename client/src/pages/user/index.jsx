@@ -1,4 +1,8 @@
-import { useEffect, useState } from 'react';
+
+
+import { useEffect, useState, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
 import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
@@ -29,6 +33,8 @@ import Navbar from '../../components/Navbar';
 import Footer from '../../components/Footer';
 
 const UserLandingPage = () => {
+    const navigate = useNavigate();
+    const { t } = useTranslation();
     const [selectedImage, setSelectedImage] = useState(null);
     const [activities, setActivities] = useState([]);
     const [latestActivities, setLatestActivities] = useState([]);
@@ -36,6 +42,7 @@ const UserLandingPage = () => {
     const [videosLoading, setVideosLoading] = useState(false);
     const [members, setMembers] = useState([]);
     const [galleryItems, setGalleryItems] = useState([]);
+    const recentActivityRef = useRef(null);
 
     const defaultSliderImages = [
         { id: 1, photo: '/assets/img/slider-img-01.webp', topic: 'Welcome to Shankhnad Foundation' },
@@ -148,6 +155,38 @@ const UserLandingPage = () => {
         return () => clearTimeout(timer);
     }, [sliderImages.length, youtubeVideos.length, galleryItems.length]);
 
+    // Auto-scroll logic for Recent Activity
+    useEffect(() => {
+        const container = recentActivityRef.current;
+        if (!container || activities.length === 0) return;
+
+        let intervalId;
+        const startScroll = () => {
+            intervalId = setInterval(() => {
+                if (container.scrollTop + container.clientHeight >= container.scrollHeight - 1) {
+                    // Smoothly reset to top
+                    container.scrollTo({ top: 0, behavior: 'instant' });
+                } else {
+                    container.scrollTop += 0.5; // Very slow speed
+                }
+            }, 30);
+        };
+
+        const stopScroll = () => clearInterval(intervalId);
+
+        startScroll();
+
+        // Pause on hover
+        container.addEventListener('mouseenter', stopScroll);
+        container.addEventListener('mouseleave', startScroll);
+
+        return () => {
+            stopScroll();
+            container.removeEventListener('mouseenter', stopScroll);
+            container.removeEventListener('mouseleave', startScroll);
+        };
+    }, [activities]);
+
     const getEmbedUrl = (url) => {
         if (!url) return '';
         if (url.includes('embed/')) return url;
@@ -161,11 +200,11 @@ const UserLandingPage = () => {
     };
 
     const objectives = [
-        { title: 'Social Welfare', image: '/assets/img/social-welfare2.jpg' },
-        { title: 'Health & Research', image: '/assets/img/H&R2.jpg' },
-        { title: 'Education & Training', image: '/assets/img/E&T2.jpg' },
-        { title: 'Human Rights', image: '/assets/img/HR2.jpg' },
-        { title: 'Anti Crime', image: '/assets/img/anti-crime.jpg' }
+        { title: t('home.obj_social'), image: '/assets/img/social-welfare2.jpg' },
+        { title: t('home.obj_health'), image: '/assets/img/H&R2.jpg' },
+        { title: t('home.obj_edu'), image: '/assets/img/E&T2.jpg' },
+        { title: t('home.obj_human'), image: '/assets/img/HR2.jpg' },
+        { title: t('home.obj_crime'), image: '/assets/img/anti-crime.jpg' }
     ];
 
     const handleModalBackgroundClick = (e) => {
@@ -345,6 +384,8 @@ const UserLandingPage = () => {
                         <Box sx={{
                             position: 'relative',
                             px: '40px',
+                            pt: 1, // Space for hover transform transform: 'translateY(-4px)'
+                            pb: 1,
                             '& .slick-prev, & .slick-next': {
                                 width: '30px',
                                 height: '30px',
@@ -368,69 +409,91 @@ const UserLandingPage = () => {
                             }
                         }}>
                             <Slider {...quickActionSettings}>
-                                <Box sx={{ px: 1 }}>
-                                    <Card sx={{
-                                        textAlign: 'center',
-                                        py: { xs: 4, md: 2 },
-                                        cursor: 'pointer',
-                                        '&:hover': { boxShadow: 6, transform: 'translateY(-4px)' },
-                                        transition: 'all 0.3s',
-                                        height: '100%'
-                                    }}>
+                                <Box sx={{ px: 1, height: '100%', py: 0.5 }}>
+                                    <Card
+                                        onClick={() => navigate('/member-apply')}
+                                        sx={{
+                                            textAlign: 'center',
+                                            py: { xs: 4, md: 2 },
+                                            cursor: 'pointer',
+                                            '&:hover': { boxShadow: 6, transform: 'translateY(-4px)' },
+                                            transition: 'all 0.3s',
+                                            height: '100%',
+                                            borderRadius: 3
+                                        }}
+                                    >
                                         <PersonAdd sx={{ fontSize: { xs: 60, md: 40 }, color: '#1976d2', mb: 2 }} />
-                                        <Typography variant="h6" fontWeight={600} sx={{ fontSize: { xs: '1.1rem', md: '1rem' } }}>Add person</Typography>
+                                        <Typography variant="h6" fontWeight={600} sx={{ fontSize: { xs: '1.1rem', md: '1rem' } }}>{t('navbar.apply')}</Typography>
                                     </Card>
                                 </Box>
-                                <Box sx={{ px: 1 }}>
-                                    <Card sx={{
-                                        textAlign: 'center',
-                                        py: { xs: 4, md: 2 },
-                                        cursor: 'pointer',
-                                        '&:hover': { boxShadow: 6, transform: 'translateY(-4px)' },
-                                        transition: 'all 0.3s',
-                                        height: '100%'
-                                    }}>
+                                <Box sx={{ px: 1, height: '100%', py: 0.5 }}>
+                                    <Card
+                                        onClick={() => navigate('/upcoming-events')}
+                                        sx={{
+                                            textAlign: 'center',
+                                            py: { xs: 4, md: 2 },
+                                            cursor: 'pointer',
+                                            '&:hover': { boxShadow: 6, transform: 'translateY(-4px)' },
+                                            transition: 'all 0.3s',
+                                            height: '100%',
+                                            borderRadius: 3
+                                        }}
+                                    >
                                         <Event sx={{ fontSize: { xs: 60, md: 40 }, color: '#1976d2', mb: 2 }} />
-                                        <Typography variant="h6" fontWeight={600} sx={{ fontSize: { xs: '1.1rem', md: '1rem' } }}>Upcoming events</Typography>
+                                        <Typography variant="h6" fontWeight={600} sx={{ fontSize: { xs: '1.1rem', md: '1rem' } }}>{t('navbar.services')}</Typography>
                                     </Card>
                                 </Box>
-                                <Box sx={{ px: 1 }}>
-                                    <Card sx={{
-                                        textAlign: 'center',
-                                        py: { xs: 4, md: 2 },
-                                        cursor: 'pointer',
-                                        '&:hover': { boxShadow: 6, transform: 'translateY(-4px)' },
-                                        transition: 'all 0.3s',
-                                        height: '100%'
-                                    }}>
+                                <Box sx={{ px: 1, height: '100%', py: 0.5 }}>
+                                    <Card
+                                        onClick={() => navigate('/our-team')}
+                                        sx={{
+                                            textAlign: 'center',
+                                            py: { xs: 4, md: 2 },
+                                            cursor: 'pointer',
+                                            '&:hover': { boxShadow: 6, transform: 'translateY(-4px)' },
+                                            transition: 'all 0.3s',
+                                            height: '100%',
+                                            borderRadius: 3
+                                        }}
+                                    >
                                         <Groups sx={{ fontSize: { xs: 60, md: 40 }, color: '#1976d2', mb: 2 }} />
-                                        <Typography variant="h6" fontWeight={600} sx={{ fontSize: { xs: '1.1rem', md: '1rem' } }}>Management team</Typography>
+                                        <Typography variant="h6" fontWeight={600} sx={{ fontSize: { xs: '1.1rem', md: '1rem' } }}>{t('navbar.team')}</Typography>
                                     </Card>
                                 </Box>
-                                <Box sx={{ px: 1 }}>
-                                    <Card sx={{
-                                        textAlign: 'center',
-                                        py: { xs: 4, md: 2 },
-                                        cursor: 'pointer',
-                                        '&:hover': { boxShadow: 6, transform: 'translateY(-4px)' },
-                                        transition: 'all 0.3s',
-                                        height: '100%'
-                                    }}>
-                                        <YouTube sx={{ fontSize: { xs: 60, md: 40 }, color: '#1976d2', mb: 2 }} />
-                                        <Typography variant="h6" fontWeight={600} sx={{ fontSize: { xs: '1.1rem', md: '1rem' } }}>Donate</Typography>
+                                <Box sx={{ px: 1, height: '100%', py: 0.5 }}>
+                                    <Card
+                                        onClick={() => navigate('/donate')}
+                                        sx={{
+                                            textAlign: 'center',
+                                            py: { xs: 4, md: 2 },
+                                            cursor: 'pointer',
+                                            '&:hover': { boxShadow: 6, transform: 'translateY(-4px)' },
+                                            transition: 'all 0.3s',
+                                            height: '100%',
+                                            borderRadius: 3
+                                        }}
+                                    >
+                                        <Paper elevation={0} sx={{ bgcolor: 'transparent' }}>
+                                            <Event sx={{ fontSize: { xs: 60, md: 40 }, color: '#1976d2', mb: 2 }} />
+                                        </Paper>
+                                        <Typography variant="h6" fontWeight={600} sx={{ fontSize: { xs: '1.1rem', md: '1rem' } }}>{t('navbar.donate')}</Typography>
                                     </Card>
                                 </Box>
-                                <Box sx={{ px: 1 }}>
-                                    <Card sx={{
-                                        textAlign: 'center',
-                                        py: { xs: 4, md: 2 },
-                                        cursor: 'pointer',
-                                        '&:hover': { boxShadow: 6, transform: 'translateY(-4px)' },
-                                        transition: 'all 0.3s',
-                                        height: '100%'
-                                    }}>
+                                <Box sx={{ px: 1, height: '100%', py: 0.5 }}>
+                                    <Card
+                                        onClick={() => navigate('/crowdfunding')}
+                                        sx={{
+                                            textAlign: 'center',
+                                            py: { xs: 4, md: 2 },
+                                            cursor: 'pointer',
+                                            '&:hover': { boxShadow: 6, transform: 'translateY(-4px)' },
+                                            transition: 'all 0.3s',
+                                            height: '100%',
+                                            borderRadius: 3
+                                        }}
+                                    >
                                         <Groups sx={{ fontSize: { xs: 60, md: 40 }, color: '#1976d2', mb: 2 }} />
-                                        <Typography variant="h6" fontWeight={600} sx={{ fontSize: { xs: '1.1rem', md: '1rem' } }}>Crowd funding</Typography>
+                                        <Typography variant="h6" fontWeight={600} sx={{ fontSize: { xs: '1.1rem', md: '1rem' } }}>{t('navbar.crowdfunding')}</Typography>
                                     </Card>
                                 </Box>
                             </Slider>
@@ -441,15 +504,30 @@ const UserLandingPage = () => {
                 {/* Recent Activity Section */}
                 <Container maxWidth="lg" sx={{ mt: sectionSpacing, px: { xs: 2, sm: 3 } }}>
                     <Grid container spacing={{ xs: 2, md: 3 }}>
-                        <Grid size={{ xs: 12, md: 3 }}>
-                            <Paper sx={{ p: 0, overflow: 'hidden' }}>
+                        <Grid size={{ xs: 12, md: 3 }} sx={{ display: 'flex' }}>
+                            <Paper sx={{ p: 0, overflow: 'hidden', display: 'flex', flexDirection: 'column', width: '100%', height: { xs: 400, md: 560 } }}>
                                 <Box sx={{ bgcolor: '#1565c0', color: 'white', p: 1.5 }}>
-                                    <Typography variant="h6" sx={{ fontWeight: 600 }}>Recent Activity</Typography>
+                                    <Typography variant="h6" sx={{ fontWeight: 600 }}>{t('home.recent_activity')}</Typography>
                                 </Box>
-                                <Box sx={{ p: 2 }}>
+                                <Box sx={{ p: 2, display: 'flex', flexDirection: 'column', flexGrow: 1, overflow: 'hidden' }}>
                                     {activities && activities.length > 0 ? (
-                                        <Box sx={{ mb: 2, maxHeight: '200px', overflowY: 'auto' }}>
-                                            {activities.slice(0, 5).map((activity) => (
+                                        <Box
+                                            ref={recentActivityRef}
+                                            sx={{
+                                                mb: 2,
+                                                flexGrow: 1,
+                                                overflowY: 'auto',
+                                                pr: 0.5,
+                                                // Hide scrollbar but keep functionality
+                                                scrollbarWidth: 'none',
+                                                '-ms-overflow-style': 'none',
+                                                '&::-webkit-scrollbar': {
+                                                    display: 'none'
+                                                }
+                                            }}
+                                        >
+                                            {/* Duplicate items for a smoother perceived loop if needed, but simple wrap works too */}
+                                            {activities.map((activity) => (
                                                 <Box
                                                     key={activity._id || activity.id}
                                                     sx={{
@@ -471,32 +549,34 @@ const UserLandingPage = () => {
                                             ))}
                                         </Box>
                                     ) : (
-                                        <Typography color="text.secondary" sx={{ mb: 3 }}>No recent activity found.</Typography>
+                                        <Typography color="text.secondary" sx={{ mb: 3 }}>{t('home.no_activity')}</Typography>
                                     )}
                                     <Button
                                         fullWidth
                                         variant="contained"
                                         startIcon={<PersonAdd />}
+                                        onClick={() => navigate('/member-apply')}
                                         sx={{ bgcolor: '#ff9800', mb: 1.5, py: 1.2, '&:hover': { bgcolor: '#f57c00' } }}
                                     >
-                                        Apply Membership
+                                        {t('home.apply_membership')}
                                     </Button>
                                     <Button
                                         fullWidth
                                         variant="contained"
                                         startIcon={<Event />}
+                                        onClick={() => navigate('/donate')}
                                         sx={{ bgcolor: '#4caf50', py: 1.2, '&:hover': { bgcolor: '#388e3c' } }}
                                     >
-                                        Donation
+                                        {t('home.donation')}
                                     </Button>
                                 </Box>
                             </Paper>
                         </Grid>
-                        <Grid size={{ xs: 12, md: 9 }}>
-                            <Paper sx={{ p: { xs: 2, md: 3 }, minHeight: 200 }}>
+                        <Grid size={{ xs: 12, md: 9 }} sx={{ display: 'flex' }}>
+                            <Paper sx={{ p: { xs: 2, md: 3 }, display: 'flex', flexDirection: 'column', width: '100%', height: { xs: 500, md: 560 } }}>
                                 {latestActivities && latestActivities.length > 0 ? (
                                     <Box sx={{
-                                        maxHeight: { xs: '600px', md: '750px' },
+                                        flexGrow: 1,
                                         overflowY: 'auto',
                                         overflowX: 'hidden',
                                         pr: 1, // spacing for scrollbar
@@ -518,18 +598,34 @@ const UserLandingPage = () => {
                                         <Grid container spacing={{ xs: 2, md: 3 }}>
                                             {latestActivities.map((activity) => (
                                                 <Grid size={{ xs: 12, md: 6 }} key={activity._id || activity.id}>
-                                                    <Card sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+                                                    <Card sx={{
+                                                        display: 'flex',
+                                                        flexDirection: 'column',
+                                                        height: '100%',
+                                                        borderRadius: 3,
+                                                    }}
+                                                        onClick={() => navigate(`/latest-activity/${activity._id || activity.id}`)}
+                                                    >
                                                         <CardMedia
                                                             component="img"
-                                                            sx={{ height: { xs: 160, sm: 180, md: 200 }, objectFit: 'cover' }}
+                                                            sx={{ height: { xs: 180, sm: 200, md: 220 }, objectFit: 'cover' }}
                                                             image={activity.photo?.startsWith('http') ? activity.photo : `http://localhost:5000${activity.photo.replace('/uploads/slider/', '/uploads/latest-activity/')}`}
                                                             alt={activity.activity_detail}
                                                         />
                                                         <CardContent sx={{ flexGrow: 1 }}>
-                                                            <Typography variant="body1" sx={{ fontWeight: 500, mb: 1 }}>
-                                                                {activity.activity_detail}
-                                                            </Typography>
-                                                            <Typography variant="caption" color="text.secondary">
+                                                            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start', mb: 1 }}>
+                                                                <Typography variant="body1" sx={{
+                                                                    fontWeight: 600,
+                                                                    color: '#2c3e50',
+                                                                    display: '-webkit-box',
+                                                                    WebkitLineClamp: 2,
+                                                                    WebkitBoxOrient: 'vertical',
+                                                                    overflow: 'hidden'
+                                                                }}>
+                                                                    {activity.activity_detail}
+                                                                </Typography>
+                                                            </Box>
+                                                            <Typography variant="caption" sx={{ color: '#1565c0', fontWeight: 500 }}>
                                                                 {new Date(activity.createdAt || activity.created_at).toLocaleDateString('en-US', {
                                                                     year: 'numeric',
                                                                     month: 'long',
@@ -544,7 +640,7 @@ const UserLandingPage = () => {
                                     </Box>
                                 ) : (
                                     <Typography variant="body1" color="text.secondary" textAlign="center">
-                                        No latest activities found.
+                                        {t('home.no_latest_activities') || 'No latest activities found.'}
                                     </Typography>
                                 )}
                             </Paper>
@@ -556,27 +652,35 @@ const UserLandingPage = () => {
                 <Container maxWidth="lg" sx={{ mt: sectionSpacing, mb: sectionSpacing, px: { xs: 2, sm: 3 } }}>
                     <Paper sx={{ p: { xs: 2.5, md: 5 }, borderRadius: 3, boxShadow: 3 }}>
                         <Grid container spacing={{ xs: 4, md: 6 }} alignItems="start">
-                            <Grid size={{ xs: 12, md: 4, lg: 3 }}>
+                            <Grid size={{ xs: 12, md: 5, lg: 4 }}>
                                 <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
-                                    <Box sx={{ textAlign: { xs: 'center', md: 'left' } }}>
+                                    <Box sx={{ textAlign: 'center' }}>
                                         <Box
                                             component="img"
                                             src="/assets/img/Shankhnad-logo.png"
                                             alt="Shankhnad Foundation"
-                                            sx={{ width: '100%', maxWidth: { xs: 150, md: 180 }, display: 'inline-block' }}
+                                            sx={{ width: '100%', maxWidth: { xs: 180, md: 220 }, display: 'inline-block' }}
                                         />
                                     </Box>
-                                    <Box sx={{ maxWidth: { xs: '280px', md: '100%' }, mx: 'auto', width: '100%' }}>
+                                    <Box sx={{ maxWidth: { xs: 320, sm: 360, md: 380 }, mx: 'auto', width: '100%' }}>
                                         {members.length > 0 ? (
                                             <Slider {...memberSliderSettings}>
                                                 {members.map(member => (
                                                     <Box key={member._id} sx={{ textAlign: 'center', p: 1 }}>
-                                                        <Card sx={{ p: 2, borderRadius: 2, boxShadow: 1 }}>
+                                                        <Card sx={{ p: 2.5, borderRadius: 3, boxShadow: 3, maxWidth: 420, mx: 'auto' }}>
                                                             <CardMedia
                                                                 component="img"
                                                                 image={member.photo ? `http://localhost:5000/${member.photo.replace(/^\/+/, '')}` : '/assets/img/default-member.png'}
                                                                 alt={member.name}
-                                                                sx={{ width: { xs: 120, md: 150 }, height: { xs: 120, md: 150 }, objectFit: 'cover', borderRadius: 2, mx: 'auto', mb: 1 }}
+                                                                sx={{
+                                                                    width: '100%',
+                                                                    maxWidth: { xs: 210, md: 240 },
+                                                                    height: { xs: 230, md: 270 },
+                                                                    objectFit: 'cover',
+                                                                    borderRadius: 3,
+                                                                    mx: 'auto',
+                                                                    mb: 2
+                                                                }}
                                                             />
                                                             <Typography variant="subtitle1" sx={{ fontWeight: 700, fontSize: { xs: '0.9rem', md: '1rem' } }}>{member.name}</Typography>
                                                             <Typography variant="body2" color="text.secondary" sx={{ fontSize: { xs: '0.8rem', md: '0.875rem' } }}>{member.status}</Typography>
@@ -592,51 +696,50 @@ const UserLandingPage = () => {
                                     </Box>
                                 </Box>
                             </Grid>
-                            <Grid size={{ xs: 12, md: 8, lg: 9 }}>
+                            <Grid size={{ xs: 12, md: 7, lg: 8 }}>
                                 <Typography variant="h4" sx={{
                                     fontWeight: 700,
                                     mb: 2,
                                     fontSize: { xs: '1.75rem', md: '2.125rem' },
                                     textAlign: { xs: 'center', md: 'left' }
                                 }}>
-                                    About Us
+                                    {t('about_section.title')}
                                 </Typography>
                                 <Typography paragraph color="text.secondary" sx={{
                                     fontSize: { xs: '0.95rem', md: '1.05rem' },
                                     lineHeight: 1.7,
                                     textAlign: 'justify'
                                 }}>
-                                    Lorem ipsum dolor sit amet consectetur adipisicing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+                                    {t('about_section.p1')}
                                 </Typography>
                                 <Typography paragraph color="text.secondary" sx={{
                                     fontSize: { xs: '0.95rem', md: '1.05rem' },
                                     lineHeight: 1.7,
                                     textAlign: 'justify'
                                 }}>
-                                    Quia ratione exercitationem explicabo beatae odio molestiae vero deserunt quo, esse numquam cupiditate aperiam nulla earum tempore ea odit at amet quod.
+                                    {t('about_section.p2')}
                                 </Typography>
                                 <Typography paragraph color="text.secondary" sx={{
                                     fontSize: { xs: '0.95rem', md: '1.05rem' },
                                     lineHeight: 1.7,
                                     textAlign: 'justify'
                                 }}>
-                                    Quia ratione exercitationem explicabo beatae odio molestiae vero deserunt quo, esse numquam cupiditate aperiam nulla earum tempore ea odit at amet quod.
+                                    {t('about_section.p3')}
                                 </Typography>
                                 <Typography paragraph color="text.secondary" sx={{
                                     fontSize: { xs: '0.95rem', md: '1.05rem' },
                                     lineHeight: 1.7,
                                     textAlign: 'justify'
                                 }}>
-                                    Quia ratione exercitationem explicabo beatae odio molestiae vero deserunt quo, esse numquam cupiditate aperiam nulla earum tempore ea odit at amet quod.
+                                    {t('about_section.p4')}
                                 </Typography>
                                 <Typography paragraph color="text.secondary" sx={{
                                     fontSize: { xs: '0.95rem', md: '1.05rem' },
                                     lineHeight: 1.7,
                                     textAlign: 'justify'
                                 }}>
-                                    Quia ratione exercitationem explicabo beatae odio molestiae vero deserunt quo, esse numquam cupiditate aperiam nulla earum tempore ea odit at amet quod.
+                                    {t('about_section.p5')}
                                 </Typography>
-
                             </Grid>
                         </Grid>
                     </Paper>
@@ -645,7 +748,7 @@ const UserLandingPage = () => {
                 {/* Our Objectives Section */}
                 <Container maxWidth="lg" sx={{ mt: sectionSpacing, mb: sectionSpacing, px: { xs: 2, sm: 3 } }}>
                     <Box sx={{ bgcolor: '#1565c0', color: 'white', p: { xs: 1.5, md: 2 }, textAlign: 'center', mb: { xs: 2, md: 3 }, borderRadius: 1 }}>
-                        <Typography variant="h5" sx={{ fontWeight: 600, fontSize: { xs: '1.25rem', md: '1.5rem' } }}>Our Objectives</Typography>
+                        <Typography variant="h5" sx={{ fontWeight: 600, fontSize: { xs: '1.25rem', md: '1.5rem' } }}>{t('home.our_objectives')}</Typography>
                     </Box>
                     <Grid container spacing={2}>
                         {objectives.map((obj, index) => (
@@ -680,15 +783,15 @@ const UserLandingPage = () => {
                 {/* YouTube Videos Section */}
                 <Container maxWidth="lg" sx={{ mt: sectionSpacing, mb: sectionSpacing, px: { xs: 2, sm: 3 } }}>
                     <Box sx={{ bgcolor: '#1565c0', color: 'white', p: { xs: 1.5, md: 2 }, textAlign: 'center', mb: { xs: 2, md: 3 }, borderRadius: 1 }}>
-                        <Typography variant="h5" sx={{ fontWeight: 600, fontSize: { xs: '1.25rem', md: '1.5rem' } }}>Youtube Videos</Typography>
+                        <Typography variant="h5" sx={{ fontWeight: 600, fontSize: { xs: '1.25rem', md: '1.5rem' } }}>{t('home.youtube_videos')}</Typography>
                     </Box>
                     {videosLoading ? (
                         <Paper sx={{ p: 4, textAlign: 'center' }}>
-                            <Typography color="text.secondary">Loading YouTube videos...</Typography>
+                            <Typography color="text.secondary">{t('home.loading_youtube') || 'Loading YouTube videos...'}</Typography>
                         </Paper>
                     ) : youtubeVideos.length === 0 ? (
                         <Paper sx={{ p: 4, textAlign: 'center' }}>
-                            <Typography color="text.secondary">No YouTube videos found.</Typography>
+                            <Typography color="text.secondary">{t('home.no_youtube') || 'No YouTube videos found.'}</Typography>
                         </Paper>
                     ) : (
                         <Box sx={{
@@ -765,7 +868,7 @@ const UserLandingPage = () => {
                 {/* Gallery Section */}
                 <Container maxWidth="lg" sx={{ mt: sectionSpacing, mb: sectionSpacing, px: { xs: 2, sm: 3 } }}>
                     <Box sx={{ bgcolor: '#1565c0', color: 'white', p: { xs: 1.5, md: 2 }, textAlign: 'center', mb: { xs: 2, md: 3 }, borderRadius: 1 }}>
-                        <Typography variant="h5" sx={{ fontWeight: 600, fontSize: { xs: '1.25rem', md: '1.5rem' } }}>Gallery</Typography>
+                        <Typography variant="h5" sx={{ fontWeight: 600, fontSize: { xs: '1.25rem', md: '1.5rem' } }}>{t('home.gallery')}</Typography>
                     </Box>
                     <Box sx={{
                         position: 'relative',
@@ -809,7 +912,7 @@ const UserLandingPage = () => {
                                             component="img"
                                             sx={{ height: { xs: 200, md: 220 }, objectFit: 'cover' }}
                                             image={`http://localhost:5000/${item.photo.replace(/^\/+/, '')}`}
-                                            alt="Gallery item"
+                                            alt={t('home.gallery')}
                                         />
                                     </Card>
                                 </Box>
@@ -821,34 +924,97 @@ const UserLandingPage = () => {
                 {/* President Message Section */}
                 <Container maxWidth="lg" sx={{ mt: sectionSpacing, mb: sectionSpacing, px: { xs: 2, sm: 3 } }}>
                     <Box sx={{ bgcolor: '#1565c0', color: 'white', p: { xs: 1.5, md: 2 }, textAlign: 'center', mb: { xs: 2, md: 3 }, borderRadius: 1 }}>
-                        <Typography variant="h5" sx={{ fontWeight: 600, fontSize: { xs: '1.25rem', md: '1.5rem' } }}>President Message</Typography>
+                        <Typography variant="h5" sx={{ fontWeight: 600, fontSize: { xs: '1.25rem', md: '1.5rem' } }}>{t('home.president_message')}</Typography>
                     </Box>
-                    <Grid container spacing={{ xs: 2, md: 4 }} alignItems="center">
-                        <Grid size={{ xs: 12, md: 3 }}>
-                            <Box sx={{ textAlign: 'center', bgcolor: 'white', p: { xs: 2, md: 3 }, borderRadius: 2 }}>
-                                <Box
-                                    component="img"
-                                    src="/assets/img/kuldeepMember.png"
-                                    alt="President"
-                                    sx={{ width: '100%', maxWidth: { xs: 180, md: 200 }, borderRadius: '8px', boxShadow: 2 }}
-                                />
-                                <Typography variant="h6" sx={{ mt: 2, fontWeight: 700, fontSize: '1rem' }}>President Name</Typography>
-                            </Box>
+                    <Paper sx={{ p: { xs: 3, md: 5 }, borderRadius: 3, boxShadow: 3 }}>
+                        <Grid container spacing={{ xs: 3, md: 6 }} alignItems="flex-start">
+                            {/* President Image & Name */}
+                            <Grid size={{ xs: 12, md: 4, lg: 3.5 }}>
+                                <Box sx={{
+                                    display: 'flex',
+                                    flexDirection: 'column',
+                                    alignItems: 'center',
+                                    position: 'sticky',
+                                    top: '100px'
+                                }}>
+                                    <Box
+                                        component="img"
+                                        src="/assets/img/kuldeepMember.png"
+                                        alt={t('home.president_message')}
+                                        sx={{
+                                            width: '100%',
+                                            maxWidth: { xs: 220, md: '100%' },
+                                            borderRadius: '16px',
+                                            boxShadow: 4,
+                                            border: '4px solid #fff',
+                                            mb: 2.5
+                                        }}
+                                    />
+                                    <Typography variant="h6" sx={{ fontWeight: 800, color: '#1565c0', mb: 0.5 }}>
+                                        {t('home.president_name')}
+                                    </Typography>
+                                    <Typography variant="subtitle2" sx={{
+                                        color: 'text.secondary',
+                                        fontWeight: 600,
+                                        textTransform: 'uppercase',
+                                        letterSpacing: 1,
+                                        bgcolor: 'rgba(21, 101, 192, 0.08)',
+                                        px: 2,
+                                        py: 0.5,
+                                        borderRadius: 4
+                                    }}>
+                                        {t('home.president_title', 'President')}
+                                    </Typography>
+                                </Box>
+                            </Grid>
+
+                            {/* President Message Content */}
+                            <Grid size={{ xs: 12, md: 8, lg: 8.5 }}>
+                                <Box sx={{ position: 'relative' }}>
+                                    <Typography
+                                        variant="h5"
+                                        sx={{
+                                            fontWeight: 700,
+                                            color: '#1565c0',
+                                            mb: 3,
+                                            fontSize: { xs: '1.25rem', md: '1.75rem' },
+                                            position: 'relative',
+                                            '&:after': {
+                                                content: '""',
+                                                position: 'absolute',
+                                                bottom: '-8px',
+                                                left: 0,
+                                                width: '60px',
+                                                height: '4px',
+                                                bgcolor: '#1565c0',
+                                                borderRadius: 2
+                                            }
+                                        }}
+                                    >
+                                        {t('president_message.greeting')}
+                                    </Typography>
+
+                                    <Box sx={{ mt: 4 }}>
+                                        {[1, 2, 3, 4, 5].map((idx) => (
+                                            <Typography
+                                                key={idx}
+                                                paragraph
+                                                color="text.secondary"
+                                                sx={{
+                                                    fontSize: { xs: '0.95rem', md: '1.05rem' },
+                                                    lineHeight: 1.8,
+                                                    textAlign: 'justify',
+                                                    mb: idx === 5 ? 0 : 2.5
+                                                }}
+                                            >
+                                                {t(`president_message.p${idx}`)}
+                                            </Typography>
+                                        ))}
+                                    </Box>
+                                </Box>
+                            </Grid>
                         </Grid>
-                        <Grid size={{ xs: 12, md: 9 }}>
-                            <Paper sx={{ p: { xs: 2.5, md: 4 }, height: '100%', borderRadius: 2 }}>
-                                <Typography variant="h6" sx={{ fontWeight: 600, color: '#1565c0', mb: 2, fontSize: { xs: '1.1rem', md: '1.25rem' } }}>
-                                    Dear Friends,
-                                </Typography>
-                                <Typography paragraph color="text.secondary" sx={{ fontSize: { xs: '0.9rem', md: '1rem' }, lineHeight: 1.7, textAlign: 'justify' }}>
-                                    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
-                                </Typography>
-                                <Typography paragraph color="text.secondary" sx={{ fontSize: { xs: '0.9rem', md: '1rem' }, lineHeight: 1.7, textAlign: 'justify', mb: 0 }}>
-                                    Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-                                </Typography>
-                            </Paper>
-                        </Grid>
-                    </Grid>
+                    </Paper>
                 </Container>
 
                 {selectedImage && (

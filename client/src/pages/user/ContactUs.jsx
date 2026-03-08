@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import Navbar from '../../components/Navbar';
 import Footer from '../../components/Footer';
 import {
@@ -15,6 +16,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import api from '../../components/BaseURL';
 
 const ContactUs = () => {
+    const { t } = useTranslation();
     const [formData, setFormData] = useState({
         name: '',
         mobile: '',
@@ -84,7 +86,7 @@ const ContactUs = () => {
 
             api.post('/enquiry', data)
                 .then((response) => {
-                    toast.success('Contact submitted successfully!');
+                    toast.success(t('contact.success'));
                     setFormData({
                         name: '',
                         mobile: '',
@@ -95,7 +97,7 @@ const ContactUs = () => {
                 })
                 .catch((error) => {
                     console.error('Error submitting contact:', error);
-                    toast.error('Error submitting contact. Please try again.');
+                    toast.error(t('contact.error'));
                 });
         }
     };
@@ -121,7 +123,7 @@ const ContactUs = () => {
                             }}
                         >
                             <Typography variant="h5" sx={{ fontWeight: 600 }}>
-                                Contact Us
+                                {t('contact.title')}
                             </Typography>
                         </Box>
 
@@ -132,9 +134,9 @@ const ContactUs = () => {
                                     <TextField
                                         fullWidth
                                         required
-                                        label="Name"
+                                        label={t('contact.name')}
                                         name="name"
-                                        placeholder="Enter your full name"
+                                        placeholder={t('contact.name_placeholder')}
                                         value={formData.name}
                                         onChange={handleChange}
                                         error={!!errors.name}
@@ -149,9 +151,9 @@ const ContactUs = () => {
                                     <TextField
                                         fullWidth
                                         required
-                                        label="Mobile No."
+                                        label={t('contact.mobile')}
                                         name="mobile"
-                                        placeholder="Enter your mobile number"
+                                        placeholder={t('contact.mobile_placeholder')}
                                         value={formData.mobile}
                                         onChange={handleChange}
                                         error={!!errors.mobile}
@@ -167,9 +169,9 @@ const ContactUs = () => {
                                         fullWidth
                                         required
                                         type="email"
-                                        label="Email"
+                                        label={t('contact.email')}
                                         name="email"
-                                        placeholder="Enter your email"
+                                        placeholder={t('contact.email_placeholder')}
                                         value={formData.email}
                                         onChange={handleChange}
                                         error={!!errors.email}
@@ -184,9 +186,9 @@ const ContactUs = () => {
                                     <TextField
                                         fullWidth
                                         required
-                                        label="Topic"
+                                        label={t('contact.topic')}
                                         name="topic"
-                                        placeholder="Enter topic"
+                                        placeholder={t('contact.topic_placeholder')}
                                         value={formData.topic}
                                         onChange={handleChange}
                                         error={!!errors.topic}
@@ -201,9 +203,9 @@ const ContactUs = () => {
                                     <TextField
                                         fullWidth
                                         required
-                                        label="Description"
+                                        label={t('contact.description')}
                                         name="description"
-                                        placeholder="Enter your message"
+                                        placeholder={t('contact.description_placeholder')}
                                         value={formData.description}
                                         onChange={handleChange}
                                         error={!!errors.description}
@@ -233,7 +235,7 @@ const ContactUs = () => {
                                             },
                                         }}
                                     >
-                                        Submit
+                                        {t('contact.submit')}
                                     </Button>
                                 </Grid>
                             </Grid>

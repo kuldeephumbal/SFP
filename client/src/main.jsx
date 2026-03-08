@@ -4,7 +4,9 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 import './index.css';
+import './i18n';
 import App from './App';
+import ScrollToTop from './components/ScrollToTop';
 import Dashboard from './pages/admin/Dashboard';
 import Settings from './pages/admin/Settings';
 import Login from './pages/user/Login';
@@ -21,6 +23,7 @@ import Donate from './pages/user/Donate';
 import UpcomingEvents from './pages/user/upcomingEvents';
 import ListOfDonor from './pages/user/ListOfDonor';
 import Gallery from './pages/user/Gallery';
+import LatestActivityDetail from './pages/user/LatestActivityDetail';
 import AdminGallery from './pages/admin/Gallery';
 import AdminCrowdFunding from './pages/admin/CrowdFunding';
 import AdminProblem from './pages/admin/ProblemRaised';
@@ -35,10 +38,16 @@ import Achievements from './pages/user/Achievements';
 import CrowdFunding from './pages/user/CrowdFunding';
 import YourProblem from './pages/user/YourProblem';
 import OurProjects from './pages/user/OurProjects';
+import TermsAndConditions from './pages/user/TermsAndConditions';
+import PrivacyPolicy from './pages/user/PrivacyPolicy';
+import Disclaimer from './pages/user/Disclaimer';
+import RefundPolicy from './pages/user/RefundPolicy';
+import NotFound from './pages/user/NotFound';
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
     <BrowserRouter>
+      <ScrollToTop />
       <Routes>
         {/* Public Routes */}
         <Route path="/" element={<UserLandingPage />} />
@@ -55,6 +64,15 @@ createRoot(document.getElementById('root')).render(
         <Route path="/crowdfunding" element={<CrowdFunding />} />
         <Route path="/your-problems" element={<YourProblem />} />
         <Route path="/projects" element={<OurProjects />} />
+        <Route path="/terms" element={<TermsAndConditions />} />
+        <Route path="/privacy" element={<PrivacyPolicy />} />
+        <Route path="/disclaimer" element={<Disclaimer />} />
+        <Route path="/refund" element={<RefundPolicy />} />
+        <Route path="/latest-activity/:id" element={<LatestActivityDetail />} />
+
+        {/* Catch-all route for any other public pages */}
+        <Route path="*" element={<Navigate to="/404" replace />} />
+        <Route path="/404" element={<NotFound />} />
 
         {/* Auth Routes */}
         <Route path="/login" element={<Login />} />
@@ -81,7 +99,7 @@ createRoot(document.getElementById('root')).render(
             <Route path="enquiry" element={<AdminEnquiry />} />
             <Route path="achievements" element={<AdminAchievements />} />
             <Route path="settings" element={<Settings />} />
-            <Route path="*" element={<div>Page Not Found</div>} />
+            <Route path="*" element={<Navigate to="/404" replace />} />
           </Routes>
         </App>} />
       </Routes>

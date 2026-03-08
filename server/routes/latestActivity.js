@@ -3,6 +3,7 @@ const router = express.Router();
 const { latestActivityUpload } = require('../config/multer');
 const {
     getLatestActivities,
+    getLatestActivityById,
     createLatestActivity,
     updateLatestActivity,
     deleteLatestActivity
@@ -52,6 +53,7 @@ const {
  *                 $ref: '#/components/schemas/LatestActivity'
  */
 router.get('/', getLatestActivities);
+router.get('/:id', getLatestActivityById);
 
 /**
  * @swagger

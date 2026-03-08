@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import Navbar from '../../components/Navbar';
 import Footer from '../../components/Footer';
 import api from '../../components/BaseURL';
@@ -18,6 +19,7 @@ import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 const Gallery = () => {
+    const { t } = useTranslation();
     const [galleryItems, setGalleryItems] = useState([]);
     const [selectedImage, setSelectedImage] = useState(null);
     const [loading, setLoading] = useState(true);
@@ -38,7 +40,7 @@ const Gallery = () => {
             })
             .catch((error) => {
                 console.error('Error fetching gallery items:', error);
-                toast.error('Error loading gallery');
+                toast.error(t('gallery.error_loading'));
                 setLoading(false);
             });
     };
@@ -62,7 +64,7 @@ const Gallery = () => {
                         }}
                     >
                         <Typography variant="h5" sx={{ fontWeight: 600 }}>
-                            Gallery
+                            {t('gallery.title')}
                         </Typography>
                     </Box>
 
@@ -72,41 +74,51 @@ const Gallery = () => {
                             <CircularProgress />
                         </Box>
                     ) : galleryItems.length > 0 ? (
-                        <Grid container spacing={3}>
+                        <Box
+                            sx={{
+                                display: 'grid',
+                                gridTemplateColumns: {
+                                    xs: 'repeat(2, minmax(0, 1fr))',
+                                    sm: 'repeat(3, minmax(0, 1fr))',
+                                    md: 'repeat(4, minmax(0, 1fr))',
+                                },
+                                gap: { xs: 2, sm: 3 },
+                            }}
+                        >
                             {galleryItems.map((item) => (
-                                <Grid item xs={12} sm={6} md={4} lg={3} key={item._id}>
-                                    <Card
+                                <Card
+                                    key={item._id}
+                                    sx={{
+                                        boxShadow: 2,
+                                        borderRadius: 1,
+                                        overflow: 'hidden',
+                                        cursor: 'pointer',
+                                        transition: 'all 0.3s ease-in-out',
+                                        '&:hover': {
+                                            boxShadow: 4,
+                                            transform: 'scale(1.03)',
+                                        },
+                                    }}
+                                    onClick={() => setSelectedImage(item.photo)}
+                                >
+                                    <CardMedia
+                                        component="img"
+                                        image={`http://localhost:5000${item.photo}`}
+                                        alt="gallery item"
                                         sx={{
-                                            height: '100%',
-                                            boxShadow: 2,
-                                            borderRadius: 1,
-                                            overflow: 'hidden',
-                                            cursor: 'pointer',
-                                            transition: 'all 0.3s ease-in-out',
-                                            '&:hover': {
-                                                boxShadow: 4,
-                                                transform: 'scale(1.03)',
-                                            },
+                                            width: '100%',
+                                            height: { xs: 140, sm: 160, md: 180 },
+                                            objectFit: 'cover',
+                                            display: 'block',
                                         }}
-                                        onClick={() => setSelectedImage(item.photo)}
-                                    >
-                                        <CardMedia
-                                            component="img"
-                                            image={`http://localhost:5000${item.photo}`}
-                                            alt="gallery item"
-                                            sx={{
-                                                height: 250,
-                                                objectFit: 'cover',
-                                            }}
-                                        />
-                                    </Card>
-                                </Grid>
+                                    />
+                                </Card>
                             ))}
-                        </Grid>
+                        </Box>
                     ) : (
                         <Box sx={{ textAlign: 'center', py: 6 }}>
                             <Typography variant="body1" color="textSecondary">
-                                No gallery items found.
+                                {t('common.no_items')}
                             </Typography>
                         </Box>
                     )}

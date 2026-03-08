@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import Navbar from '../../components/Navbar';
 import Footer from '../../components/Footer';
 import {
@@ -17,6 +18,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import api from '../../components/BaseURL';
 
 const ListOfDonor = () => {
+    const { t } = useTranslation();
     const [donations, setDonations] = useState([]);
     const [searchText, setSearchText] = useState('');
     const [loading, setLoading] = useState(true);
@@ -29,7 +31,7 @@ const ListOfDonor = () => {
             })
             .catch((error) => {
                 console.error('Error fetching donations:', error);
-                toast.error('Error loading donors');
+                toast.error(t('donors.error_loading'));
                 setLoading(false);
             });
     };
@@ -62,20 +64,21 @@ const ListOfDonor = () => {
                         }}
                     >
                         <Typography variant="h5" sx={{ fontWeight: 600 }}>
-                            List of Donors
+                            {t('donors.title')}
                         </Typography>
                     </Box>
 
                     {/* Search Bar */}
                     <Box sx={{ mb: 4, display: 'flex', justifyContent: 'center' }}>
                         <TextField
-                            placeholder="🔍 Search here..."
+                            placeholder={t('common.search')}
                             value={searchText}
                             onChange={(e) => setSearchText(e.target.value)}
                             variant="outlined"
                             size="small"
                             sx={{
-                                width: { xs: '100%', sm: '80%', md: '50%' },
+                                width: '100%',
+                                maxWidth: { xs: 340, sm: 400, md: 480 },
                                 backgroundColor: 'white',
                                 borderRadius: 1,
                             }}
@@ -88,70 +91,80 @@ const ListOfDonor = () => {
                             <CircularProgress />
                         </Box>
                     ) : filteredDonations.length > 0 ? (
-                        <Grid container spacing={3}>
+                        <Box
+                            sx={{
+                                display: 'grid',
+                                gridTemplateColumns: {
+                                    xs: 'repeat(2, minmax(0, 1fr))',
+                                    sm: 'repeat(3, minmax(0, 1fr))',
+                                    md: 'repeat(4, minmax(0, 1fr))',
+                                },
+                                gap: { xs: 2, sm: 3 },
+                            }}
+                        >
                             {filteredDonations.map((donation) => (
-                                <Grid size={{ xs: 12, sm: 6, md: 4, lg: 3 }} key={donation._id}>
-                                    <Card
+                                <Card
+                                    key={donation._id}
+                                    sx={{
+                                        height: '100%',
+                                        display: 'flex',
+                                        flexDirection: 'column',
+                                        textAlign: 'center',
+                                        boxShadow: 2,
+                                        borderRadius: 1,
+                                        overflow: 'hidden',
+                                        transition: 'all 0.3s ease-in-out',
+                                        '&:hover': {
+                                            boxShadow: 4,
+                                            transform: 'translateY(-5px)',
+                                        },
+                                    }}
+                                >
+                                    {/* Donor Image */}
+                                    <CardMedia
+                                        component="img"
+                                        image={donation.photo ? `http://localhost:5000/${donation.photo.replace(/^\/+/, '')}` : '/assets/img/default-profile.jpg'}
+                                        alt={donation.full_name}
                                         sx={{
-                                            height: '100%',
-                                            display: 'flex',
-                                            flexDirection: 'column',
-                                            textAlign: 'center',
-                                            boxShadow: 2,
-                                            borderRadius: 1,
-                                            overflow: 'hidden',
-                                            transition: 'all 0.3s ease-in-out',
-                                            '&:hover': {
-                                                boxShadow: 4,
-                                                transform: 'translateY(-5px)',
-                                            },
+                                            height: { xs: 140, sm: 160, md: 180 },
+                                            objectFit: 'cover',
                                         }}
-                                    >
-                                        {/* Donor Image */}
-                                        <CardMedia
-                                            component="img"
-                                            image={donation.photo ? `http://localhost:5000/${donation.photo.replace(/^\/+/, '')}` : '/assets/img/default-profile.jpg'}
-                                            alt={donation.full_name}
+                                    />
+
+                                    {/* Card Content */}
+                                    <CardContent sx={{ flexGrow: 1 }}>
+                                        {/* Donor Name */}
+                                        <Typography
+                                            variant="h6"
                                             sx={{
-                                                height: 200,
-                                                objectFit: 'cover',
+                                                fontWeight: 600,
+                                                color: '#333',
+                                                mb: 0.5,
+                                                fontSize: { xs: '0.95rem', sm: '1rem', md: '1.05rem' },
                                             }}
-                                        />
+                                        >
+                                            {donation.full_name}
+                                        </Typography>
 
-                                        {/* Card Content */}
-                                        <CardContent sx={{ flexGrow: 1 }}>
-                                            {/* Donor Name */}
-                                            <Typography
-                                                variant="h6"
-                                                sx={{
-                                                    fontWeight: 600,
-                                                    color: '#333',
-                                                    mb: 1,
-                                                }}
-                                            >
-                                                {donation.full_name}
-                                            </Typography>
-
-                                            {/* Amount */}
-                                            <Typography
-                                                variant="body1"
-                                                sx={{
-                                                    fontWeight: 600,
-                                                    color: '#4caf50',
-                                                    fontSize: '1.2rem',
-                                                }}
-                                            >
-                                                ₹{donation.amount}
-                                            </Typography>
-                                        </CardContent>
-                                    </Card>
-                                </Grid>
+                                        {/* Amount */}
+                                        <Typography
+                                            variant="body1"
+                                            sx={{
+                                                fontWeight: 600,
+                                                color: '#4caf50',
+                                                fontSize: { xs: '0.9rem', sm: '1rem', md: '1.1rem' },
+                                            }}
+                                        >
+                                            ₹{donation.amount}
+                                        </Typography>
+                                    </CardContent>
+                                </Card>
                             ))}
-                        </Grid>
+                        </Box>
                     ) : (
                         <Box sx={{ textAlign: 'center', py: 6 }}>
                             <Typography variant="body1" color="textSecondary">
-                                No donor registered by this name.
+                                {t('donors.no_donor')}
                             </Typography>
                         </Box>
                     )}

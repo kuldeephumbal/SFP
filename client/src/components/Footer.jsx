@@ -1,106 +1,147 @@
-import { Box, Container, Grid, Typography, IconButton, Link, Divider } from '@mui/material';
-import { Facebook, Twitter, Instagram, YouTube, LocationOn, Phone, Email } from '@mui/icons-material';
+import { Box, Container, Grid, Typography, IconButton, Link as MuiLink, Divider } from '@mui/material';
+import { Link, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
+import { Facebook, X as XIcon, Instagram, YouTube, LocationOn, Phone, Email } from '@mui/icons-material';
 
 const Footer = () => {
+    const { t } = useTranslation();
+    const navigate = useNavigate();
     return (
         <Box sx={{ bgcolor: '#2c3e50', color: 'white', py: 5 }}>
             <Container maxWidth="lg">
-                <Grid container spacing={4}>
-                    <Grid item xs={12} md={3}>
+                <Grid container spacing={4} justifyContent={{ xs: 'center', md: 'space-between' }} alignItems="flex-start">
+                    {/* Logo & Follow Us Section */}
+                    <Grid size={{ xs: 12, md: 4 }}>
                         <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2 }}>
                             <Box sx={{ bgcolor: 'white', p: 2, borderRadius: 2 }}>
                                 <img
                                     src="/assets/img/Shankhnad-logo.png"
-                                    alt="Shankhnad Foundation"
+                                    alt={t('foundation_name')}
                                     style={{ width: 100 }}
                                 />
                             </Box>
-                            <Typography variant="h6" sx={{ fontWeight: 600 }}>Follow Us</Typography>
+                            <Typography variant="h6" sx={{ fontWeight: 600 }}>{t('footer.follow_us')}</Typography>
                             <Box sx={{ display: 'flex', gap: 1 }}>
-                                <IconButton sx={{ bgcolor: '#3b5998', color: 'white', '&:hover': { bgcolor: '#2d4373' } }}>
+                                <IconButton component="a" href="https://www.facebook.com/shankhnadnews/" target="_blank" sx={{ bgcolor: '#3b5998', color: 'white', '&:hover': { bgcolor: '#2d4373' } }}>
                                     <Facebook />
                                 </IconButton>
-                                <IconButton sx={{ bgcolor: '#1da1f2', color: 'white', '&:hover': { bgcolor: '#0c85d0' } }}>
-                                    <Twitter />
+                                <IconButton component="a" href="https://x.com/NewsShankhnad" target="_blank" sx={{ bgcolor: '#000000', color: 'white', '&:hover': { bgcolor: '#333333' } }}>
+                                    <XIcon />
                                 </IconButton>
-                                <IconButton sx={{ bgcolor: '#e4405f', color: 'white', '&:hover': { bgcolor: '#c13584' } }}>
+                                <IconButton component="a" href="https://www.instagram.com/shankhnad_the_voice/" target="_blank" sx={{ bgcolor: '#e4405f', color: 'white', '&:hover': { bgcolor: '#c13584' } }}>
                                     <Instagram />
                                 </IconButton>
-                                <IconButton sx={{ bgcolor: '#ff0000', color: 'white', '&:hover': { bgcolor: '#cc0000' } }}>
+                                <IconButton component="a" href="https://www.youtube.com/channel/UC-FPnJJ5-YAYTjTrt7P1o4w" target="_blank" sx={{ bgcolor: '#ff0000', color: 'white', '&:hover': { bgcolor: '#cc0000' } }}>
                                     <YouTube />
                                 </IconButton>
                             </Box>
                         </Box>
                     </Grid>
-                    <Grid item xs={12} md={3}>
-                        <Box sx={{ display: 'flex', alignItems: 'start', gap: 1, mb: 2 }}>
-                            <LocationOn sx={{ color: '#1976d2' }} />
-                            <Box>
-                                <Typography variant="subtitle1" sx={{ fontWeight: 600, mb: 1 }}>Address</Typography>
-                                <Typography variant="body2">
-                                    Shankhnad Farm House - Sihor, Bhavnagar, Gujarat
-                                </Typography>
+
+                    {/* Contact Info Section - Address last */}
+                    <Grid size={{ xs: 12, md: 4 }}>
+                        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3, width: '100%', alignItems: { xs: 'center', md: 'flex-start' }, textAlign: { xs: 'center', md: 'left' } }}>
+                            <Box sx={{ display: 'flex', flexDirection: { xs: 'column', md: 'row' }, alignItems: { xs: 'center', md: 'flex-start' }, gap: 2 }}>
+                                <Phone sx={{ color: '#ecf0f1', fontSize: '1.8rem', mt: { md: 0.5 } }} />
+                                <Box>
+                                    <Typography variant="subtitle1" sx={{ fontWeight: 600, color: 'white' }}>{t('footer.call_us')}</Typography>
+                                    <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.8)' }}>+91 98792 75333</Typography>
+                                </Box>
                             </Box>
-                        </Box>
-                        <Box sx={{ display: 'flex', alignItems: 'start', gap: 1, mb: 2 }}>
-                            <Phone sx={{ color: '#1976d2' }} />
-                            <Box>
-                                <Typography variant="subtitle1" sx={{ fontWeight: 600, mb: 1 }}>Call Us</Typography>
-                                <Typography variant="body2">+91 9725863699</Typography>
+                            <Box sx={{ display: 'flex', flexDirection: { xs: 'column', md: 'row' }, alignItems: { xs: 'center', md: 'flex-start' }, gap: 2 }}>
+                                <Email sx={{ color: '#ecf0f1', fontSize: '1.8rem', mt: { md: 0.5 } }} />
+                                <Box>
+                                    <Typography variant="subtitle1" sx={{ fontWeight: 600, color: 'white' }}>{t('footer.email')}</Typography>
+                                    <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.8)' }}>shanknadfs@gmail.com</Typography>
+                                </Box>
                             </Box>
-                        </Box>
-                        <Box sx={{ display: 'flex', alignItems: 'start', gap: 1 }}>
-                            <Email sx={{ color: '#1976d2' }} />
-                            <Box>
-                                <Typography variant="subtitle1" sx={{ fontWeight: 600, mb: 1 }}>Email</Typography>
-                                <Typography variant="body2">shankhnad.tv.news@gmail.com</Typography>
+                            <Box sx={{ display: 'flex', flexDirection: { xs: 'column', md: 'row' }, alignItems: { xs: 'center', md: 'flex-start' }, gap: 2 }}>
+                                <LocationOn sx={{ color: '#ecf0f1', fontSize: '1.8rem', mt: { md: 0.5 } }} />
+                                <Box>
+                                    <Typography variant="subtitle1" sx={{ fontWeight: 600, color: 'white' }}>{t('footer.address')}</Typography>
+                                    <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.8)', maxWidth: '280px' }}>
+                                        {t('footer.footer_address', 'Shankhanad News, 402-Dwarkesh Flat, Sihor Pin - 364240')}
+                                    </Typography>
+                                </Box>
                             </Box>
                         </Box>
                     </Grid>
-                    <Grid item xs={12} md={3}>
-                        <Typography variant="h6" sx={{ fontWeight: 600, mb: 1 }}>Useful Links</Typography>
-                        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.5 }}>
-                            <Link href="/" color="inherit" underline="hover" sx={{ fontSize: '0.875rem' }}>Home</Link>
-                            <Link href="/member-apply" color="inherit" underline="hover" sx={{ fontSize: '0.875rem' }}>Member Apply</Link>
-                            <Link href="/our-team" color="inherit" underline="hover" sx={{ fontSize: '0.875rem' }}>Team Member</Link>
-                            <Link href="/donors" color="inherit" underline="hover" sx={{ fontSize: '0.875rem' }}>List Of Donors</Link>
-                            <Link href="/contact" color="inherit" underline="hover" sx={{ fontSize: '0.875rem' }}>Contact Us</Link>
-                        </Box>
-                    </Grid>
-                    <Grid item xs={12} md={3}>
-                        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.5, mt: 4 }}>
-                            <Link href="/upcoming-events" color="inherit" underline="hover" sx={{ fontSize: '0.875rem' }}>Latest Event</Link>
-                            <Link href="/donate" color="inherit" underline="hover" sx={{ fontSize: '0.875rem' }}>Donation</Link>
-                            <Link href="/gallery" color="inherit" underline="hover" sx={{ fontSize: '0.875rem' }}>Gallery</Link>
-                            <Link href="/projects" color="inherit" underline="hover" sx={{ fontSize: '0.875rem' }}>Our projects</Link>
-                            <Link href="/about" color="inherit" underline="hover" sx={{ fontSize: '0.875rem' }}>About Us</Link>
+
+                    {/* Useful Links Section */}
+                    <Grid size={{ xs: 12, md: 4 }}>
+                        <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: { xs: 'center', md: 'flex-start' }, textAlign: { xs: 'center', md: 'left' } }}>
+                            <Typography variant="h6" sx={{ fontWeight: 600, mb: 3, pb: 1, borderBottom: '2px solid rgba(255,255,255,0.1)', width: { xs: 'auto', md: '100%' } }}>{t('footer.useful_links')}</Typography>
+                            <Grid container spacing={2} sx={{ width: '100%', maxWidth: { xs: '300px', md: 'none' } }}>
+                                <Grid size={{ xs: 6 }}>
+                                    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.2, alignItems: { xs: 'center', md: 'flex-start' } }}>
+                                        <MuiLink component={Link} to="/" color="inherit" underline="hover" sx={{ fontSize: '0.85rem', color: 'rgba(255,255,255,0.8)', '&:hover': { color: 'white' } }}>{t('navbar.home')}</MuiLink>
+                                        <MuiLink component={Link} to="/member-apply" color="inherit" underline="hover" sx={{ fontSize: '0.85rem', color: 'rgba(255,255,255,0.8)', '&:hover': { color: 'white' } }}>{t('navbar.apply')}</MuiLink>
+                                        <MuiLink component={Link} to="/our-team" color="inherit" underline="hover" sx={{ fontSize: '0.85rem', color: 'rgba(255,255,255,0.8)', '&:hover': { color: 'white' } }}>{t('navbar.team')}</MuiLink>
+                                        <MuiLink component={Link} to="/donors" color="inherit" underline="hover" sx={{ fontSize: '0.85rem', color: 'rgba(255,255,255,0.8)', '&:hover': { color: 'white' } }}>{t('navbar.donors_list')}</MuiLink>
+                                        <MuiLink component={Link} to="/contact" color="inherit" underline="hover" sx={{ fontSize: '0.85rem', color: 'rgba(255,255,255,0.8)', '&:hover': { color: 'white' } }}>{t('navbar.contact')}</MuiLink>
+                                    </Box>
+                                </Grid>
+                                <Grid size={{ xs: 6 }}>
+                                    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.2, alignItems: { xs: 'center', md: 'flex-start' } }}>
+                                        <MuiLink component={Link} to="/upcoming-events" color="inherit" underline="hover" sx={{ fontSize: '0.85rem', color: 'rgba(255,255,255,0.8)', '&:hover': { color: 'white' } }}>{t('navbar.upcoming_events')}</MuiLink>
+                                        <MuiLink component={Link} to="/donate" color="inherit" underline="hover" sx={{ fontSize: '0.85rem', color: 'rgba(255,255,255,0.8)', '&:hover': { color: 'white' } }}>{t('navbar.donate')}</MuiLink>
+                                        <MuiLink component={Link} to="/gallery" color="inherit" underline="hover" sx={{ fontSize: '0.85rem', color: 'rgba(255,255,255,0.8)', '&:hover': { color: 'white' } }}>{t('navbar.gallery')}</MuiLink>
+                                        <MuiLink component={Link} to="/projects" color="inherit" underline="hover" sx={{ fontSize: '0.85rem', color: 'rgba(255,255,255,0.8)', '&:hover': { color: 'white' } }}>{t('navbar.our_projects')}</MuiLink>
+                                        <MuiLink component={Link} to="/about" color="inherit" underline="hover" sx={{ fontSize: '0.85rem', color: 'rgba(255,255,255,0.8)', '&:hover': { color: 'white' } }}>{t('navbar.about')}</MuiLink>
+                                    </Box>
+                                </Grid>
+                            </Grid>
                         </Box>
                     </Grid>
                 </Grid>
                 <Divider sx={{ my: 3, bgcolor: 'rgba(255,255,255,0.2)' }} />
                 <Box sx={{ textAlign: 'center' }}>
                     <Typography variant="body2" sx={{ mb: 1 }}>
-                        Copyright © 2025, All Right Reserved{' '}
-                        <Link href="/" color="#42a5f5" underline="hover" sx={{ fontWeight: 600 }}>
-                            Shankhnad Foundation
-                        </Link>
+                        Copyright © 2025, {t('footer.rights')}{' '}
+                        <MuiLink component={Link} to="/" color="#42a5f5" underline="hover" sx={{ fontWeight: 600 }}>
+                            {t('foundation_name')}
+                        </MuiLink>
                     </Typography>
                     <Box sx={{ display: 'flex', justifyContent: 'center', gap: 2, mb: 2, flexWrap: 'wrap' }}>
-                        <Link href="#" color="inherit" underline="hover" sx={{ fontSize: '0.75rem' }}>
-                            Terms & Condition
-                        </Link>
-                        <Link href="#" color="inherit" underline="hover" sx={{ fontSize: '0.75rem' }}>
-                            Privacy Policy
-                        </Link>
-                        <Link href="#" color="inherit" underline="hover" sx={{ fontSize: '0.75rem' }}>
-                            Disclaimer
-                        </Link>
-                        <Link href="#" color="inherit" underline="hover" sx={{ fontSize: '0.75rem' }}>
-                            Refund Policy
-                        </Link>
+                        <MuiLink
+                            component="button"
+                            onClick={() => navigate('/terms')}
+                            color="inherit"
+                            underline="hover"
+                            sx={{ fontSize: '0.75rem', background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'inherit', padding: 0 }}
+                        >
+                            {t('footer.terms')}
+                        </MuiLink>
+                        <MuiLink
+                            component="button"
+                            onClick={() => navigate('/privacy')}
+                            color="inherit"
+                            underline="hover"
+                            sx={{ fontSize: '0.75rem', background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'inherit', padding: 0 }}
+                        >
+                            {t('footer.privacy')}
+                        </MuiLink>
+                        <MuiLink
+                            component="button"
+                            onClick={() => navigate('/disclaimer')}
+                            color="inherit"
+                            underline="hover"
+                            sx={{ fontSize: '0.75rem', background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'inherit', padding: 0 }}
+                        >
+                            {t('footer.disclaimer')}
+                        </MuiLink>
+                        <MuiLink
+                            component="button"
+                            onClick={() => navigate('/refund')}
+                            color="inherit"
+                            underline="hover"
+                            sx={{ fontSize: '0.75rem', background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'inherit', padding: 0 }}
+                        >
+                            {t('footer.refund')}
+                        </MuiLink>
                     </Box>
                     <Typography variant="caption" color="rgba(255,255,255,0.7)">
-                        Website Designed By - Kuldeep Humbal, Mob. - 9725863699
+                        {t('footer.designed_by')}
                     </Typography>
                 </Box>
             </Container>

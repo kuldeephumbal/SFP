@@ -11,6 +11,20 @@ exports.getLatestActivities = async (req, res) => {
     }
 };
 
+// Get single latest activity by ID
+exports.getLatestActivityById = async (req, res) => {
+    try {
+        const activity = await LatestActivity.findById(req.params.id);
+        if (!activity) {
+            return res.status(404).json({ message: 'Latest activity not found' });
+        }
+        res.status(200).json(activity);
+    } catch (error) {
+        console.error('Error fetching latest activity:', error);
+        res.status(500).json({ message: 'Failed to fetch latest activity', error: error.message });
+    }
+};
+
 // Create a new latest activity
 exports.createLatestActivity = async (req, res) => {
     try {
