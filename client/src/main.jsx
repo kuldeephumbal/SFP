@@ -20,7 +20,7 @@ import UpcomingEvent from './pages/admin/UpcomingEvent';
 import UserLandingPage from './pages/user/index';
 import MemberApply from './pages/user/MemberApply';
 import Donate from './pages/user/Donate';
-import UpcomingEvents from './pages/user/upcomingEvents';
+import UpcomingEvents from './pages/user/UpcomingEvents';
 import ListOfDonor from './pages/user/ListOfDonor';
 import Gallery from './pages/user/Gallery';
 import LatestActivityDetail from './pages/user/LatestActivityDetail';
