@@ -28,6 +28,10 @@ exports.getLatestActivityById = async (req, res) => {
 // Create a new latest activity
 exports.createLatestActivity = async (req, res) => {
     try {
+        console.log('Create Activity Request:', {
+            body: req.body,
+            file: req.file ? req.file.filename : 'No file'
+        });
         const { activity_detail } = req.body;
 
         if (!activity_detail) {
@@ -47,7 +51,11 @@ exports.createLatestActivity = async (req, res) => {
         res.status(201).json({ message: 'Latest activity created successfully', activity: newActivity });
     } catch (error) {
         console.error('Error creating latest activity:', error);
-        res.status(500).json({ message: 'Failed to create latest activity', error: error.message });
+        res.status(500).json({
+            message: 'Failed to create latest activity',
+            error: error.message,
+            stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
+        });
     }
 };
 

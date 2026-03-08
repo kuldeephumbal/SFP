@@ -1,5 +1,7 @@
 require('dotenv').config();
 const express = require('express');
+const fs = require('fs');
+const path = require('path');
 const cors = require("cors");
 const bodyParser = require('body-parser');
 const app = express();
@@ -22,6 +24,28 @@ const enquiryRoutes = require('./routes/Enquiry');
 const achievementRoutes = require('./routes/achievement');
 const uploadRoutes = require('./routes/upload');
 const dashboardRoutes = require('./routes/dashboard');
+
+// Ensure upload directories exist
+const uploadDirs = [
+    'uploads',
+    'uploads/slider',
+    'uploads/members',
+    'uploads/latest-activity',
+    'uploads/gallery',
+    'uploads/events',
+    'uploads/crowdfunding',
+    'uploads/problems',
+    'uploads/projects',
+    'uploads/donations',
+    'uploads/member-applications'
+];
+
+uploadDirs.forEach(dir => {
+    const dirPath = path.join(__dirname, dir);
+    if (!fs.existsSync(dirPath)) {
+        fs.mkdirSync(dirPath, { recursive: true });
+    }
+});
 
 // Middleware
 swaggerDocs(app);
