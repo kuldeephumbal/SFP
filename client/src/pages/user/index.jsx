@@ -939,7 +939,7 @@ const UserLandingPage = () => {
                                 }}>
                                     <Box
                                         component="img"
-                                        src="/assets/img/kuldeepMember.png"
+                                        src="/assets/img/milanMember.png"
                                         alt={t('home.president_message')}
                                         sx={{
                                             width: '100%',
