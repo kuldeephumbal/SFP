@@ -33,6 +33,7 @@ const Navbar = () => {
         i18n.changeLanguage(lng);
         localStorage.setItem('i18nextLng', lng);
         setLangAnchorEl(null);
+        setMobileOpen(false);
     };
 
     const handleLangOpen = (event) => {
