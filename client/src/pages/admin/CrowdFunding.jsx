@@ -16,7 +16,7 @@ import {
 } from '@mui/material';
 import { Add, Edit, Delete, VolunteerActivism, Image as ImageIcon, Search } from '@mui/icons-material';
 import { toast } from 'react-toastify';
-import api from '../../components/BaseURL';
+import api, { IMAGE_BASE_URL } from '../../components/BaseURL';
 import BaseTable from '../../components/BaseTable';
 
 const AdminCrowdFunding = () => {

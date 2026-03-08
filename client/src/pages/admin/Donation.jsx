@@ -13,7 +13,7 @@ import {
 import { Delete, Paid, Search, Receipt } from '@mui/icons-material';
 import { toast } from 'react-toastify';
 import BaseTable from '../../components/BaseTable';
-import api from '../../components/BaseURL';
+import api, { IMAGE_BASE_URL } from '../../components/BaseURL';
 
 const AdminDonation = () => {
     const [searchQuery, setSearchQuery] = useState('');

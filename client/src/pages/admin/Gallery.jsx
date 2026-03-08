@@ -15,7 +15,7 @@ import {
 } from '@mui/material';
 import { Add, Edit, Delete, PhotoLibrary, Image as ImageIcon } from '@mui/icons-material';
 import { toast } from 'react-toastify';
-import api from '../../components/BaseURL';
+import api, { IMAGE_BASE_URL } from '../../components/BaseURL';
 import BaseTable from '../../components/BaseTable';
 
 const Gallery = () => {

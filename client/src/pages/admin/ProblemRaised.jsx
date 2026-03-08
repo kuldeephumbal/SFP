@@ -18,7 +18,7 @@ import {
 import { Delete, ReportProblem, Search, AttachFile, VideoLibrary } from '@mui/icons-material';
 import { toast } from 'react-toastify';
 import BaseTable from '../../components/BaseTable';
-import api from '../../components/BaseURL';
+import api, { IMAGE_BASE_URL } from '../../components/BaseURL';
 
 const AdminProblem = () => {
     const [searchQuery, setSearchQuery] = useState('');
