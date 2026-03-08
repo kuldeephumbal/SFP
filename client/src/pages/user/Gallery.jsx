@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import Navbar from '../../components/Navbar';
 import Footer from '../../components/Footer';
-import api, { IMAGE_BASE_URL } from '../../components/BaseURL';
+import api, { IMAGE_BASE_URL, getImageUrl } from '../../components/BaseURL';
 import {
     Box,
     Container,
@@ -110,7 +110,7 @@ const Gallery = () => {
                                     >
                                         <CardMedia
                                             component="img"
-                                            image={`${IMAGE_BASE_URL}${item.photo}`}
+                                            image={getImageUrl(item.photo)}
                                             alt={item.title || 'Gallery Image'}
                                             sx={{
                                                 height: 250,
@@ -171,7 +171,7 @@ const Gallery = () => {
                             {selectedImage && (
                                 <Box
                                     component="img"
-                                    src={`${IMAGE_BASE_URL}/${selectedImage.replace(/^\/+/, '')}`}
+                                    src={getImageUrl(selectedImage)}
                                     alt="Gallery Preview"
                                     sx={{
                                         width: '100%',

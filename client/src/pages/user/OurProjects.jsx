@@ -16,7 +16,7 @@ import {
 } from '@mui/material';
 import Navbar from '../../components/Navbar';
 import Footer from '../../components/Footer';
-import api, { IMAGE_BASE_URL } from '../../components/BaseURL';
+import api, { IMAGE_BASE_URL, getImageUrl } from '../../components/BaseURL';
 
 export default function OurProjects() {
     const { t } = useTranslation();
@@ -118,7 +118,7 @@ export default function OurProjects() {
                                         {/* Project Image */}
                                         <CardMedia
                                             component="img"
-                                            image={`${IMAGE_BASE_URL}/${project.photo.replace(/^\/+/, '')}`}
+                                            image={getImageUrl(project.photo)}
                                             alt={project.topic}
                                             sx={{
                                                 width: { xs: '100%', md: '35%' },

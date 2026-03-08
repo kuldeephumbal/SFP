@@ -28,7 +28,7 @@ import {
     YouTube
 } from '@mui/icons-material';
 import axios from 'axios';
-import api, { IMAGE_BASE_URL } from '../../components/BaseURL';
+import api, { IMAGE_BASE_URL, getImageUrl } from '../../components/BaseURL';
 import Navbar from '../../components/Navbar';
 import Footer from '../../components/Footer';
 
@@ -59,7 +59,7 @@ const UserLandingPage = () => {
                 if (Array.isArray(res.data) && res.data.length > 0) {
                     const mapped = res.data.map((item, index) => ({
                         id: item._id || index,
-                        photo: item.photo?.startsWith('http') ? item.photo : `${IMAGE_BASE_URL}${item.photo}`,
+                        photo: item.photo,
                         topic: item.topic || ''
                     }));
                     setSliderImages(mapped);
@@ -349,7 +349,7 @@ const UserLandingPage = () => {
                                     <Box key={slider.id} sx={{ position: 'relative' }}>
                                         <Box
                                             component="img"
-                                            src={`${IMAGE_BASE_URL}/${slider.photo.replace(/^\/+/, '')}`}
+                                            src={getImageUrl(slider.photo)}
                                             alt={slider.topic}
                                             sx={{
                                                 width: '100%',
@@ -609,7 +609,7 @@ const UserLandingPage = () => {
                                                         <CardMedia
                                                             component="img"
                                                             sx={{ height: { xs: 180, sm: 200, md: 220 }, objectFit: 'cover' }}
-                                                            image={activity.photo?.startsWith('http') ? activity.photo : `${IMAGE_BASE_URL}/${activity.photo.replace(/^\/+/, '')}`}
+                                                            image={getImageUrl(activity.photo)}
                                                             alt={activity.activity_detail}
                                                         />
                                                         <CardContent sx={{ flexGrow: 1 }}>
@@ -911,7 +911,7 @@ const UserLandingPage = () => {
                                         <CardMedia
                                             component="img"
                                             sx={{ height: { xs: 200, md: 220 }, objectFit: 'cover' }}
-                                            image={`${IMAGE_BASE_URL}/${item.photo.replace(/^\/+/, '')}`}
+                                            image={getImageUrl(item.photo)}
                                             alt={t('home.gallery')}
                                         />
                                     </Card>
@@ -1036,7 +1036,7 @@ const UserLandingPage = () => {
                     >
                         <Box sx={{ position: 'relative', maxWidth: '90%', maxHeight: '90%' }}>
                             <img
-                                src={`${IMAGE_BASE_URL}/${selectedImage.replace(/^\/+/, '')}`}
+                                src={getImageUrl(selectedImage)}
                                 alt="Enlarged"
                                 style={{ maxWidth: '100%', maxHeight: '90vh', objectFit: 'contain' }}
                             />

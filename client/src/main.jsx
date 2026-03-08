@@ -19,6 +19,7 @@ import LatestActivity from './pages/admin/LatestActivity';
 import YoutubeVideos from './pages/admin/YoutubeVideos';
 import Member from './pages/admin/Member';
 import UpcomingEvent from './pages/admin/UpcomingEvent';
+import Profile from './pages/admin/Profile';
 import UserLandingPage from './pages/user/index';
 import MemberApply from './pages/user/MemberApply';
 import Donate from './pages/user/Donate';
@@ -102,6 +103,7 @@ createRoot(document.getElementById('root')).render(
             <Route path="enquiry" element={<AdminEnquiry />} />
             <Route path="achievements" element={<AdminAchievements />} />
             <Route path="settings" element={<Settings />} />
+            <Route path="profile" element={<Profile />} />
             <Route path="*" element={<Navigate to="/404" replace />} />
           </Routes>
         </App>} />

@@ -24,7 +24,7 @@ import {
     Image as ImageIcon
 } from '@mui/icons-material';
 import { toast } from 'react-toastify';
-import api, { IMAGE_BASE_URL } from '../../components/BaseURL';
+import api, { IMAGE_BASE_URL, getImageUrl } from '../../components/BaseURL';
 import BaseTable from '../../components/BaseTable';
 
 const LatestActivity = () => {
@@ -311,7 +311,7 @@ const LatestActivity = () => {
                                 minWidth: '120px',
                                 renderCell: (row) => (
                                     <Avatar
-                                        src={row.photo?.startsWith('http') ? row.photo : `${IMAGE_BASE_URL}${row.photo}`}
+                                        src={getImageUrl(row.photo)}
                                         alt={row.activity_detail}
                                         variant="rounded"
                                         sx={{ width: 80, height: 60, objectFit: 'cover' }}

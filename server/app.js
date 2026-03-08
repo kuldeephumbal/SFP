@@ -55,7 +55,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
 // Server static files from uploads directory
-app.use('/uploads', express.static('uploads', {
+app.use('/uploads', express.static(path.join(__dirname, 'uploads'), {
     setHeaders: (res, path) => {
         res.setHeader('Access-Control-Allow-Origin', '*');
         res.setHeader('Access-Control-Allow-Methods', 'GET');
