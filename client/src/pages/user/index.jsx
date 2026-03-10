@@ -3,9 +3,7 @@
 import { useEffect, useState, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
-import Slider from "react-slick";
-import "slick-carousel/slick/slick.css";
-import "slick-carousel/slick/slick-theme.css";
+import CustomSlider from '../../components/CustomSlider';
 import {
     Box,
     Container,
@@ -155,7 +153,7 @@ const UserLandingPage = () => {
         return () => clearTimeout(timer);
     }, [sliderImages.length, youtubeVideos.length, galleryItems.length]);
 
-    // Auto-scroll logic for Recent Activity
+    // Auto-scroll logic for Recent Activity - infinite loop
     useEffect(() => {
         const container = recentActivityRef.current;
         if (!container || activities.length === 0) return;
@@ -163,11 +161,11 @@ const UserLandingPage = () => {
         let intervalId;
         const startScroll = () => {
             intervalId = setInterval(() => {
-                if (container.scrollTop + container.clientHeight >= container.scrollHeight - 1) {
-                    // Smoothly reset to top
-                    container.scrollTo({ top: 0, behavior: 'instant' });
-                } else {
-                    container.scrollTop += 0.5; // Very slow speed
+                container.scrollTop += 0.5; // Very slow speed
+
+                // When we've scrolled past the original content height, reset to top seamlessly
+                if (container.scrollTop >= container.scrollHeight / 2) {
+                    container.scrollTop = 0;
                 }
             }, 30);
         };
@@ -215,88 +213,6 @@ const UserLandingPage = () => {
 
     const sectionSpacing = { xs: 3, md: 6 };
 
-    // Slider settings
-    const heroSliderSettings = {
-        dots: true,
-        infinite: true,
-        speed: 500,
-        slidesToShow: 1,
-        slidesToScroll: 1,
-        autoplay: true,
-        autoplaySpeed: 5000,
-        arrows: true
-    };
-
-    const quickActionSettings = {
-        infinite: true,
-        speed: 300,
-        slidesToShow: 4,
-        slidesToScroll: 1,
-        autoplay: false,
-        arrows: true,
-        responsive: [
-            {
-                breakpoint: 1024,
-                settings: {
-                    slidesToShow: 3,
-                    slidesToScroll: 1,
-                }
-            },
-            {
-                breakpoint: 768,
-                settings: {
-                    slidesToShow: 2,
-                    slidesToScroll: 1,
-                }
-            },
-            {
-                breakpoint: 600,
-                settings: {
-                    slidesToShow: 1,
-                    slidesToScroll: 1,
-                    arrows: true
-                }
-            }
-        ]
-    };
-
-    const memberSliderSettings = {
-        infinite: true,
-        speed: 200,
-        slidesToShow: 1,
-        slidesToScroll: 1,
-        autoplay: true,
-        autoplaySpeed: 2500,
-        arrows: false
-    };
-
-    const gallerySliderSettings = {
-        infinite: true,
-        speed: 200,
-        slidesToShow: 3,
-        slidesToScroll: 1,
-        autoplay: true,
-        autoplaySpeed: 3000,
-        arrows: true,
-        responsive: [
-            { breakpoint: 1024, settings: { slidesToShow: 3 } },
-            { breakpoint: 768, settings: { slidesToShow: 2 } },
-            { breakpoint: 576, settings: { slidesToShow: 1, autoplay: false } }
-        ]
-    };
-
-    const youtubeSliderSettings = {
-        infinite: true,
-        speed: 300,
-        slidesToShow: 3,
-        slidesToScroll: 1,
-        autoplay: false,
-        arrows: true,
-        responsive: [
-            { breakpoint: 1024, settings: { slidesToShow: 2, slidesToScroll: 1 } },
-            { breakpoint: 600, settings: { slidesToShow: 1, slidesToScroll: 1, arrows: true } }
-        ]
-    };
 
     return (
         <>
@@ -305,199 +221,150 @@ const UserLandingPage = () => {
                 bgcolor: '#f5f5f5',
                 minHeight: '100vh',
                 pb: sectionSpacing,
-                overflowX: 'hidden',
-                '& .slick-list': { margin: 0 }
+                overflowX: 'hidden'
             }}>
 
                 {/* Hero Slider Section */}
                 <Box sx={{ bgcolor: '#f5f5f5', py: { xs: 2, md: 3 } }}>
                     <Container maxWidth="lg" sx={{ px: { xs: 2, sm: 3 } }}>
-                        <Box sx={{
-                            position: 'relative',
-                            bgcolor: 'white',
-                            borderRadius: 2,
-                            overflow: 'hidden',
-                            '& .slick-prev, & .slick-next': {
-                                zIndex: 1,
-                                top: '50%',
-                                transform: 'translateY(-50%)',
-                                width: '32px',
-                                height: '32px',
-                                '&:before': {
-                                    fontSize: '30px'
-                                }
-                            },
-                            '& .slick-prev': {
-                                left: '10px'
-                            },
-                            '& .slick-next': {
-                                right: '10px'
-                            },
-                            '& .slick-dots': {
-                                bottom: '20px',
-                                '& li button:before': {
-                                    fontSize: '12px',
-                                    color: 'white'
-                                },
-                                '& li.slick-active button:before': {
-                                    color: 'white'
-                                }
-                            }
-                        }}>
-                            <Slider {...heroSliderSettings}>
-                                {sliderImages.map((slider) => (
-                                    <Box key={slider.id} sx={{ position: 'relative' }}>
-                                        <Box
-                                            component="img"
-                                            src={getImageUrl(slider.photo)}
-                                            alt={slider.topic}
-                                            sx={{
-                                                width: '100%',
-                                                height: { xs: 220, sm: 300, md: 400 },
-                                                objectFit: 'cover'
-                                            }}
-                                        />
-                                        <Box sx={{
-                                            position: 'absolute',
-                                            bottom: 0,
-                                            left: 0,
-                                            right: 0,
-                                            background: 'linear-gradient(to top, rgba(0,0,0,0.7), transparent)',
-                                            color: 'white',
-                                            p: { xs: 2, md: 3 },
-                                            display: { xs: 'none', md: 'block' }
-                                        }}>
-                                            <Typography variant="h5" sx={{ fontWeight: 600 }}>
-                                                {slider.topic}
-                                            </Typography>
-                                        </Box>
+                        <CustomSlider
+                            slidesToShow={1}
+                            autoplay
+                            autoplaySpeed={5000}
+                            dots
+                            dotsInside
+                            showArrows
+                            arrowsInside
+                            styledArrows={false}
+                        >
+                            {sliderImages.map((slider) => (
+                                <Box key={slider.id} sx={{ position: 'relative' }}>
+                                    <Box
+                                        component="img"
+                                        src={getImageUrl(slider.photo)}
+                                        alt={slider.topic}
+                                        sx={{
+                                            width: '100%',
+                                            height: { xs: 220, sm: 300, md: 400 },
+                                            objectFit: 'cover'
+                                        }}
+                                    />
+                                    <Box sx={{
+                                        position: 'absolute',
+                                        bottom: 0,
+                                        left: 0,
+                                        right: 0,
+                                        background: 'linear-gradient(to top, rgba(0,0,0,0.7), transparent)',
+                                        color: 'white',
+                                        p: { xs: 2, md: 3 },
+                                        display: { xs: 'none', md: 'block' }
+                                    }}>
+                                        <Typography variant="h5" sx={{ fontWeight: 600 }}>
+                                            {slider.topic}
+                                        </Typography>
                                     </Box>
-                                ))}
-                            </Slider>
-                        </Box>
+                                </Box>
+                            ))}
+                        </CustomSlider>
                     </Container>
                 </Box>
 
                 {/* Quick Action Cards */}
                 <Box sx={{ mt: { xs: 2, md: 3 }, mb: sectionSpacing }}>
                     <Container maxWidth="lg">
-                        <Box sx={{
-                            position: 'relative',
-                            px: '40px',
-                            pt: 1, // Space for hover transform transform: 'translateY(-4px)'
-                            pb: 1,
-                            '& .slick-prev, & .slick-next': {
-                                width: '30px',
-                                height: '30px',
-                                top: '50%',
-                                transform: 'translateY(-50%)',
-                                background: 'none',
-                                boxShadow: 'none',
-                                zIndex: 1,
-                                '&:before': {
-                                    color: '#1976d2',
-                                    fontSize: '28px',
-                                    opacity: 0.85,
-                                    lineHeight: '30px',
-                                }
-                            },
-                            '& .slick-prev': {
-                                left: '-36px',
-                            },
-                            '& .slick-next': {
-                                right: '-36px',
-                            }
-                        }}>
-                            <Slider {...quickActionSettings}>
-                                <Box sx={{ px: 1, height: '100%', py: 0.5 }}>
-                                    <Card
-                                        onClick={() => navigate('/member-apply')}
-                                        sx={{
-                                            textAlign: 'center',
-                                            py: { xs: 4, md: 2 },
-                                            cursor: 'pointer',
-                                            '&:hover': { boxShadow: 6, transform: 'translateY(-4px)' },
-                                            transition: 'all 0.3s',
-                                            height: '100%',
-                                            borderRadius: 3
-                                        }}
-                                    >
-                                        <PersonAdd sx={{ fontSize: { xs: 60, md: 40 }, color: '#1976d2', mb: 2 }} />
-                                        <Typography variant="h6" fontWeight={600} sx={{ fontSize: { xs: '1.1rem', md: '1rem' } }}>{t('navbar.apply')}</Typography>
-                                    </Card>
-                                </Box>
-                                <Box sx={{ px: 1, height: '100%', py: 0.5 }}>
-                                    <Card
-                                        onClick={() => navigate('/upcoming-events')}
-                                        sx={{
-                                            textAlign: 'center',
-                                            py: { xs: 4, md: 2 },
-                                            cursor: 'pointer',
-                                            '&:hover': { boxShadow: 6, transform: 'translateY(-4px)' },
-                                            transition: 'all 0.3s',
-                                            height: '100%',
-                                            borderRadius: 3
-                                        }}
-                                    >
+                        <CustomSlider
+                            slidesToShow={4}
+                            breakpoints={{
+                                320: { slidesToShow: 1 },
+                                768: { slidesToShow: 2 },
+                                1024: { slidesToShow: 3 },
+                                1200: { slidesToShow: 4 },
+                            }}
+                            showArrows
+                        >
+                            <Box sx={{ px: 1, height: '100%', py: 0.5 }}>
+                                <Card
+                                    onClick={() => navigate('/member-apply')}
+                                    sx={{
+                                        textAlign: 'center',
+                                        py: { xs: 4, md: 2 },
+                                        cursor: 'pointer',
+                                        transition: 'all 0.3s',
+                                        height: '100%',
+                                        borderRadius: 3
+                                    }}
+                                >
+                                    <PersonAdd sx={{ fontSize: { xs: 60, md: 40 }, color: '#1976d2', mb: 2 }} />
+                                    <Typography variant="h6" fontWeight={600} sx={{ fontSize: { xs: '1.1rem', md: '1rem' } }}>{t('navbar.apply')}</Typography>
+                                </Card>
+                            </Box>
+                            <Box sx={{ px: 1, height: '100%', py: 0.5 }}>
+                                <Card
+                                    onClick={() => navigate('/upcoming-events')}
+                                    sx={{
+                                        textAlign: 'center',
+                                        py: { xs: 4, md: 2 },
+                                        cursor: 'pointer',
+                                        transition: 'all 0.3s',
+                                        height: '100%',
+                                        borderRadius: 3
+                                    }}
+                                >
+                                    <Event sx={{ fontSize: { xs: 60, md: 40 }, color: '#1976d2', mb: 2 }} />
+                                    <Typography variant="h6" fontWeight={600} sx={{ fontSize: { xs: '1.1rem', md: '1rem' } }}>{t('navbar.services')}</Typography>
+                                </Card>
+                            </Box>
+                            <Box sx={{ px: 1, height: '100%', py: 0.5 }}>
+                                <Card
+                                    onClick={() => navigate('/our-team')}
+                                    sx={{
+                                        textAlign: 'center',
+                                        py: { xs: 4, md: 2 },
+                                        cursor: 'pointer',
+                                        transition: 'all 0.3s',
+                                        height: '100%',
+                                        borderRadius: 3
+                                    }}
+                                >
+                                    <Groups sx={{ fontSize: { xs: 60, md: 40 }, color: '#1976d2', mb: 2 }} />
+                                    <Typography variant="h6" fontWeight={600} sx={{ fontSize: { xs: '1.1rem', md: '1rem' } }}>{t('navbar.team')}</Typography>
+                                </Card>
+                            </Box>
+                            <Box sx={{ px: 1, height: '100%', py: 0.5 }}>
+                                <Card
+                                    onClick={() => navigate('/donate')}
+                                    sx={{
+                                        textAlign: 'center',
+                                        py: { xs: 4, md: 2 },
+                                        cursor: 'pointer',
+                                        transition: 'all 0.3s',
+                                        height: '100%',
+                                        borderRadius: 3
+                                    }}
+                                >
+                                    <Paper elevation={0} sx={{ bgcolor: 'transparent' }}>
                                         <Event sx={{ fontSize: { xs: 60, md: 40 }, color: '#1976d2', mb: 2 }} />
-                                        <Typography variant="h6" fontWeight={600} sx={{ fontSize: { xs: '1.1rem', md: '1rem' } }}>{t('navbar.services')}</Typography>
-                                    </Card>
-                                </Box>
-                                <Box sx={{ px: 1, height: '100%', py: 0.5 }}>
-                                    <Card
-                                        onClick={() => navigate('/our-team')}
-                                        sx={{
-                                            textAlign: 'center',
-                                            py: { xs: 4, md: 2 },
-                                            cursor: 'pointer',
-                                            '&:hover': { boxShadow: 6, transform: 'translateY(-4px)' },
-                                            transition: 'all 0.3s',
-                                            height: '100%',
-                                            borderRadius: 3
-                                        }}
-                                    >
-                                        <Groups sx={{ fontSize: { xs: 60, md: 40 }, color: '#1976d2', mb: 2 }} />
-                                        <Typography variant="h6" fontWeight={600} sx={{ fontSize: { xs: '1.1rem', md: '1rem' } }}>{t('navbar.team')}</Typography>
-                                    </Card>
-                                </Box>
-                                <Box sx={{ px: 1, height: '100%', py: 0.5 }}>
-                                    <Card
-                                        onClick={() => navigate('/donate')}
-                                        sx={{
-                                            textAlign: 'center',
-                                            py: { xs: 4, md: 2 },
-                                            cursor: 'pointer',
-                                            '&:hover': { boxShadow: 6, transform: 'translateY(-4px)' },
-                                            transition: 'all 0.3s',
-                                            height: '100%',
-                                            borderRadius: 3
-                                        }}
-                                    >
-                                        <Paper elevation={0} sx={{ bgcolor: 'transparent' }}>
-                                            <Event sx={{ fontSize: { xs: 60, md: 40 }, color: '#1976d2', mb: 2 }} />
-                                        </Paper>
-                                        <Typography variant="h6" fontWeight={600} sx={{ fontSize: { xs: '1.1rem', md: '1rem' } }}>{t('navbar.donate')}</Typography>
-                                    </Card>
-                                </Box>
-                                <Box sx={{ px: 1, height: '100%', py: 0.5 }}>
-                                    <Card
-                                        onClick={() => navigate('/crowdfunding')}
-                                        sx={{
-                                            textAlign: 'center',
-                                            py: { xs: 4, md: 2 },
-                                            cursor: 'pointer',
-                                            '&:hover': { boxShadow: 6, transform: 'translateY(-4px)' },
-                                            transition: 'all 0.3s',
-                                            height: '100%',
-                                            borderRadius: 3
-                                        }}
-                                    >
-                                        <Groups sx={{ fontSize: { xs: 60, md: 40 }, color: '#1976d2', mb: 2 }} />
-                                        <Typography variant="h6" fontWeight={600} sx={{ fontSize: { xs: '1.1rem', md: '1rem' } }}>{t('navbar.crowdfunding')}</Typography>
-                                    </Card>
-                                </Box>
-                            </Slider>
-                        </Box>
+                                    </Paper>
+                                    <Typography variant="h6" fontWeight={600} sx={{ fontSize: { xs: '1.1rem', md: '1rem' } }}>{t('navbar.donate')}</Typography>
+                                </Card>
+                            </Box>
+                            <Box sx={{ px: 1, height: '100%', py: 0.5 }}>
+                                <Card
+                                    onClick={() => navigate('/crowdfunding')}
+                                    sx={{
+                                        textAlign: 'center',
+                                        py: { xs: 4, md: 2 },
+                                        cursor: 'pointer',
+                                        transition: 'all 0.3s',
+                                        height: '100%',
+                                        borderRadius: 3
+                                    }}
+                                >
+                                    <Groups sx={{ fontSize: { xs: 60, md: 40 }, color: '#1976d2', mb: 2 }} />
+                                    <Typography variant="h6" fontWeight={600} sx={{ fontSize: { xs: '1.1rem', md: '1rem' } }}>{t('navbar.crowdfunding')}</Typography>
+                                </Card>
+                            </Box>
+                        </CustomSlider>
                     </Container>
                 </Box>
 
@@ -526,10 +393,10 @@ const UserLandingPage = () => {
                                                 }
                                             }}
                                         >
-                                            {/* Duplicate items for a smoother perceived loop if needed, but simple wrap works too */}
-                                            {activities.map((activity) => (
+                                            {/* Render activities twice for infinite scrolling effect */}
+                                            {[...activities, ...activities].map((activity, index) => (
                                                 <Box
-                                                    key={activity._id || activity.id}
+                                                    key={`${activity._id || activity.id}-${index}`}
                                                     sx={{
                                                         pb: 1.5,
                                                         mb: 1.5,
@@ -664,7 +531,12 @@ const UserLandingPage = () => {
                                     </Box>
                                     <Box sx={{ maxWidth: { xs: 320, sm: 360, md: 380 }, mx: 'auto', width: '100%' }}>
                                         {members.length > 0 ? (
-                                            <Slider {...memberSliderSettings}>
+                                            <CustomSlider
+                                                slidesToShow={1}
+                                                autoplay
+                                                autoplaySpeed={2500}
+                                                showArrows={false}
+                                            >
                                                 {members.map(member => (
                                                     <Box key={member._id} sx={{ textAlign: 'center', p: 1 }}>
                                                         <Card sx={{ p: 2.5, borderRadius: 3, boxShadow: 3, maxWidth: 420, mx: 'auto' }}>
@@ -687,7 +559,7 @@ const UserLandingPage = () => {
                                                         </Card>
                                                     </Box>
                                                 ))}
-                                            </Slider>
+                                            </CustomSlider>
                                         ) : (
                                             <Typography variant="body2" color="text.secondary" textAlign="center">
                                                 No members found.
@@ -794,74 +666,51 @@ const UserLandingPage = () => {
                             <Typography color="text.secondary">{t('home.no_youtube') || 'No YouTube videos found.'}</Typography>
                         </Paper>
                     ) : (
-                        <Box sx={{
-                            position: 'relative',
-                            px: '40px',
-                            '& .slick-prev, & .slick-next': {
-                                width: '30px',
-                                height: '30px',
-                                top: '50%',
-                                transform: 'translateY(-50%)',
-                                background: 'none',
-                                boxShadow: 'none',
-                                zIndex: 1,
-                                '&:before': {
-                                    color: '#1976d2',
-                                    fontSize: '28px',
-                                    opacity: 0.85,
-                                    lineHeight: '30px',
-                                }
-                            },
-                            '& .slick-prev': {
-                                left: '-36px',
-                            },
-                            '& .slick-next': {
-                                right: '-36px',
-                            }
-                        }}>
-                            <Slider key={`youtube-${youtubeVideos.length}`} {...youtubeSliderSettings}>
-                                {youtubeVideos.slice(0, 6).map((video) => (
-                                    <Box key={video._id || video.id} sx={{ px: 1.5 }}>
-                                        <Card sx={{
-                                            overflow: 'hidden',
-                                            '&:hover': {
-                                                transform: 'translateY(-4px)',
-                                                boxShadow: 6,
-                                                transition: 'all 0.3s'
-                                            }
-                                        }}>
-                                            <Box sx={{ position: 'relative', paddingTop: '56.25%', bgcolor: '#000' }}>
-                                                {getEmbedUrl(video.url) && (
-                                                    <Box
-                                                        component="iframe"
-                                                        src={getEmbedUrl(video.url)}
-                                                        title={video.url}
-                                                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                                                        allowFullScreen
-                                                        sx={{
-                                                            position: 'absolute',
-                                                            top: 0,
-                                                            left: 0,
-                                                            width: '100%',
-                                                            height: '100%',
-                                                            border: 0
-                                                        }}
-                                                    />
-                                                )}
+                        <CustomSlider
+                            slidesToShow={3}
+                            breakpoints={{
+                                320: { slidesToShow: 1 },
+                                768: { slidesToShow: 2 },
+                                1024: { slidesToShow: 3 }
+                            }}
+                            showArrows
+                        >
+                            {youtubeVideos.slice(0, 6).map((video) => (
+                                <Box key={video._id || video.id} sx={{ px: 1.5 }}>
+                                    <Card sx={{
+                                        overflow: 'hidden'
+                                    }}>
+                                        <Box sx={{ position: 'relative', paddingTop: '56.25%', bgcolor: '#000' }}>
+                                            {getEmbedUrl(video.url) && (
+                                                <Box
+                                                    component="iframe"
+                                                    src={getEmbedUrl(video.url)}
+                                                    title={video.url}
+                                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                                    allowFullScreen
+                                                    sx={{
+                                                        position: 'absolute',
+                                                        top: 0,
+                                                        left: 0,
+                                                        width: '100%',
+                                                        height: '100%',
+                                                        border: 0
+                                                    }}
+                                                />
+                                            )}
+                                        </Box>
+                                        <CardContent sx={{ p: { xs: 1.5, md: 2 } }}>
+                                            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                                                <Typography variant="body2" sx={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', flex: 1, fontSize: { xs: '0.8rem', md: '0.875rem' } }}>
+                                                    {video.url}
+                                                </Typography>
+                                                <YouTube sx={{ color: '#ff0000', ml: 1 }} />
                                             </Box>
-                                            <CardContent sx={{ p: { xs: 1.5, md: 2 } }}>
-                                                <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                                                    <Typography variant="body2" sx={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', flex: 1, fontSize: { xs: '0.8rem', md: '0.875rem' } }}>
-                                                        {video.url}
-                                                    </Typography>
-                                                    <YouTube sx={{ color: '#ff0000', ml: 1 }} />
-                                                </Box>
-                                            </CardContent>
-                                        </Card>
-                                    </Box>
-                                ))}
-                            </Slider>
-                        </Box>
+                                        </CardContent>
+                                    </Card>
+                                </Box>
+                            ))}
+                        </CustomSlider>
                     )}
                 </Container>
 
@@ -870,55 +719,38 @@ const UserLandingPage = () => {
                     <Box sx={{ bgcolor: '#1565c0', color: 'white', p: { xs: 1.5, md: 2 }, textAlign: 'center', mb: { xs: 2, md: 3 }, borderRadius: 1 }}>
                         <Typography variant="h5" sx={{ fontWeight: 600, fontSize: { xs: '1.25rem', md: '1.5rem' } }}>{t('home.gallery')}</Typography>
                     </Box>
-                    <Box sx={{
-                        position: 'relative',
-                        px: '40px',
-                        '& .slick-prev, & .slick-next': {
-                            width: '30px',
-                            height: '30px',
-                            top: '50%',
-                            transform: 'translateY(-50%)',
-                            background: 'none',
-                            boxShadow: 'none',
-                            zIndex: 1,
-                            '&:before': {
-                                color: '#1976d2',
-                                fontSize: '28px',
-                                opacity: 0.85,
-                                lineHeight: '30px',
-                            }
-                        },
-                        '& .slick-prev': {
-                            left: '-36px',
-                        },
-                        '& .slick-next': {
-                            right: '-36px',
-                        }
-                    }}>
-                        <Slider key={`gallery-${galleryItems.length}`} {...gallerySliderSettings}>
-                            {galleryItems.map(item => (
-                                <Box key={item._id} sx={{ px: 1.5, py: 1 }}>
-                                    <Card
-                                        sx={{
-                                            cursor: 'pointer',
-                                            borderRadius: 2,
-                                            overflow: 'hidden',
-                                            boxShadow: 2,
-                                            '&:hover': { transform: 'scale(1.03)', boxShadow: 6, transition: 'all 0.3s' }
-                                        }}
-                                        onClick={() => setSelectedImage(item.photo)}
-                                    >
-                                        <CardMedia
-                                            component="img"
-                                            sx={{ height: { xs: 200, md: 220 }, objectFit: 'cover' }}
-                                            image={getImageUrl(item.photo)}
-                                            alt={t('home.gallery')}
-                                        />
-                                    </Card>
-                                </Box>
-                            ))}
-                        </Slider>
-                    </Box>
+                    <CustomSlider
+                        slidesToShow={3}
+                        breakpoints={{
+                            320: { slidesToShow: 1 },
+                            768: { slidesToShow: 2 },
+                            1024: { slidesToShow: 3 }
+                        }}
+                        autoplay
+                        autoplaySpeed={3000}
+                        showArrows
+                    >
+                        {galleryItems.map(item => (
+                            <Box key={item._id} sx={{ px: 1.5, py: 1 }}>
+                                <Card
+                                    sx={{
+                                        cursor: 'pointer',
+                                        borderRadius: 2,
+                                        overflow: 'hidden',
+                                        boxShadow: 2
+                                    }}
+                                    onClick={() => setSelectedImage(item.photo)}
+                                >
+                                    <CardMedia
+                                        component="img"
+                                        sx={{ height: { xs: 200, md: 220 }, objectFit: 'cover' }}
+                                        image={getImageUrl(item.photo)}
+                                        alt={t('home.gallery')}
+                                    />
+                                </Card>
+                            </Box>
+                        ))}
+                    </CustomSlider>
                 </Container>
 
                 {/* President Message Section */}
