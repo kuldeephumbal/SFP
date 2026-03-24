@@ -38,6 +38,9 @@ const UserLandingPage = () => {
     const [latestActivities, setLatestActivities] = useState([]);
     const [youtubeVideos, setYoutubeVideos] = useState([]);
     const [videosLoading, setVideosLoading] = useState(false);
+
+    const [showScrollTop, setShowScrollTop] = useState(false);
+    const [scrollPercent, setScrollPercent] = useState(0);
     const [members, setMembers] = useState([]);
     const [galleryItems, setGalleryItems] = useState([]);
     const recentActivityRef = useRef(null);
@@ -152,6 +155,22 @@ const UserLandingPage = () => {
         }, 150);
         return () => clearTimeout(timer);
     }, [sliderImages.length, youtubeVideos.length, galleryItems.length]);
+
+    // scroll-to-top and percentage indicator
+    useEffect(() => {
+        const onScroll = () => {
+            const scrollY = window.pageYOffset || document.documentElement.scrollTop;
+            const scrollHeight = document.documentElement.scrollHeight - window.innerHeight;
+            const percent = scrollHeight > 0 ? Math.min(100, Math.round((scrollY / scrollHeight) * 100)) : 0;
+            setScrollPercent(percent);
+            setShowScrollTop(scrollY > 100);
+        };
+
+        window.addEventListener('scroll', onScroll, { passive: true });
+        onScroll();
+
+        return () => window.removeEventListener('scroll', onScroll);
+    }, []);
 
     // Auto-scroll logic for Recent Activity - infinite loop
     useEffect(() => {
@@ -888,6 +907,44 @@ const UserLandingPage = () => {
                             >
                                 <Typography sx={{ fontSize: '20px', fontWeight: 'bold' }}>✕</Typography>
                             </IconButton>
+                        </Box>
+                    </Box>
+                )}
+
+                {showScrollTop && (
+                    <Box
+                        onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+                        sx={{
+                            position: 'fixed',
+                            right: { xs: 16, md: 24 },
+                            bottom: { xs: 16, md: 24 },
+                            width: 62,
+                            height: 62,
+                            borderRadius: '50%',
+                            background: `conic-gradient(#E6892D ${scrollPercent}%, rgba(255,255,255,0.25) ${scrollPercent}% 100%)`,
+                            zIndex: 1500,
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            boxShadow: '0 6px 18px rgba(0,0,0,0.35)',
+                            cursor: 'pointer', transition: 'background 0.2s ease-out', '&:hover': { opacity: 0.9 }
+                        }}
+                    >
+                        <Box
+                            sx={{
+                                width: 52,
+                                height: 52,
+                                borderRadius: '50%',
+                                bgcolor: '#1976D2',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                flexDirection: 'column'
+                            }}
+                        >
+                            <Typography sx={{ fontSize: '0.75rem', fontWeight: 700, color: '#fff' }}>
+                                {scrollPercent}%
+                            </Typography>
                         </Box>
                     </Box>
                 )}
