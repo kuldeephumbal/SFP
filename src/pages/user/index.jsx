@@ -244,8 +244,8 @@ const UserLandingPage = () => {
             }}>
 
                 {/* Hero Slider Section */}
-                <Box sx={{ bgcolor: '#f5f5f5', py: { xs: 2, md: 3 } }}>
-                    <Container maxWidth="lg" sx={{ px: { xs: 2, sm: 3 } }}>
+                <Box sx={{ bgcolor: '#f5f5f5', py: { xs: 0, md: 3 } }}>
+                    <Container maxWidth="lg" sx={{ px: { xs: 0, sm: 3 } }}>
                         <CustomSlider
                             slidesToShow={1}
                             autoplay
@@ -264,7 +264,7 @@ const UserLandingPage = () => {
                                         alt={slider.topic}
                                         sx={{
                                             width: '100%',
-                                            height: { xs: 220, sm: 300, md: 400 },
+                                            height: { xs: 250, sm: 280, md: 430, lg: 530 },
                                             objectFit: 'cover'
                                         }}
                                     />
@@ -275,10 +275,10 @@ const UserLandingPage = () => {
                                         right: 0,
                                         background: 'linear-gradient(to top, rgba(0,0,0,0.7), transparent)',
                                         color: 'white',
-                                        p: { xs: 2, md: 3 },
+                                        p: { xs: 1, md: 3 },
                                         display: { xs: 'none', md: 'block' }
                                     }}>
-                                        <Typography variant="h5" sx={{ fontWeight: 600 }}>
+                                        <Typography variant="h5" sx={{ fontWeight: 600, fontSize: { xs: '1rem', md: '1.75rem' } }}>
                                             {slider.topic}
                                         </Typography>
                                     </Box>
@@ -294,7 +294,8 @@ const UserLandingPage = () => {
                         <CustomSlider
                             slidesToShow={4}
                             breakpoints={{
-                                320: { slidesToShow: 1 },
+                                320: { slidesToShow: 2 },
+                                480: { slidesToShow: 2 },
                                 768: { slidesToShow: 2 },
                                 1024: { slidesToShow: 3 },
                                 1200: { slidesToShow: 4 },
@@ -306,15 +307,16 @@ const UserLandingPage = () => {
                                     onClick={() => navigate('/member-apply')}
                                     sx={{
                                         textAlign: 'center',
-                                        py: { xs: 4, md: 2 },
+                                        py: { xs: 2, md: 1.5 },
                                         cursor: 'pointer',
                                         transition: 'all 0.3s',
                                         height: '100%',
-                                        borderRadius: 3
+                                        borderRadius: 3,
+                                        minHeight: { xs: 100, md: 120 }
                                     }}
                                 >
-                                    <PersonAdd sx={{ fontSize: { xs: 60, md: 40 }, color: '#1976d2', mb: 2 }} />
-                                    <Typography variant="h6" fontWeight={600} sx={{ fontSize: { xs: '1.1rem', md: '1rem' } }}>{t('navbar.apply')}</Typography>
+                                    <PersonAdd sx={{ fontSize: { xs: 30, md: 36 }, color: '#1976d2', mb: 1.2 }} />
+                                    <Typography variant="h6" fontWeight={600} sx={{ fontSize: { xs: '0.85rem', md: '1rem' }, lineHeight: 1.1 }}>{t('navbar.apply')}</Typography>
                                 </Card>
                             </Box>
                             <Box sx={{ px: 1, height: '100%', py: 0.5 }}>
@@ -322,15 +324,15 @@ const UserLandingPage = () => {
                                     onClick={() => navigate('/upcoming-events')}
                                     sx={{
                                         textAlign: 'center',
-                                        py: { xs: 4, md: 2 },
+                                        py: { xs: 2.5, md: 2 },
                                         cursor: 'pointer',
                                         transition: 'all 0.3s',
                                         height: '100%',
                                         borderRadius: 3
                                     }}
                                 >
-                                    <Event sx={{ fontSize: { xs: 60, md: 40 }, color: '#1976d2', mb: 2 }} />
-                                    <Typography variant="h6" fontWeight={600} sx={{ fontSize: { xs: '1.1rem', md: '1rem' } }}>{t('navbar.services')}</Typography>
+                                    <Event sx={{ fontSize: { xs: 30, md: 36 }, color: '#1976d2', mb: 1.5 }} />
+                                    <Typography variant="h6" fontWeight={600} sx={{ fontSize: { xs: '0.85rem', md: '1rem' }, lineHeight: 1.1 }}>{t('navbar.services')}</Typography>
                                 </Card>
                             </Box>
                             <Box sx={{ px: 1, height: '100%', py: 0.5 }}>
@@ -338,15 +340,15 @@ const UserLandingPage = () => {
                                     onClick={() => navigate('/our-team')}
                                     sx={{
                                         textAlign: 'center',
-                                        py: { xs: 4, md: 2 },
+                                        py: { xs: 2.5, md: 2 },
                                         cursor: 'pointer',
                                         transition: 'all 0.3s',
                                         height: '100%',
                                         borderRadius: 3
                                     }}
                                 >
-                                    <Groups sx={{ fontSize: { xs: 60, md: 40 }, color: '#1976d2', mb: 2 }} />
-                                    <Typography variant="h6" fontWeight={600} sx={{ fontSize: { xs: '1.1rem', md: '1rem' } }}>{t('navbar.team')}</Typography>
+                                    <Groups sx={{ fontSize: { xs: 30, md: 36 }, color: '#1976d2', mb: 1.5 }} />
+                                    <Typography variant="h6" fontWeight={600} sx={{ fontSize: { xs: '0.85rem', md: '1rem' }, lineHeight: 1.1 }}>{t('navbar.team')}</Typography>
                                 </Card>
                             </Box>
                             <Box sx={{ px: 1, height: '100%', py: 0.5 }}>
@@ -354,7 +356,7 @@ const UserLandingPage = () => {
                                     onClick={() => navigate('/donate')}
                                     sx={{
                                         textAlign: 'center',
-                                        py: { xs: 4, md: 2 },
+                                        py: { xs: 2.5, md: 2 },
                                         cursor: 'pointer',
                                         transition: 'all 0.3s',
                                         height: '100%',
@@ -362,9 +364,9 @@ const UserLandingPage = () => {
                                     }}
                                 >
                                     <Paper elevation={0} sx={{ bgcolor: 'transparent' }}>
-                                        <Event sx={{ fontSize: { xs: 60, md: 40 }, color: '#1976d2', mb: 2 }} />
+                                        <Event sx={{ fontSize: { xs: 30, md: 36 }, color: '#1976d2', mb: 1.5 }} />
                                     </Paper>
-                                    <Typography variant="h6" fontWeight={600} sx={{ fontSize: { xs: '1.1rem', md: '1rem' } }}>{t('navbar.donate')}</Typography>
+                                    <Typography variant="h6" fontWeight={600} sx={{ fontSize: { xs: '0.85rem', md: '1rem' }, lineHeight: 1.1 }}>{t('navbar.donate')}</Typography>
                                 </Card>
                             </Box>
                             <Box sx={{ px: 1, height: '100%', py: 0.5 }}>
@@ -372,15 +374,15 @@ const UserLandingPage = () => {
                                     onClick={() => navigate('/crowdfunding')}
                                     sx={{
                                         textAlign: 'center',
-                                        py: { xs: 4, md: 2 },
+                                        py: { xs: 2.5, md: 2 },
                                         cursor: 'pointer',
                                         transition: 'all 0.3s',
                                         height: '100%',
                                         borderRadius: 3
                                     }}
                                 >
-                                    <Groups sx={{ fontSize: { xs: 60, md: 40 }, color: '#1976d2', mb: 2 }} />
-                                    <Typography variant="h6" fontWeight={600} sx={{ fontSize: { xs: '1.1rem', md: '1rem' } }}>{t('navbar.crowdfunding')}</Typography>
+                                    <Groups sx={{ fontSize: { xs: 30, md: 36 }, color: '#1976d2', mb: 1.5 }} />
+                                    <Typography variant="h6" fontWeight={600} sx={{ fontSize: { xs: '0.85rem', md: '1rem' }, lineHeight: 1.1 }}>{t('navbar.crowdfunding')}</Typography>
                                 </Card>
                             </Box>
                         </CustomSlider>
@@ -389,11 +391,11 @@ const UserLandingPage = () => {
 
                 {/* Recent Activity Section */}
                 <Container maxWidth="lg" sx={{ mt: sectionSpacing, px: { xs: 2, sm: 3 } }}>
-                    <Grid container spacing={{ xs: 2, md: 3 }}>
-                        <Grid size={{ xs: 12, md: 3 }} sx={{ display: 'flex' }}>
-                            <Paper sx={{ p: 0, overflow: 'hidden', display: 'flex', flexDirection: 'column', width: '100%', height: { xs: 400, md: 560 } }}>
+                    <Grid container spacing={{ xs: 2, md: 3 }} justifyContent="center">
+                        <Grid size={{ xs: 12, md: 4 }} sx={{ display: 'flex', justifyContent: 'center' }}>
+                            <Paper sx={{ p: 0, overflow: 'hidden', display: 'flex', flexDirection: 'column', width: { xs: '100%', sm: '95%', md: '100%' }, height: { xs: 400, md: 560 } }}>
                                 <Box sx={{ bgcolor: '#1565c0', color: 'white', p: 1.5 }}>
-                                    <Typography variant="h6" sx={{ fontWeight: 600 }}>{t('home.recent_activity')}</Typography>
+                                    <Typography variant="h6" sx={{ fontWeight: 600, textAlign: 'center' }}>{t('home.recent_activity')}</Typography>
                                 </Box>
                                 <Box sx={{ p: 2, display: 'flex', flexDirection: 'column', flexGrow: 1, overflow: 'hidden' }}>
                                     {activities && activities.length > 0 ? (
@@ -458,7 +460,7 @@ const UserLandingPage = () => {
                                 </Box>
                             </Paper>
                         </Grid>
-                        <Grid size={{ xs: 12, md: 9 }} sx={{ display: 'flex' }}>
+                        <Grid size={{ xs: 12, md: 8 }} sx={{ display: 'flex', justifyContent: 'center' }}>
                             <Paper sx={{ p: { xs: 2, md: 3 }, display: 'flex', flexDirection: 'column', width: '100%', height: { xs: 500, md: 560 } }}>
                                 {latestActivities && latestActivities.length > 0 ? (
                                     <Box sx={{
@@ -489,6 +491,8 @@ const UserLandingPage = () => {
                                                         flexDirection: 'column',
                                                         height: '100%',
                                                         borderRadius: 3,
+                                                        boxShadow: 'none',
+                                                        border: '1px solid #ccc',
                                                     }}
                                                         onClick={() => navigate(`/latest-activity/${activity._id || activity.id}`)}
                                                     >
@@ -545,10 +549,10 @@ const UserLandingPage = () => {
                                             component="img"
                                             src="/assets/img/Shankhnad-logo.png"
                                             alt="Shankhnad Foundation"
-                                            sx={{ width: '100%', maxWidth: { xs: 180, md: 220 }, display: 'inline-block' }}
+                                            sx={{ width: '100%', maxWidth: { xs: 160, md: 180 }, display: 'inline-block' }}
                                         />
                                     </Box>
-                                    <Box sx={{ maxWidth: { xs: 320, sm: 360, md: 380 }, mx: 'auto', width: '100%' }}>
+                                    <Box sx={{ maxWidth: { xs: 350, sm: 220, md: 280 }, mx: 'auto', width: '100%' }}>
                                         {members.length > 0 ? (
                                             <CustomSlider
                                                 slidesToShow={1}
@@ -565,8 +569,8 @@ const UserLandingPage = () => {
                                                                 alt={member.name}
                                                                 sx={{
                                                                     width: '100%',
-                                                                    maxWidth: { xs: 210, md: 240 },
-                                                                    height: { xs: 230, md: 270 },
+                                                                    maxWidth: { xs: 250, md: 200 },
+                                                                    height: { xs: 250, md: 220 },
                                                                     objectFit: 'cover',
                                                                     borderRadius: 3,
                                                                     mx: 'auto',

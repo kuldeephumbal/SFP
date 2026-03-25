@@ -178,12 +178,12 @@ const Navbar = () => {
                         flexDirection: { xs: 'column', md: 'row' },
                         gap: { xs: 1, md: 0 }
                     }}>
-                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                            <img src="/assets/img/Shankhnad-logo.png" alt="Logo" style={{ height: 50 }} />
+                        <Box onClick={() => navigate('/')} sx={{ display: 'flex', alignItems: 'center', gap: 1, cursor: 'pointer' }}>
+                            <img src="/assets/img/Shankhnad-logo.png" alt="Logo" style={{ height: 42 }} />
+                            <Typography variant="h5" sx={{ fontWeight: 'bold', color: '#1976d2', ml: 0.5, fontSize: { xs: '1rem', md: '1.25rem' } }}>
+                                {t('foundation_name')}
+                            </Typography>
                         </Box>
-                        <Typography variant="h5" sx={{ fontWeight: 'bold', color: '#1976d2' }}>
-                            {t('foundation_name')}
-                        </Typography>
                         <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
                             <Button
                                 size="small"
@@ -223,12 +223,12 @@ const Navbar = () => {
                 <Container maxWidth="lg" sx={{ px: { xs: 2, sm: 3 } }}>
                     <Toolbar sx={{ justifyContent: 'space-between', gap: 0, minHeight: '56px !important', py: 0 }}>
                         <Box sx={{ display: { xs: 'flex', md: 'none' }, alignItems: 'center', width: '100%', justifyContent: 'space-between' }}>
-                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                                <img src="/assets/img/Shankhnad-logo.png" alt="Logo" style={{ height: 32 }} />
+                            <Box onClick={() => navigate('/')} sx={{ display: 'flex', alignItems: 'center', gap: 1, cursor: 'pointer' }}>
+                                <img src="/assets/img/Shankhnad-logo.png" alt="Logo" style={{ height: 28 }} />
                                 <Typography variant="subtitle1" sx={{
                                     fontWeight: 700,
                                     color: 'white',
-                                    fontSize: { xs: '0.85rem', sm: '1rem' },
+                                    fontSize: { xs: '0.75rem', sm: '0.9rem' },
                                     lineHeight: 1.2
                                 }}>
                                     {t('foundation_name')}
