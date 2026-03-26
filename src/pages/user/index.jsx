@@ -244,8 +244,8 @@ const UserLandingPage = () => {
             }}>
 
                 {/* Hero Slider Section */}
-                <Box sx={{ bgcolor: '#f5f5f5', py: { xs: 0, md: 3 } }}>
-                    <Container maxWidth="lg" sx={{ px: { xs: 0, sm: 3 } }}>
+                <Box sx={{ bgcolor: '#f5f5f5', mt: 0, py: 0 }}>
+                    <Container maxWidth={false} disableGutters sx={{ px: 0, mt: 0, mb: 0 }}>
                         <CustomSlider
                             slidesToShow={1}
                             autoplay
@@ -264,8 +264,8 @@ const UserLandingPage = () => {
                                         alt={slider.topic}
                                         sx={{
                                             width: '100%',
-                                            height: { xs: 250, sm: 280, md: 430, lg: 530 },
-                                            objectFit: 'cover'
+                                            height: { xs: 250, sm: 280, md: 487, lg: 587 },
+                                            objectFit: 'fit'
                                         }}
                                     />
                                     <Box sx={{
@@ -594,6 +594,7 @@ const UserLandingPage = () => {
                             <Grid size={{ xs: 12, md: 7, lg: 8 }}>
                                 <Typography variant="h4" sx={{
                                     fontWeight: 700,
+                                    color: '#1565c0',
                                     mb: 2,
                                     fontSize: { xs: '1.75rem', md: '2.125rem' },
                                     textAlign: { xs: 'center', md: 'left' }
@@ -778,9 +779,6 @@ const UserLandingPage = () => {
 
                 {/* President Message Section */}
                 <Container maxWidth="lg" sx={{ mt: sectionSpacing, mb: sectionSpacing, px: { xs: 2, sm: 3 } }}>
-                    <Box sx={{ bgcolor: '#1565c0', color: 'white', p: { xs: 1.5, md: 2 }, textAlign: 'center', mb: { xs: 2, md: 3 }, borderRadius: 1 }}>
-                        <Typography variant="h5" sx={{ fontWeight: 600, fontSize: { xs: '1.25rem', md: '1.5rem' } }}>{t('home.president_message')}</Typography>
-                    </Box>
                     <Paper sx={{ p: { xs: 3, md: 5 }, borderRadius: 3, boxShadow: 3 }}>
                         <Grid container spacing={{ xs: 3, md: 6 }} alignItems="flex-start">
                             {/* President Image & Name */}
@@ -827,12 +825,13 @@ const UserLandingPage = () => {
                             <Grid size={{ xs: 12, md: 8, lg: 8.5 }}>
                                 <Box sx={{ position: 'relative' }}>
                                     <Typography
-                                        variant="h5"
+                                        variant="h4"
+                                        color="#1565c0"
                                         sx={{
                                             fontWeight: 700,
-                                            color: '#1565c0',
-                                            mb: 3,
-                                            fontSize: { xs: '1.25rem', md: '1.75rem' },
+                                            mb: 2,
+                                            fontSize: { xs: '1.25rem', md: '1.85rem' },
+                                            textAlign: { xs: 'center', md: 'left' },
                                             position: 'relative',
                                             '&:after': {
                                                 content: '""',
@@ -841,7 +840,6 @@ const UserLandingPage = () => {
                                                 left: 0,
                                                 width: '60px',
                                                 height: '4px',
-                                                bgcolor: '#1565c0',
                                                 borderRadius: 2
                                             }
                                         }}

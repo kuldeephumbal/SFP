@@ -176,14 +176,22 @@ const Navbar = () => {
                         justifyContent: 'space-between',
                         alignItems: 'center',
                         flexDirection: { xs: 'column', md: 'row' },
-                        gap: { xs: 1, md: 0 }
+                        gap: { xs: 1, md: 0 },
+                        position: 'relative'
                     }}>
                         <Box onClick={() => navigate('/')} sx={{ display: 'flex', alignItems: 'center', gap: 1, cursor: 'pointer' }}>
                             <img src="/assets/img/Shankhnad-logo.png" alt="Logo" style={{ height: 42 }} />
-                            <Typography variant="h5" sx={{ fontWeight: 'bold', color: '#1976d2', ml: 0.5, fontSize: { xs: '1rem', md: '1.25rem' } }}>
-                                {t('foundation_name')}
-                            </Typography>
                         </Box>
+                        <Typography variant="h5" sx={{
+                            fontWeight: 'bold',
+                            color: '#1976d2',
+                            position: 'absolute',
+                            left: '50%',
+                            transform: 'translateX(-50%)',
+                            fontSize: { xs: '1.9rem', md: '1.6rem' }
+                        }}>
+                            {t('foundation_name')}
+                        </Typography>
                         <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
                             <Button
                                 size="small"
