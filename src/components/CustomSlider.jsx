@@ -1,15 +1,12 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Box, IconButton } from '@mui/material';
-import { ArrowBack, ArrowForward, ChevronLeft, ChevronRight } from '@mui/icons-material';
+import { ChevronLeft, ChevronRight } from '@mui/icons-material';
 
-// A very lightweight slider/carousel implementation using CSS transform.
-// Props:
-//   children - slide elements
-//   slidesToShow - number of slides visible at once (default 1)
-//   autoplay - boolean to enable auto sliding
-//   autoplaySpeed - ms between automatic transitions
-//   showArrows - whether to render navigation arrows
-// Additional props are spread onto the outer container Box.
+/**
+ * CustomSlider:
+ * 1. Infinite looping with onTransitionEnd for snappy repeats.
+ * 2. Drag/Swipe support with default cursor.
+ */
 
 const CustomSlider = ({
     children,
@@ -19,29 +16,30 @@ const CustomSlider = ({
     autoplaySpeed = 3000,
     showArrows = true,
     dots = false,
-    arrowsInside = false, // render arrows overlayed inside the slider container
-    dotsInside = false,   // new: position dots inside the slider area
-    styledArrows = true,  // if false, don't apply default blue/white styling
-    arrowSize = 25,       // size in px for the square button
-    LeftArrowIcon = ChevronLeft,  // optional custom arrow components
+    arrowsInside = false,
+    dotsInside = false,
+    styledArrows = true,
+    arrowSize = 25,
+    LeftArrowIcon = ChevronLeft,
     RightArrowIcon = ChevronRight,
     ...props
 }) => {
-    const [index, setIndex] = useState(0);
-    const total = React.Children.count(children);
-    const containerRef = useRef(null);
+    const childrenArray = React.Children.toArray(children);
+    const total = childrenArray.length;
     const [currentSlides, setCurrentSlides] = useState(slidesToShow);
 
-    const goTo = (idx) => {
-        if (idx < 0) idx = 0;
-        if (idx > total - currentSlides) idx = total - currentSlides;
-        setIndex(idx);
-    };
+    // Index: 0 is the last-item-clone, [1 to total] are original items, total+1 is the first-item-clone
+    const [index, setIndex] = useState(1);
+    const [isTransitioning, setIsTransitioning] = useState(false);
+    const [dragOffset, setDragOffset] = useState(0);
+    const [isDragging, setIsDragging] = useState(false);
 
-    const next = () => goTo(index + 1);
-    const prev = () => goTo(index - 1);
+    const containerRef = useRef(null);
+    const dragStartX = useRef(0);
+    const dragCurrentX = useRef(0);
+    const autoplayTimer = useRef(null);
 
-    // handle breakpoints
+    // Breakpoint logic
     useEffect(() => {
         if (!breakpoints) {
             setCurrentSlides(slidesToShow);
@@ -68,37 +66,89 @@ const CustomSlider = ({
         return () => window.removeEventListener('resize', evaluate);
     }, [breakpoints, slidesToShow]);
 
-    useEffect(() => {
-        if (autoplay) {
-            const id = setInterval(() => {
-                setIndex((prev) => {
-                    const nextIdx = prev + 1;
-                    return nextIdx > total - currentSlides ? 0 : nextIdx;
-                });
-            }, autoplaySpeed);
-            return () => clearInterval(id);
+    const next = useCallback(() => {
+        if (isTransitioning) return;
+        setIsTransitioning(true);
+        setIndex(prev => prev + 1);
+    }, [isTransitioning]);
+
+    const prev = useCallback(() => {
+        if (isTransitioning) return;
+        setIsTransitioning(true);
+        setIndex(prev => prev - 1);
+    }, [isTransitioning]);
+
+    const handleTransitionEnd = () => {
+        setIsTransitioning(false);
+        // If we are at the end clone, snap instantly to the real first item
+        if (index >= total + 1) {
+            setIndex(1);
         }
-    }, [autoplay, autoplaySpeed, currentSlides, total]);
-
-    // Resize handler to keep index in range when container shrinks
-    useEffect(() => {
-        const handleResize = () => {
-            if (index > total - slidesToShow) {
-                setIndex(total - slidesToShow);
-            }
-        };
-        window.addEventListener('resize', handleResize);
-        return () => window.removeEventListener('resize', handleResize);
-    }, [index, slidesToShow, total]);
-
-    // choose layout based on arrowsInside or dotsInside flags
-    const wrapperStyles = {
-        width: '100%',
-        position: arrowsInside || dotsInside ? 'relative' : 'static',
-        overflow: arrowsInside ? 'hidden' : 'visible'
+        // If we are at the start clone, snap instantly to the real last item
+        if (index <= 0) {
+            setIndex(total);
+        }
     };
 
-    // default arrow button styling
+    const goTo = (i) => {
+        if (isTransitioning) return;
+        setIsTransitioning(true);
+        setIndex(i + 1);
+    };
+
+    // Autoplay logic
+    useEffect(() => {
+        if (autoplay && !isDragging) {
+            autoplayTimer.current = setInterval(() => {
+                next();
+            }, autoplaySpeed);
+            return () => clearInterval(autoplayTimer.current);
+        }
+    }, [autoplay, autoplaySpeed, next, isDragging]);
+
+    // Dragging logic
+    const handleDragStart = (e) => {
+        if (isTransitioning) return;
+        const clientX = e.type === 'touchstart' ? e.touches[0].clientX : e.clientX;
+        dragStartX.current = clientX;
+        dragCurrentX.current = clientX;
+        setIsDragging(true);
+    };
+
+    const handleDragMove = (e) => {
+        if (!isDragging) return;
+        const clientX = e.type === 'touchmove' ? e.touches[0].clientX : e.clientX;
+        dragCurrentX.current = clientX;
+        const offset = clientX - dragStartX.current;
+        setDragOffset(offset);
+    };
+
+    const handleDragEnd = () => {
+        if (!isDragging) return;
+        setIsDragging(false);
+        setIsTransitioning(true); // Snap back or move with animation
+
+        const diff = dragCurrentX.current - dragStartX.current;
+        const threshold = 50;
+
+        if (Math.abs(diff) > threshold) {
+            if (diff > 0) prev();
+            else next();
+        }
+        setDragOffset(0);
+    };
+
+    // [LastClone, Item1, Item2, ..., ItemN, FirstClone]
+    const allSlides = [childrenArray[total - 1], ...childrenArray, childrenArray[0]];
+
+    const wrapperStyles = {
+        width: '100%',
+        position: 'relative',
+        overflow: 'hidden',
+        userSelect: 'none',
+        cursor: 'auto'
+    };
+
     const arrowSx = styledArrows ? {
         backgroundColor: '#1976D2',
         color: '#fff',
@@ -106,25 +156,38 @@ const CustomSlider = ({
         borderRadius: '50%',
         width: arrowSize,
         height: arrowSize,
-        p: 0, // use explicit size
+        p: 0,
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center'
-    } : {};  // empty object when styling disabled
+    } : {};
 
     const sliderContent = (
-        <Box sx={{ flex: 1, position: 'relative', overflow: 'hidden', width: '100%' }}>
+        <Box
+            sx={{ flex: 1, position: 'relative', overflow: 'hidden', width: '100%' }}
+            onMouseDown={handleDragStart}
+            onMouseMove={handleDragMove}
+            onMouseUp={handleDragEnd}
+            onMouseLeave={handleDragEnd}
+            onTouchStart={handleDragStart}
+            onTouchMove={handleDragMove}
+            onTouchEnd={handleDragEnd}
+        >
             <Box
                 ref={containerRef}
+                onTransitionEnd={handleTransitionEnd}
                 sx={{
                     display: 'flex',
-                    transition: 'transform 0.5s ease',
-                    transform: `translateX(-${(index * 100) / currentSlides}%)`,
+                    transition: isTransitioning ? 'transform 0.5s ease' : 'none',
+                    transform: `translateX(calc(-${(index * 100) / currentSlides}% + ${dragOffset}px))`,
                     width: '100%',
+                    '& img': { pointerEvents: 'none', userSelect: 'none' } // Disables sticking behavior
                 }}
             >
-                {React.Children.map(children, (child, idx) => (
-                    <Box sx={{ flex: `0 0 ${100 / currentSlides}%`, width: `${100 / currentSlides}%` }}>{child}</Box>
+                {allSlides.map((child, idx) => (
+                    <Box key={idx} sx={{ flex: `0 0 ${100 / currentSlides}%`, width: `${100 / currentSlides}%` }}>
+                        {child}
+                    </Box>
                 ))}
             </Box>
         </Box>
@@ -132,115 +195,73 @@ const CustomSlider = ({
 
     return (
         <Box {...props} sx={wrapperStyles}>
-            {arrowsInside ? (
-                // arrows overlayed on top of slider
-                <>
-                    {showArrows && (
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: arrowsInside ? 0 : 2, width: '100%' }}>
+                {showArrows && !arrowsInside && (
+                    <IconButton onClick={prev} sx={{ ...arrowSx, zIndex: 1 }}><LeftArrowIcon /></IconButton>
+                )}
+
+                <Box sx={{ position: 'relative', width: '100%', overflow: 'hidden' }}>
+                    {showArrows && arrowsInside && (
                         <IconButton
                             onClick={prev}
                             sx={{
-                                position: 'absolute',
-                                left: 8,
-                                top: '50%',
-                                transform: 'translateY(-50%)',
-                                zIndex: 2,
-                                ...arrowSx,
+                                position: 'absolute', left: 8, top: '50%', transform: 'translateY(-50%)',
+                                zIndex: 2, ...arrowSx
                             }}
                         >
                             <LeftArrowIcon />
                         </IconButton>
                     )}
+
                     {sliderContent}
-                    {showArrows && (
+
+                    {showArrows && arrowsInside && (
                         <IconButton
                             onClick={next}
                             sx={{
-                                position: 'absolute',
-                                right: 8,
-                                top: '50%',
-                                transform: 'translateY(-50%)',
-                                zIndex: 2,
-                                ...arrowSx,
+                                position: 'absolute', right: 8, top: '50%', transform: 'translateY(-50%)',
+                                zIndex: 2, ...arrowSx
                             }}
                         >
                             <RightArrowIcon />
                         </IconButton>
                     )}
-                </>
-            ) : (
-                // arrows outside, separated by flexbox
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: { xs: 1, md: 2 }, width: '100%' }}>
-                    {showArrows && (
-                        <IconButton
-                            onClick={prev}
-                            sx={{
-                                flexShrink: 0,
-                                zIndex: 1,
-                                ...arrowSx,
-                            }}
-                        >
-                            <LeftArrowIcon />
-                        </IconButton>
-                    )}
-                    {sliderContent}
-                    {showArrows && (
-                        <IconButton
-                            onClick={next}
-                            sx={{
-                                flexShrink: 0,
-                                zIndex: 1,
-                                ...arrowSx,
-                            }}
-                        >
-                            <RightArrowIcon />
-                        </IconButton>
-                    )}        </Box>
-            )}
+                </Box>
+
+                {showArrows && !arrowsInside && (
+                    <IconButton onClick={next} sx={{ ...arrowSx, zIndex: 1 }}><RightArrowIcon /></IconButton>
+                )}
+            </Box>
+
             {dots && (
-                dotsInside ? (
-                    <Box
-                        sx={{
-                            position: 'absolute',
-                            bottom: 8,
-                            left: 0,
-                            right: 0,
-                            display: 'flex',
-                            justifyContent: 'center'
-                        }}
-                    >
-                        {Array.from({ length: total - currentSlides + 1 }).map((_, i) => (
-                            <Box
-                                key={i}
-                                onClick={() => goTo(i)}
-                                sx={{
-                                    width: 8,
-                                    height: 8,
-                                    bgcolor: i === index ? 'primary.main' : 'grey.400',
-                                    borderRadius: '50%',
-                                    mx: 0.5,
-                                    cursor: 'pointer',
-                                }}
-                            />
-                        ))}
-                    </Box>
-                ) : (
-                    <Box sx={{ display: 'flex', justifyContent: 'center', mt: 2, width: '100%' }}>
-                        {Array.from({ length: total - currentSlides + 1 }).map((_, i) => (
-                            <Box
-                                key={i}
-                                onClick={() => goTo(i)}
-                                sx={{
-                                    width: 8,
-                                    height: 8,
-                                    bgcolor: i === index ? 'primary.main' : 'grey.400',
-                                    borderRadius: '50%',
-                                    mx: 0.5,
-                                    cursor: 'pointer',
-                                }}
-                            />
-                        ))}
-                    </Box>
-                )
+                <Box
+                    sx={{
+                        position: dotsInside ? 'absolute' : 'static',
+                        bottom: dotsInside ? 16 : 0,
+                        mt: dotsInside ? 0 : 2,
+                        left: 0,
+                        right: 0,
+                        display: 'flex',
+                        justifyContent: 'center',
+                        zIndex: 2
+                    }}
+                >
+                    {childrenArray.map((_, i) => (
+                        <Box
+                            key={i}
+                            onClick={() => goTo(i)}
+                            sx={{
+                                width: 8,
+                                height: 8,
+                                bgcolor: (index - 1 + total) % total === i ? 'primary.main' : 'rgba(0,0,0,0.2)',
+                                borderRadius: '50%',
+                                mx: 0.5,
+                                cursor: 'pointer',
+                                transition: 'all 0.3s'
+                            }}
+                        />
+                    ))}
+                </Box>
             )}
         </Box>
     );

@@ -3,6 +3,11 @@ import { initReactI18next } from 'react-i18next';
 import LanguageDetector from 'i18next-browser-languagedetector';
 import Backend from 'i18next-http-backend';
 
+// CRITICAL: Ensure Gujarati is the default if no preference is saved
+if (!localStorage.getItem('i18nextLng')) {
+    localStorage.setItem('i18nextLng', 'gu');
+}
+
 i18n
     .use(Backend)
     .use(LanguageDetector)
@@ -10,7 +15,9 @@ i18n
     .init({
         // Only these three languages are supported
         supportedLngs: ['en', 'hi', 'gu'],
-        fallbackLng: 'en',
+        // Set fixed starting language from localStorage or hardcoded default
+        lng: localStorage.getItem('i18nextLng') || 'gu',
+        fallbackLng: 'gu',
         // Strip region codes: 'en-US' → 'en', 'en-IN' → 'en'
         load: 'languageOnly',
         debug: false,
@@ -21,8 +28,8 @@ i18n
             loadPath: '/locales/{{lng}}/translation.json',
         },
         detection: {
-            // Check localStorage first, then browser language
-            order: ['localStorage', 'navigator'],
+            // ONLY check localStorage to avoid automatic browser English detection
+            order: ['localStorage'],
             // Key used to store the language in localStorage
             lookupLocalStorage: 'i18nextLng',
             // Cache the chosen language back to localStorage

@@ -72,7 +72,7 @@ createRoot(document.getElementById('root')).render(
         <Route path="/privacy" element={<PrivacyPolicy />} />
         <Route path="/disclaimer" element={<Disclaimer />} />
         <Route path="/refund" element={<RefundPolicy />} />
-        <Route path="/latest-activity/:id" element={<LatestActivityDetail />} />
+        <Route path="/latest-activity-detail" element={<LatestActivityDetail />} />
 
         {/* Catch-all route for any other public pages */}
         <Route path="*" element={<Navigate to="/404" replace />} />

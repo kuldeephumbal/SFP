@@ -1,6 +1,6 @@
 import { useTranslation } from 'react-i18next';
 import { useEffect, useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import {
     Box,
     Container,
@@ -28,8 +28,19 @@ import Footer from '../../components/Footer';
 
 const LatestActivityDetail = () => {
     const { t } = useTranslation();
-    const { id } = useParams();
+    const location = useLocation();
     const navigate = useNavigate();
+
+    // Check state first, then fallback to session storage for refresh
+    const [activityId] = useState(() => {
+        const idFromState = location.state?.id;
+        if (idFromState) {
+            sessionStorage.setItem('lastActivityId', idFromState);
+            return idFromState;
+        }
+        return sessionStorage.getItem('lastActivityId');
+    });
+
     const [activity, setActivity] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -38,7 +49,7 @@ const LatestActivityDetail = () => {
         const fetchActivity = async () => {
             try {
                 setLoading(true);
-                const res = await api.get(`/latest-activity/${id}`);
+                const res = await api.get(`/latest-activity/${activityId}`);
                 setActivity(res.data);
                 setError(null);
             } catch (err) {
@@ -49,10 +60,13 @@ const LatestActivityDetail = () => {
             }
         };
 
-        if (id) {
+        if (activityId) {
             fetchActivity();
+        } else {
+            setLoading(false);
+            setError(t('common.activity_not_found'));
         }
-    }, [id]);
+    }, [activityId, t]);
 
     const handleShare = (platform) => {
         const url = window.location.href;
@@ -119,14 +133,6 @@ const LatestActivityDetail = () => {
         <Box sx={{ bgcolor: '#f5f5f5', minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
             <Navbar />
             <Container maxWidth="lg" sx={{ py: { xs: 4, md: 6 }, flexGrow: 1 }}>
-                <Button
-                    startIcon={<ArrowBack />}
-                    onClick={() => navigate(-1)}
-                    sx={{ mb: 3, color: '#1565c0' }}
-                >
-                    {t('common.back')}
-                </Button>
-
                 <Paper elevation={3} sx={{ borderRadius: 3, overflow: 'hidden' }}>
                     <Grid container spacing={0}>
                         <Grid size={{ xs: 12, md: 7 }}>

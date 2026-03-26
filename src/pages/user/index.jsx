@@ -264,7 +264,7 @@ const UserLandingPage = () => {
                                         alt={slider.topic}
                                         sx={{
                                             width: '100%',
-                                            height: { xs: 250, sm: 280, md: 487, lg: 587 },
+                                            height: { xs: 250, sm: 280, md: 487, lg: 600 },
                                             objectFit: 'fit'
                                         }}
                                     />
@@ -493,8 +493,14 @@ const UserLandingPage = () => {
                                                         borderRadius: 3,
                                                         boxShadow: 'none',
                                                         border: '1px solid #ccc',
+                                                        cursor: 'pointer',
+                                                        transition: 'transform 0.2s',
+                                                        '&:hover': {
+                                                            transform: 'translateY(-4px)',
+                                                            boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
+                                                        }
                                                     }}
-                                                        onClick={() => navigate(`/latest-activity/${activity._id || activity.id}`)}
+                                                        onClick={() => navigate('/latest-activity-detail', { state: { id: activity._id || activity.id } })}
                                                     >
                                                         <CardMedia
                                                             component="img"

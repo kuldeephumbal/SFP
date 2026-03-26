@@ -17,17 +17,20 @@ import {
     Divider,
     useMediaQuery
 } from '@mui/material';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { Facebook, X as XIcon, Instagram, YouTube, Menu as MenuIcon } from '@mui/icons-material';
 
 const Navbar = () => {
     const navigate = useNavigate();
+    const location = useLocation();
     const { t, i18n } = useTranslation();
     const [aboutAnchorEl, setAboutAnchorEl] = useState(null);
     const [importantAnchorEl, setImportantAnchorEl] = useState(null);
     const [langAnchorEl, setLangAnchorEl] = useState(null);
     const [mobileOpen, setMobileOpen] = useState(false);
     const isMobile = useMediaQuery('(max-width:900px)');
+
+    const isActive = (path) => location.pathname === path;
 
     const changeLanguage = (lng) => {
         i18n.changeLanguage(lng);
@@ -100,56 +103,153 @@ const Navbar = () => {
             <Divider />
             <Box sx={{ flexGrow: 1, overflowY: 'auto' }}>
                 <List sx={{ py: 0 }}>
-                    <ListItemButton onClick={() => handleMobileNavigate('/')}
-                        sx={{ py: 1.2 }}>
+                    <ListItemButton
+                        onClick={() => handleMobileNavigate('/')}
+                        sx={{
+                            py: 1.2,
+                            bgcolor: isActive('/') ? '#e3f2fd' : 'transparent',
+                            color: isActive('/') ? '#1976d2' : 'inherit'
+                        }}
+                    >
                         <ListItemText primary={t('navbar.home')} />
                     </ListItemButton>
-                    <ListItemButton onClick={() => handleMobileNavigate('/member-apply')} sx={{ py: 1.2 }}>
+                    <ListItemButton
+                        onClick={() => handleMobileNavigate('/member-apply')}
+                        sx={{
+                            py: 1.2,
+                            bgcolor: isActive('/member-apply') ? '#e3f2fd' : 'transparent',
+                            color: isActive('/member-apply') ? '#1976d2' : 'inherit'
+                        }}
+                    >
                         <ListItemText primary={t('navbar.apply')} />
                     </ListItemButton>
-                    <ListItemButton onClick={() => handleMobileNavigate('/upcoming-events')} sx={{ py: 1.2 }}>
+                    <ListItemButton
+                        onClick={() => handleMobileNavigate('/upcoming-events')}
+                        sx={{
+                            py: 1.2,
+                            bgcolor: isActive('/upcoming-events') ? '#e3f2fd' : 'transparent',
+                            color: isActive('/upcoming-events') ? '#1976d2' : 'inherit'
+                        }}
+                    >
                         <ListItemText primary={t('navbar.upcoming_events')} />
                     </ListItemButton>
-                    <ListItemButton onClick={() => handleMobileNavigate('/donate')} sx={{ py: 1.2 }}>
+                    <ListItemButton
+                        onClick={() => handleMobileNavigate('/donate')}
+                        sx={{
+                            py: 1.2,
+                            bgcolor: isActive('/donate') ? '#e3f2fd' : 'transparent',
+                            color: isActive('/donate') ? '#1976d2' : 'inherit'
+                        }}
+                    >
                         <ListItemText primary={t('navbar.donate')} />
                     </ListItemButton>
-                    <ListItemButton onClick={() => handleMobileNavigate('/donors')} sx={{ py: 1.2 }}>
+                    <ListItemButton
+                        onClick={() => handleMobileNavigate('/donors')}
+                        sx={{
+                            py: 1.2,
+                            bgcolor: isActive('/donors') ? '#e3f2fd' : 'transparent',
+                            color: isActive('/donors') ? '#1976d2' : 'inherit'
+                        }}
+                    >
                         <ListItemText primary={t('navbar.donors_list')} />
                     </ListItemButton>
-                    <ListItemButton onClick={() => handleMobileNavigate('/gallery')} sx={{ py: 1.2 }}>
+                    <ListItemButton
+                        onClick={() => handleMobileNavigate('/gallery')}
+                        sx={{
+                            py: 1.2,
+                            bgcolor: isActive('/gallery') ? '#e3f2fd' : 'transparent',
+                            color: isActive('/gallery') ? '#1976d2' : 'inherit'
+                        }}
+                    >
                         <ListItemText primary={t('navbar.gallery')} />
                     </ListItemButton>
-                    <ListItemButton onClick={() => handleMobileNavigate('/contact')} sx={{ py: 1.2 }}>
+                    <ListItemButton
+                        onClick={() => handleMobileNavigate('/contact')}
+                        sx={{
+                            py: 1.2,
+                            bgcolor: isActive('/contact') ? '#e3f2fd' : 'transparent',
+                            color: isActive('/contact') ? '#1976d2' : 'inherit'
+                        }}
+                    >
                         <ListItemText primary={t('navbar.contact')} />
                     </ListItemButton>
                 </List>
                 <Divider />
                 <List sx={{ py: 0 }}>
-                    <ListItemButton onClick={() => handleMobileNavigate('/about')} sx={{ py: 1.2 }}>
+                    <ListItemButton
+                        onClick={() => handleMobileNavigate('/about')}
+                        sx={{
+                            py: 1.2,
+                            bgcolor: isActive('/about') ? '#e3f2fd' : 'transparent',
+                            color: isActive('/about') ? '#1976d2' : 'inherit'
+                        }}
+                    >
                         <ListItemText primary={t('navbar.about')} />
                     </ListItemButton>
-                    <ListItemButton onClick={() => handleMobileNavigate('/our-team')} sx={{ py: 1.2 }}>
+                    <ListItemButton
+                        onClick={() => handleMobileNavigate('/our-team')}
+                        sx={{
+                            py: 1.2,
+                            bgcolor: isActive('/our-team') ? '#e3f2fd' : 'transparent',
+                            color: isActive('/our-team') ? '#1976d2' : 'inherit'
+                        }}
+                    >
                         <ListItemText primary={t('navbar.team')} />
                     </ListItemButton>
-                    <ListItemButton onClick={() => handleMobileNavigate('/achievements')} sx={{ py: 1.2 }}>
+                    <ListItemButton
+                        onClick={() => handleMobileNavigate('/achievements')}
+                        sx={{
+                            py: 1.2,
+                            bgcolor: isActive('/achievements') ? '#e3f2fd' : 'transparent',
+                            color: isActive('/achievements') ? '#1976d2' : 'inherit'
+                        }}
+                    >
                         <ListItemText primary={t('navbar.achievements')} />
                     </ListItemButton>
                 </List>
                 <Divider />
                 <List sx={{ py: 0 }}>
-                    <ListItemButton onClick={() => handleMobileNavigate('/crowdfunding')} sx={{ py: 1.2 }}>
+                    <ListItemButton
+                        onClick={() => handleMobileNavigate('/crowdfunding')}
+                        sx={{
+                            py: 1.2,
+                            bgcolor: isActive('/crowdfunding') ? '#e3f2fd' : 'transparent',
+                            color: isActive('/crowdfunding') ? '#1976d2' : 'inherit'
+                        }}
+                    >
                         <ListItemText primary={t('navbar.crowdfunding')} />
                     </ListItemButton>
-                    <ListItemButton onClick={() => handleMobileNavigate('/your-problems')} sx={{ py: 1.2 }}>
+                    <ListItemButton
+                        onClick={() => handleMobileNavigate('/your-problems')}
+                        sx={{
+                            py: 1.2,
+                            bgcolor: isActive('/your-problems') ? '#e3f2fd' : 'transparent',
+                            color: isActive('/your-problems') ? '#1976d2' : 'inherit'
+                        }}
+                    >
                         <ListItemText primary={t('navbar.your_problems')} />
                     </ListItemButton>
-                    <ListItemButton onClick={() => handleMobileNavigate('/projects')} sx={{ py: 1.2 }}>
+                    <ListItemButton
+                        onClick={() => handleMobileNavigate('/projects')}
+                        sx={{
+                            py: 1.2,
+                            bgcolor: isActive('/projects') ? '#e3f2fd' : 'transparent',
+                            color: isActive('/projects') ? '#1976d2' : 'inherit'
+                        }}
+                    >
                         <ListItemText primary={t('navbar.our_projects')} />
                     </ListItemButton>
                 </List>
                 <Divider />
                 <List sx={{ py: 0 }}>
-                    <ListItemButton onClick={() => handleMobileNavigate('/login')} sx={{ py: 1.2 }}>
+                    <ListItemButton
+                        onClick={() => handleMobileNavigate('/login')}
+                        sx={{
+                            py: 1.2,
+                            bgcolor: isActive('/login') ? '#e3f2fd' : 'transparent',
+                            color: isActive('/login') ? '#1976d2' : 'inherit'
+                        }}
+                    >
                         <ListItemText primary={t('navbar.login')} />
                     </ListItemButton>
                 </List>
@@ -229,7 +329,7 @@ const Navbar = () => {
             {/* Header/Navbar */}
             <AppBar position="sticky" sx={{ bgcolor: '#1976d2', color: 'white', boxShadow: 0 }}>
                 <Container maxWidth="lg" sx={{ px: { xs: 2, sm: 3 } }}>
-                    <Toolbar sx={{ justifyContent: 'space-between', gap: 0, minHeight: '56px !important', py: 0 }}>
+                    <Toolbar sx={{ justifyContent: 'space-between', gap: 0, minHeight: '44px !important', py: 0 }}>
                         <Box sx={{ display: { xs: 'flex', md: 'none' }, alignItems: 'center', width: '100%', justifyContent: 'space-between' }}>
                             <Box onClick={() => navigate('/')} sx={{ display: 'flex', alignItems: 'center', gap: 1, cursor: 'pointer' }}>
                                 <img src="/assets/img/Shankhnad-logo.png" alt="Logo" style={{ height: 28 }} />
@@ -249,43 +349,114 @@ const Navbar = () => {
                         <Box sx={{ display: { xs: 'none', md: 'flex' }, width: '100%', justifyContent: 'space-between' }}>
                             <Button
                                 onClick={() => navigate('/')}
-                                sx={{ color: 'white', px: 1.5, py: 2.2, borderRadius: 0, '&:hover': { bgcolor: '#1565c0' }, fontSize: '0.7rem', textTransform: 'uppercase' }}
+                                sx={{
+                                    color: isActive('/') ? '#1976d2' : 'white',
+                                    px: 1.5,
+                                    py: 0.8,
+                                    borderRadius: 5,
+                                    bgcolor: isActive('/') ? '#ffffff' : 'transparent',
+                                    '&:hover': { bgcolor: '#1565c0', color: 'white' },
+                                    fontSize: '0.7rem',
+                                    textTransform: 'uppercase',
+                                    fontWeight: isActive('/') ? 700 : 400
+
+                                }}
                             >
                                 {t('navbar.home')}
                             </Button>
                             <Button
                                 onClick={() => navigate('/member-apply')}
-                                sx={{ color: 'white', px: 1.5, py: 2.2, borderRadius: 0, '&:hover': { bgcolor: '#1565c0' }, fontSize: '0.7rem', textTransform: 'uppercase' }}
+                                sx={{
+                                    color: isActive('/member-apply') ? '#1976d2' : 'white',
+                                    px: 1.5,
+                                    py: 0.8,
+                                    borderRadius: 5,
+                                    bgcolor: isActive('/member-apply') ? '#ffffff' : 'transparent',
+                                    '&:hover': { bgcolor: '#1565c0', color: 'white' },
+                                    fontSize: '0.7rem',
+                                    textTransform: 'uppercase',
+                                    fontWeight: isActive('/member-apply') ? 700 : 400
+                                }}
                             >
                                 {t('navbar.apply')}
                             </Button>
                             <Button
                                 onClick={() => navigate('/upcoming-events')}
-                                sx={{ color: 'white', px: 1.5, py: 2.2, borderRadius: 0, '&:hover': { bgcolor: '#1565c0' }, fontSize: '0.7rem', textTransform: 'uppercase' }}
+                                sx={{
+                                    color: isActive('/upcoming-events') ? '#1976d2' : 'white',
+                                    px: 1.5,
+                                    py: 0.8,
+                                    borderRadius: 5,
+                                    bgcolor: isActive('/upcoming-events') ? '#ffffff' : 'transparent',
+                                    '&:hover': { bgcolor: '#1565c0', color: 'white' },
+                                    fontSize: '0.7rem',
+                                    textTransform: 'uppercase',
+                                    fontWeight: isActive('/upcoming-events') ? 700 : 400
+                                }}
                             >
                                 {t('navbar.upcoming_events')}
                             </Button>
                             <Button
                                 onClick={() => navigate('/donate')}
-                                sx={{ color: 'white', px: 1.5, py: 2.2, borderRadius: 0, '&:hover': { bgcolor: '#1565c0' }, fontSize: '0.7rem', textTransform: 'uppercase' }}
+                                sx={{
+                                    color: isActive('/donate') ? '#1976d2' : 'white',
+                                    px: 1.5,
+                                    py: 0.8,
+                                    borderRadius: 5,
+                                    bgcolor: isActive('/donate') ? '#ffffff' : 'transparent',
+                                    '&:hover': { bgcolor: '#1565c0', color: 'white' },
+                                    fontSize: '0.7rem',
+                                    textTransform: 'uppercase',
+                                    fontWeight: isActive('/donate') ? 700 : 400
+                                }}
                             >
                                 {t('navbar.donate')}
                             </Button>
                             <Button
                                 onClick={() => navigate('/donors')}
-                                sx={{ color: 'white', px: 1.5, py: 2.2, borderRadius: 0, '&:hover': { bgcolor: '#1565c0' }, fontSize: '0.7rem', textTransform: 'uppercase' }}
+                                sx={{
+                                    color: isActive('/donors') ? '#1976d2' : 'white',
+                                    px: 1.5,
+                                    py: 0.8,
+                                    borderRadius: 5,
+                                    bgcolor: isActive('/donors') ? '#ffffff' : 'transparent',
+                                    '&:hover': { bgcolor: '#1565c0', color: 'white' },
+                                    fontSize: '0.7rem',
+                                    textTransform: 'uppercase',
+                                    fontWeight: isActive('/donors') ? 700 : 400
+                                }}
                             >
                                 {t('navbar.donors_list')}
                             </Button>
                             <Button
                                 onClick={() => navigate('/gallery')}
-                                sx={{ color: 'white', px: 1.5, py: 2.2, borderRadius: 0, '&:hover': { bgcolor: '#1565c0' }, fontSize: '0.7rem', textTransform: 'uppercase' }}
+                                sx={{
+                                    color: isActive('/gallery') ? '#1976d2' : 'white',
+                                    px: 1.5,
+                                    py: 0.8,
+                                    borderRadius: 5,
+                                    bgcolor: isActive('/gallery') ? '#ffffff' : 'transparent',
+                                    '&:hover': { bgcolor: '#1565c0', color: 'white' },
+                                    fontSize: '0.7rem',
+                                    textTransform: 'uppercase',
+                                    fontWeight: isActive('/gallery') ? 700 : 400
+                                }}
                             >
                                 {t('navbar.gallery')}
                             </Button>
                             <Button
                                 onClick={() => navigate('/contact')}
-                                sx={{ color: 'white', px: 1.5, py: 2.2, borderRadius: 0, '&:hover': { bgcolor: '#1565c0' }, fontSize: '0.7rem', textTransform: 'uppercase' }}
+                                sx={{
+                                    color: isActive('/contact') ? '#1976d2' : 'white',
+                                    px: 1.5,
+                                    py: 0.8,
+                                    borderRadius: 5,
+                                    bgcolor: isActive('/contact') ? '#ffffff' : 'transparent',
+                                    '&:hover': { bgcolor: '#1565c0', color: 'white' },
+                                    fontSize: '0.7rem',
+                                    textTransform: 'uppercase',
+                                    fontWeight: isActive('/contact') ? 700 : 400
+                                }}
                             >
                                 {t('navbar.contact')}
                             </Button>
@@ -295,7 +466,17 @@ const Navbar = () => {
                                 aria-controls={aboutAnchorEl ? 'about-menu' : undefined}
                                 aria-haspopup="true"
                                 aria-expanded={aboutAnchorEl ? 'true' : undefined}
-                                sx={{ color: 'white', px: 1.5, py: 2.2, borderRadius: 0, '&:hover': { bgcolor: '#1565c0' }, fontSize: '0.7rem', textTransform: 'uppercase' }}
+                                sx={{
+                                    color: (isActive('/about') || isActive('/our-team') || isActive('/achievements')) ? '#1976d2' : 'white',
+                                    px: 1.5,
+                                    py: 0.8,
+                                    borderRadius: 5,
+                                    bgcolor: (isActive('/about') || isActive('/our-team') || isActive('/achievements')) ? '#ffffff' : 'transparent',
+                                    '&:hover': { bgcolor: '#1565c0', color: 'white' },
+                                    fontSize: '0.7rem',
+                                    textTransform: 'uppercase',
+                                    fontWeight: (isActive('/about') || isActive('/our-team') || isActive('/achievements')) ? 700 : 400
+                                }}
                             >
                                 {t('navbar.about')}
                             </Button>
@@ -308,9 +489,9 @@ const Navbar = () => {
                                 transformOrigin={{ vertical: 'top', horizontal: 'left' }}
                                 MenuListProps={{ 'aria-labelledby': 'about-menu-button' }}
                             >
-                                <MenuItem onClick={() => handleAboutNavigate('/about')}>{t('navbar.about')}</MenuItem>
-                                <MenuItem onClick={() => handleAboutNavigate('/our-team')}>{t('navbar.team')}</MenuItem>
-                                <MenuItem onClick={() => handleAboutNavigate('/achievements')}>
+                                <MenuItem onClick={() => handleAboutNavigate('/about')} sx={{ bgcolor: isActive('/about') ? '#e3f2fd' : 'transparent', color: isActive('/about') ? '#1976d2' : 'inherit' }}>{t('navbar.about')}</MenuItem>
+                                <MenuItem onClick={() => handleAboutNavigate('/our-team')} sx={{ bgcolor: isActive('/our-team') ? '#e3f2fd' : 'transparent', color: isActive('/our-team') ? '#1976d2' : 'inherit' }}>{t('navbar.team')}</MenuItem>
+                                <MenuItem onClick={() => handleAboutNavigate('/achievements')} sx={{ bgcolor: isActive('/achievements') ? '#e3f2fd' : 'transparent', color: isActive('/achievements') ? '#1976d2' : 'inherit' }}>
                                     {t('navbar.achievements')}
                                 </MenuItem>
                             </Menu>
@@ -320,7 +501,17 @@ const Navbar = () => {
                                 aria-controls={importantAnchorEl ? 'important-menu' : undefined}
                                 aria-haspopup="true"
                                 aria-expanded={importantAnchorEl ? 'true' : undefined}
-                                sx={{ color: 'white', px: 1.5, py: 2.2, borderRadius: 0, '&:hover': { bgcolor: '#1565c0' }, fontSize: '0.7rem', textTransform: 'uppercase' }}
+                                sx={{
+                                    color: (isActive('/crowdfunding') || isActive('/your-problems') || isActive('/projects')) ? '#1976d2' : 'white',
+                                    px: 1.5,
+                                    py: 0.8,
+                                    borderRadius: 5,
+                                    bgcolor: (isActive('/crowdfunding') || isActive('/your-problems') || isActive('/projects')) ? '#ffffff' : 'transparent',
+                                    '&:hover': { bgcolor: '#1565c0', color: 'white' },
+                                    fontSize: '0.7rem',
+                                    textTransform: 'uppercase',
+                                    fontWeight: (isActive('/crowdfunding') || isActive('/your-problems') || isActive('/projects')) ? 700 : 400
+                                }}
                             >
                                 {t('navbar.important_links')}
                             </Button>
@@ -333,13 +524,23 @@ const Navbar = () => {
                                 transformOrigin={{ vertical: 'top', horizontal: 'left' }}
                                 MenuListProps={{ 'aria-labelledby': 'important-menu-button' }}
                             >
-                                <MenuItem onClick={() => handleImportantNavigate('/crowdfunding')}>{t('navbar.crowdfunding')}</MenuItem>
-                                <MenuItem onClick={() => handleImportantNavigate('/your-problems')}>{t('navbar.your_problems')}</MenuItem>
-                                <MenuItem onClick={() => handleImportantNavigate('/projects')}>{t('navbar.our_projects')}</MenuItem>
+                                <MenuItem onClick={() => handleImportantNavigate('/crowdfunding')} sx={{ bgcolor: isActive('/crowdfunding') ? '#e3f2fd' : 'transparent', color: isActive('/crowdfunding') ? '#1976d2' : 'inherit' }}>{t('navbar.crowdfunding')}</MenuItem>
+                                <MenuItem onClick={() => handleImportantNavigate('/your-problems')} sx={{ bgcolor: isActive('/your-problems') ? '#e3f2fd' : 'transparent', color: isActive('/your-problems') ? '#1976d2' : 'inherit' }}>{t('navbar.your_problems')}</MenuItem>
+                                <MenuItem onClick={() => handleImportantNavigate('/projects')} sx={{ bgcolor: isActive('/projects') ? '#e3f2fd' : 'transparent', color: isActive('/projects') ? '#1976d2' : 'inherit' }}>{t('navbar.our_projects')}</MenuItem>
                             </Menu>
                             <Button
                                 onClick={() => navigate('/login')}
-                                sx={{ color: 'white', px: 1.5, py: 2.2, borderRadius: 0, '&:hover': { bgcolor: '#1565c0' }, fontSize: '0.7rem', textTransform: 'uppercase' }}
+                                sx={{
+                                    color: isActive('/login') ? '#1976d2' : 'white',
+                                    px: 1.5,
+                                    py: 0.8,
+                                    borderRadius: 5,
+                                    bgcolor: isActive('/login') ? '#ffffff' : 'transparent',
+                                    '&:hover': { bgcolor: '#1565c0', color: 'white' },
+                                    fontSize: '0.7rem',
+                                    textTransform: 'uppercase',
+                                    fontWeight: isActive('/login') ? 700 : 400
+                                }}
                             >
                                 {t('navbar.login')}
                             </Button>

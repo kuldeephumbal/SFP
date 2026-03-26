@@ -102,7 +102,7 @@ const Gallery = () => {
                                             overflow: 'hidden',
                                             '&:hover': {
                                                 boxShadow: 6,
-                                                transform: 'scale(1.02)',
+                                                transform: { xs: 'none', md: 'scale(1.02)' },
                                                 transition: 'all 0.3s ease-in-out',
                                             },
                                         }}
