@@ -23,7 +23,11 @@ import {
     Groups,
     ArrowBack,
     ArrowForward,
-    YouTube
+    YouTube,
+    VolunteerActivism,
+    FavoriteBorder,
+    Favorite,
+    Share
 } from '@mui/icons-material';
 import axios from 'axios';
 import api, { IMAGE_BASE_URL, getImageUrl } from '../../components/BaseURL';
@@ -43,7 +47,63 @@ const UserLandingPage = () => {
     const [scrollPercent, setScrollPercent] = useState(0);
     const [members, setMembers] = useState([]);
     const [galleryItems, setGalleryItems] = useState([]);
+    const [likedPosts, setLikedPosts] = useState([]);
     const recentActivityRef = useRef(null);
+
+    const toggleLike = (e, id) => {
+        e.stopPropagation();
+
+        const isCurrentlyLiked = likedPosts.includes(id);
+
+        // Optimistic UI update: Icon flavor
+        setLikedPosts(prev =>
+            isCurrentlyLiked ? prev.filter(p => p !== id) : [...prev, id]
+        );
+
+        // Optimistic UI update: Count flavor
+        const updateLikesInState = (prev) => prev.map(item => {
+            if ((item._id || item.id) === id) {
+                const currentLikes = item.likes || 0;
+                return { ...item, likes: isCurrentlyLiked ? Math.max(0, currentLikes - 1) : currentLikes + 1 };
+            }
+            return item;
+        });
+
+        setLatestActivities(updateLikesInState);
+        setActivities(updateLikesInState);
+
+        // Sync with database
+        api.post(`/latest-activity/like/${id}`)
+            .then(res => {
+                if (res.data && res.data.likes !== undefined) {
+                    // Finally sync state with exact backend value
+                    const syncWithBackend = (prev) => prev.map(item =>
+                        (item._id || item.id) === id ? { ...item, likes: res.data.likes } : item
+                    );
+                    setLatestActivities(syncWithBackend);
+                    setActivities(syncWithBackend);
+                }
+            })
+            .catch(err => {
+                console.error('Failed to sync like with database', err);
+                // Rollback if needed, but for better experience keep the optimistic update
+            });
+    };
+
+    const handleShare = (e, activity) => {
+        e.stopPropagation();
+        if (navigator.share) {
+            navigator.share({
+                title: 'Shankhnad Foundation',
+                text: activity.activity_detail,
+                url: window.location.origin + '/latest-activity-detail'
+            }).catch(console.error);
+        } else {
+            // Fallback
+            navigator.clipboard.writeText(window.location.origin + '/latest-activity-detail');
+            alert(t('common.link_copied') || 'Link copied to clipboard!');
+        }
+    };
 
     const defaultSliderImages = [
         { id: 1, photo: '/assets/img/slider-img-01.webp', topic: 'Welcome to Shankhnad Foundation' },
@@ -84,6 +144,16 @@ const UserLandingPage = () => {
                 console.error('Failed to load recent activities', err);
                 // Keep empty on failure
             });
+    }, []);
+
+    useEffect(() => {
+        api.get('/latest-activity/liked-ids')
+            .then(res => {
+                if (Array.isArray(res.data)) {
+                    setLikedPosts(res.data);
+                }
+            })
+            .catch(err => console.error('Error fetching liked posts:', err));
     }, []);
 
     useEffect(() => {
@@ -289,7 +359,7 @@ const UserLandingPage = () => {
                 </Box>
 
                 {/* Quick Action Cards */}
-                <Box sx={{ mt: { xs: 2, md: 3 }, mb: sectionSpacing }}>
+                <Box sx={{ pt: { xs: 4, md: 6 }, pb: 0 }}>
                     <Container maxWidth="lg">
                         <CustomSlider
                             slidesToShow={4}
@@ -306,13 +376,18 @@ const UserLandingPage = () => {
                                 <Card
                                     onClick={() => navigate('/member-apply')}
                                     sx={{
+                                        display: 'flex',
+                                        flexDirection: 'column',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
                                         textAlign: 'center',
-                                        py: { xs: 2, md: 1.5 },
+                                        px: 1.5,
+                                        py: { xs: 2, md: 2.5 },
                                         cursor: 'pointer',
                                         transition: 'all 0.3s',
                                         height: '100%',
                                         borderRadius: 3,
-                                        minHeight: { xs: 100, md: 120 }
+                                        minHeight: { xs: 110, md: 140 }
                                     }}
                                 >
                                     <PersonAdd sx={{ fontSize: { xs: 30, md: 36 }, color: '#1976d2', mb: 1.2 }} />
@@ -323,31 +398,43 @@ const UserLandingPage = () => {
                                 <Card
                                     onClick={() => navigate('/upcoming-events')}
                                     sx={{
+                                        display: 'flex',
+                                        flexDirection: 'column',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
                                         textAlign: 'center',
-                                        py: { xs: 2.5, md: 2 },
+                                        px: 1.5,
+                                        py: { xs: 2, md: 2.5 },
                                         cursor: 'pointer',
                                         transition: 'all 0.3s',
                                         height: '100%',
-                                        borderRadius: 3
+                                        borderRadius: 3,
+                                        minHeight: { xs: 110, md: 140 }
                                     }}
                                 >
-                                    <Event sx={{ fontSize: { xs: 30, md: 36 }, color: '#1976d2', mb: 1.5 }} />
-                                    <Typography variant="h6" fontWeight={600} sx={{ fontSize: { xs: '0.85rem', md: '1rem' }, lineHeight: 1.1 }}>{t('navbar.services')}</Typography>
+                                    <Event sx={{ fontSize: { xs: 30, md: 36 }, color: '#1976d2', mb: 1.2 }} />
+                                    <Typography variant="h6" fontWeight={600} sx={{ fontSize: { xs: '0.85rem', md: '1rem' }, lineHeight: 1.1 }}>{t('navbar.upcoming_events')}</Typography>
                                 </Card>
                             </Box>
                             <Box sx={{ px: 1, height: '100%', py: 0.5 }}>
                                 <Card
                                     onClick={() => navigate('/our-team')}
                                     sx={{
+                                        display: 'flex',
+                                        flexDirection: 'column',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
                                         textAlign: 'center',
-                                        py: { xs: 2.5, md: 2 },
+                                        px: 1.5,
+                                        py: { xs: 2, md: 2.5 },
                                         cursor: 'pointer',
                                         transition: 'all 0.3s',
                                         height: '100%',
-                                        borderRadius: 3
+                                        borderRadius: 3,
+                                        minHeight: { xs: 110, md: 140 }
                                     }}
                                 >
-                                    <Groups sx={{ fontSize: { xs: 30, md: 36 }, color: '#1976d2', mb: 1.5 }} />
+                                    <Groups sx={{ fontSize: { xs: 30, md: 36 }, color: '#1976d2', mb: 1.2 }} />
                                     <Typography variant="h6" fontWeight={600} sx={{ fontSize: { xs: '0.85rem', md: '1rem' }, lineHeight: 1.1 }}>{t('navbar.team')}</Typography>
                                 </Card>
                             </Box>
@@ -355,17 +442,21 @@ const UserLandingPage = () => {
                                 <Card
                                     onClick={() => navigate('/donate')}
                                     sx={{
+                                        display: 'flex',
+                                        flexDirection: 'column',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
                                         textAlign: 'center',
-                                        py: { xs: 2.5, md: 2 },
+                                        px: 1.5,
+                                        py: { xs: 2, md: 2.5 },
                                         cursor: 'pointer',
                                         transition: 'all 0.3s',
                                         height: '100%',
-                                        borderRadius: 3
+                                        borderRadius: 3,
+                                        minHeight: { xs: 110, md: 140 }
                                     }}
                                 >
-                                    <Paper elevation={0} sx={{ bgcolor: 'transparent' }}>
-                                        <Event sx={{ fontSize: { xs: 30, md: 36 }, color: '#1976d2', mb: 1.5 }} />
-                                    </Paper>
+                                    <VolunteerActivism sx={{ fontSize: { xs: 30, md: 36 }, color: '#1976d2', mb: 1.2 }} />
                                     <Typography variant="h6" fontWeight={600} sx={{ fontSize: { xs: '0.85rem', md: '1rem' }, lineHeight: 1.1 }}>{t('navbar.donate')}</Typography>
                                 </Card>
                             </Box>
@@ -373,15 +464,21 @@ const UserLandingPage = () => {
                                 <Card
                                     onClick={() => navigate('/crowdfunding')}
                                     sx={{
+                                        display: 'flex',
+                                        flexDirection: 'column',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
                                         textAlign: 'center',
-                                        py: { xs: 2.5, md: 2 },
+                                        px: 1.5,
+                                        py: { xs: 2, md: 2.5 },
                                         cursor: 'pointer',
                                         transition: 'all 0.3s',
                                         height: '100%',
-                                        borderRadius: 3
+                                        borderRadius: 3,
+                                        minHeight: { xs: 110, md: 140 }
                                     }}
                                 >
-                                    <Groups sx={{ fontSize: { xs: 30, md: 36 }, color: '#1976d2', mb: 1.5 }} />
+                                    <Groups sx={{ fontSize: { xs: 30, md: 36 }, color: '#1976d2', mb: 1.2 }} />
                                     <Typography variant="h6" fontWeight={600} sx={{ fontSize: { xs: '0.85rem', md: '1rem' }, lineHeight: 1.1 }}>{t('navbar.crowdfunding')}</Typography>
                                 </Card>
                             </Box>
@@ -408,7 +505,7 @@ const UserLandingPage = () => {
                                                 pr: 0.5,
                                                 // Hide scrollbar but keep functionality
                                                 scrollbarWidth: 'none',
-                                                '-ms-overflow-style': 'none',
+                                                msOverflowStyle: 'none',
                                                 '&::-webkit-scrollbar': {
                                                     display: 'none'
                                                 }
@@ -508,8 +605,8 @@ const UserLandingPage = () => {
                                                             image={getImageUrl(activity.photo)}
                                                             alt={activity.activity_detail}
                                                         />
-                                                        <CardContent sx={{ flexGrow: 1 }}>
-                                                            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start', mb: 1 }}>
+                                                        <CardContent sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column', p: 0, '&:last-child': { pb: 0 } }}>
+                                                            <Box sx={{ p: 2, flexGrow: 1 }}>
                                                                 <Typography variant="body1" sx={{
                                                                     fontWeight: 600,
                                                                     color: '#2c3e50',
@@ -521,13 +618,48 @@ const UserLandingPage = () => {
                                                                     {activity.activity_detail}
                                                                 </Typography>
                                                             </Box>
-                                                            <Typography variant="caption" sx={{ color: '#1565c0', fontWeight: 500 }}>
-                                                                {new Date(activity.createdAt || activity.created_at).toLocaleDateString('en-US', {
-                                                                    year: 'numeric',
-                                                                    month: 'long',
-                                                                    day: 'numeric'
-                                                                })}
-                                                            </Typography>
+
+                                                            <Divider />
+
+                                                            <Box sx={{ p: 1.5, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                                                <Typography variant="caption" sx={{ color: '#666', fontWeight: 500 }}>
+                                                                    {new Date(activity.createdAt || activity.created_at).toLocaleDateString(undefined, {
+                                                                        year: 'numeric',
+                                                                        month: 'long',
+                                                                        day: 'numeric'
+                                                                    })}
+                                                                </Typography>
+
+                                                                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+                                                                    <Box
+                                                                        sx={{
+                                                                            display: 'flex',
+                                                                            alignItems: 'center',
+                                                                            gap: 0.5,
+                                                                            cursor: 'pointer',
+                                                                            color: likedPosts.includes(activity._id || activity.id) ? '#e91e63' : '#666',
+                                                                            '&:hover': { color: '#e91e63' }
+                                                                        }}
+                                                                        onClick={(e) => toggleLike(e, activity._id || activity.id)}
+                                                                    >
+                                                                        {likedPosts.includes(activity._id || activity.id)
+                                                                            ? <Favorite sx={{ fontSize: 18 }} />
+                                                                            : <FavoriteBorder sx={{ fontSize: 18 }} />
+                                                                        }
+                                                                        <Typography variant="caption" sx={{ fontWeight: 600 }}>
+                                                                            {activity.likes || 0}
+                                                                        </Typography>
+                                                                    </Box>
+
+                                                                    <IconButton
+                                                                        size="small"
+                                                                        onClick={(e) => handleShare(e, activity)}
+                                                                        sx={{ p: 0.5, color: '#666', '&:hover': { color: '#1976d2' } }}
+                                                                    >
+                                                                        <Share sx={{ fontSize: 18 }} />
+                                                                    </IconButton>
+                                                                </Box>
+                                                            </Box>
                                                         </CardContent>
                                                     </Card>
                                                 </Grid>

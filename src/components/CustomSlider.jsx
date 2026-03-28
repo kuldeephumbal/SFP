@@ -60,6 +60,7 @@ const CustomSlider = ({
                     }
                 });
             setCurrentSlides(matched);
+            setIndex(matched); // Initialize index to the first real slide
         };
         evaluate();
         window.addEventListener('resize', evaluate);
@@ -81,19 +82,19 @@ const CustomSlider = ({
     const handleTransitionEnd = () => {
         setIsTransitioning(false);
         // If we are at the end clone, snap instantly to the real first item
-        if (index >= total + 1) {
-            setIndex(1);
+        if (index >= total + currentSlides) {
+            setIndex(currentSlides);
         }
         // If we are at the start clone, snap instantly to the real last item
-        if (index <= 0) {
-            setIndex(total);
+        if (index < currentSlides) {
+            setIndex(total + index);
         }
     };
 
     const goTo = (i) => {
         if (isTransitioning) return;
         setIsTransitioning(true);
-        setIndex(i + 1);
+        setIndex(i + currentSlides);
     };
 
     // Autoplay logic
@@ -105,6 +106,14 @@ const CustomSlider = ({
             return () => clearInterval(autoplayTimer.current);
         }
     }, [autoplay, autoplaySpeed, next, isDragging]);
+
+    useEffect(() => {
+        // Ensure index is valid after currentSlides changes
+        setIndex(prev => {
+            const relIndex = (prev - currentSlides + total) % total;
+            return relIndex + currentSlides;
+        });
+    }, [currentSlides, total]);
 
     // Dragging logic
     const handleDragStart = (e) => {
@@ -121,6 +130,11 @@ const CustomSlider = ({
         dragCurrentX.current = clientX;
         const offset = clientX - dragStartX.current;
         setDragOffset(offset);
+
+        // Prevent page scroll if dragging horizontally significantly
+        if (e.type === 'touchmove' && Math.abs(offset) > 10) {
+            // e.preventDefault(); // This is often passive now, use touch-action instead
+        }
     };
 
     const handleDragEnd = () => {
@@ -138,15 +152,19 @@ const CustomSlider = ({
         setDragOffset(0);
     };
 
-    // [LastClone, Item1, Item2, ..., ItemN, FirstClone]
-    const allSlides = [childrenArray[total - 1], ...childrenArray, childrenArray[0]];
+    // Clones for infinite loop with multiple slides
+    // We need currentSlides amount of clones at each end
+    const clonesAtStart = childrenArray.slice(-currentSlides);
+    const clonesAtEnd = childrenArray.slice(0, currentSlides);
+    const allSlides = [...clonesAtStart, ...childrenArray, ...clonesAtEnd];
 
     const wrapperStyles = {
         width: '100%',
         position: 'relative',
         overflow: 'hidden',
         userSelect: 'none',
-        cursor: 'auto'
+        cursor: 'auto',
+        touchAction: 'pan-y' // Allow vertical scroll, handle horizontal swipe
     };
 
     const arrowSx = styledArrows ? {
@@ -164,7 +182,7 @@ const CustomSlider = ({
 
     const sliderContent = (
         <Box
-            sx={{ flex: 1, position: 'relative', overflow: 'hidden', width: '100%' }}
+            sx={{ flex: 1, position: 'relative', overflow: 'hidden', width: '100%', touchAction: 'pan-y' }}
             onMouseDown={handleDragStart}
             onMouseMove={handleDragMove}
             onMouseUp={handleDragEnd}
