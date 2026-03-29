@@ -122,7 +122,7 @@ export default function OurProjects() {
                                             alt={project.topic}
                                             sx={{
                                                 width: { xs: '100%', md: '35%' },
-                                                height: { xs: 200, md: 'auto' },
+                                                height: { xs: 220, sm: 240, md: 280 },
                                                 objectFit: 'cover'
                                             }}
                                         />

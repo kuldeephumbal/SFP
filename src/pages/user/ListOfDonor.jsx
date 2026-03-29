@@ -126,13 +126,13 @@ const ListOfDonor = () => {
                                         image={donation.photo ? `${IMAGE_BASE_URL}/${donation.photo.replace(/^\/+/, '')}` : '/assets/img/default-profile.jpg'}
                                         alt={donation.full_name}
                                         sx={{
-                                            height: { xs: 140, sm: 160, md: 180 },
+                                            height: { xs: 210, sm: 270 },
                                             objectFit: 'cover',
                                         }}
                                     />
 
                                     {/* Card Content */}
-                                    <CardContent sx={{ flexGrow: 1 }}>
+                                    <CardContent sx={{ flexGrow: 1, p: 1.5, '&:last-child': { pb: 1.5 } }}>
                                         {/* Donor Name */}
                                         <Typography
                                             variant="h6"

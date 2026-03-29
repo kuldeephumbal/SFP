@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import Navbar from '../../components/Navbar';
 import Footer from '../../components/Footer';
-import api, { IMAGE_BASE_URL } from '../../components/BaseURL';
+import api, { IMAGE_BASE_URL, getImageUrl } from '../../components/BaseURL';
 import {
     Box,
     Container,
@@ -128,11 +128,11 @@ const CrowdFunding = () => {
                                         {/* Image */}
                                         <CardMedia
                                             component="img"
-                                            image={`${IMAGE_BASE_URL}/${item.photo.replace(/^\/+/, '')}`}
+                                            image={getImageUrl(item.photo)}
                                             alt={item.topic}
                                             sx={{
                                                 width: { xs: '100%', md: '35%' },
-                                                height: { xs: 220, md: '100%' },
+                                                height: { xs: 220, sm: 240, md: 280 },
                                                 objectFit: 'cover',
                                             }}
                                         />

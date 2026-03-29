@@ -48,6 +48,8 @@ const UserLandingPage = () => {
     const [members, setMembers] = useState([]);
     const [galleryItems, setGalleryItems] = useState([]);
     const [likedPosts, setLikedPosts] = useState([]);
+    const [expandedAbout, setExpandedAbout] = useState(false);
+    const [expandedPresident, setExpandedPresident] = useState(false);
     const recentActivityRef = useRef(null);
 
     const toggleLike = (e, id) => {
@@ -249,17 +251,24 @@ const UserLandingPage = () => {
 
         let intervalId;
         const startScroll = () => {
-            intervalId = setInterval(() => {
-                container.scrollTop += 0.5; // Very slow speed
+            if (!intervalId) {
+                intervalId = setInterval(() => {
+                    container.scrollTop += 0.5; // Very slow speed
 
-                // When we've scrolled past the original content height, reset to top seamlessly
-                if (container.scrollTop >= container.scrollHeight / 2) {
-                    container.scrollTop = 0;
-                }
-            }, 30);
+                    // When we've scrolled past the original content height, reset to top seamlessly
+                    if (container.scrollTop >= container.scrollHeight / 2) {
+                        container.scrollTop = 0;
+                    }
+                }, 30);
+            }
         };
 
-        const stopScroll = () => clearInterval(intervalId);
+        const stopScroll = () => {
+            if (intervalId) {
+                clearInterval(intervalId);
+                intervalId = null;
+            }
+        };
 
         startScroll();
 
@@ -267,10 +276,20 @@ const UserLandingPage = () => {
         container.addEventListener('mouseenter', stopScroll);
         container.addEventListener('mouseleave', startScroll);
 
+        // Pause on touch/hold
+        container.addEventListener('touchstart', stopScroll, { passive: true });
+        container.addEventListener('touchend', startScroll, { passive: true });
+        container.addEventListener('mousedown', stopScroll);
+        container.addEventListener('mouseup', startScroll);
+
         return () => {
             stopScroll();
             container.removeEventListener('mouseenter', stopScroll);
             container.removeEventListener('mouseleave', startScroll);
+            container.removeEventListener('touchstart', stopScroll);
+            container.removeEventListener('touchend', startScroll);
+            container.removeEventListener('mousedown', stopScroll);
+            container.removeEventListener('mouseup', startScroll);
         };
     }, [activities]);
 
@@ -396,7 +415,7 @@ const UserLandingPage = () => {
                             </Box>
                             <Box sx={{ px: 1, height: '100%', py: 0.5 }}>
                                 <Card
-                                    onClick={() => navigate('/upcoming-events')}
+                                    onClick={() => navigate('/donate')}
                                     sx={{
                                         display: 'flex',
                                         flexDirection: 'column',
@@ -412,8 +431,8 @@ const UserLandingPage = () => {
                                         minHeight: { xs: 110, md: 140 }
                                     }}
                                 >
-                                    <Event sx={{ fontSize: { xs: 30, md: 36 }, color: '#1976d2', mb: 1.2 }} />
-                                    <Typography variant="h6" fontWeight={600} sx={{ fontSize: { xs: '0.85rem', md: '1rem' }, lineHeight: 1.1 }}>{t('navbar.upcoming_events')}</Typography>
+                                    <VolunteerActivism sx={{ fontSize: { xs: 30, md: 36 }, color: '#1976d2', mb: 1.2 }} />
+                                    <Typography variant="h6" fontWeight={600} sx={{ fontSize: { xs: '0.85rem', md: '1rem' }, lineHeight: 1.1 }}>{t('navbar.donate')}</Typography>
                                 </Card>
                             </Box>
                             <Box sx={{ px: 1, height: '100%', py: 0.5 }}>
@@ -440,7 +459,7 @@ const UserLandingPage = () => {
                             </Box>
                             <Box sx={{ px: 1, height: '100%', py: 0.5 }}>
                                 <Card
-                                    onClick={() => navigate('/donate')}
+                                    onClick={() => navigate('/upcoming-events')}
                                     sx={{
                                         display: 'flex',
                                         flexDirection: 'column',
@@ -456,8 +475,8 @@ const UserLandingPage = () => {
                                         minHeight: { xs: 110, md: 140 }
                                     }}
                                 >
-                                    <VolunteerActivism sx={{ fontSize: { xs: 30, md: 36 }, color: '#1976d2', mb: 1.2 }} />
-                                    <Typography variant="h6" fontWeight={600} sx={{ fontSize: { xs: '0.85rem', md: '1rem' }, lineHeight: 1.1 }}>{t('navbar.donate')}</Typography>
+                                    <Event sx={{ fontSize: { xs: 30, md: 36 }, color: '#1976d2', mb: 1.2 }} />
+                                    <Typography variant="h6" fontWeight={600} sx={{ fontSize: { xs: '0.85rem', md: '1rem' }, lineHeight: 1.1 }}>{t('navbar.upcoming_events')}</Typography>
                                 </Card>
                             </Box>
                             <Box sx={{ px: 1, height: '100%', py: 0.5 }}>
@@ -501,14 +520,10 @@ const UserLandingPage = () => {
                                             sx={{
                                                 mb: 2,
                                                 flexGrow: 1,
-                                                overflowY: 'auto',
+                                                overflow: 'hidden',
+                                                touchAction: 'none',
+                                                userSelect: 'none',
                                                 pr: 0.5,
-                                                // Hide scrollbar but keep functionality
-                                                scrollbarWidth: 'none',
-                                                msOverflowStyle: 'none',
-                                                '&::-webkit-scrollbar': {
-                                                    display: 'none'
-                                                }
                                             }}
                                         >
                                             {/* Render activities twice for infinite scrolling effect */}
@@ -589,13 +604,8 @@ const UserLandingPage = () => {
                                                         height: '100%',
                                                         borderRadius: 3,
                                                         boxShadow: 'none',
-                                                        border: '1px solid #ccc',
-                                                        cursor: 'pointer',
-                                                        transition: 'transform 0.2s',
-                                                        '&:hover': {
-                                                            transform: 'translateY(-4px)',
-                                                            boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
-                                                        }
+                                                        border: '1px solid #e0e0e0',
+                                                        cursor: 'pointer'
                                                     }}
                                                         onClick={() => navigate('/latest-activity-detail', { state: { id: activity._id || activity.id } })}
                                                     >
@@ -753,27 +763,44 @@ const UserLandingPage = () => {
                                 }}>
                                     {t('about_section.p2')}
                                 </Typography>
-                                <Typography paragraph color="text.secondary" sx={{
-                                    fontSize: { xs: '0.95rem', md: '1.05rem' },
-                                    lineHeight: 1.7,
-                                    textAlign: 'justify'
-                                }}>
-                                    {t('about_section.p3')}
-                                </Typography>
-                                <Typography paragraph color="text.secondary" sx={{
-                                    fontSize: { xs: '0.95rem', md: '1.05rem' },
-                                    lineHeight: 1.7,
-                                    textAlign: 'justify'
-                                }}>
-                                    {t('about_section.p4')}
-                                </Typography>
-                                <Typography paragraph color="text.secondary" sx={{
-                                    fontSize: { xs: '0.95rem', md: '1.05rem' },
-                                    lineHeight: 1.7,
-                                    textAlign: 'justify'
-                                }}>
-                                    {t('about_section.p5')}
-                                </Typography>
+                                <Box sx={{ display: { xs: expandedAbout ? 'block' : 'none', md: 'block' } }}>
+                                    <Typography paragraph color="text.secondary" sx={{
+                                        fontSize: { xs: '0.95rem', md: '1.05rem' },
+                                        lineHeight: 1.7,
+                                        textAlign: 'justify'
+                                    }}>
+                                        {t('about_section.p3')}
+                                    </Typography>
+                                    <Typography paragraph color="text.secondary" sx={{
+                                        fontSize: { xs: '0.95rem', md: '1.05rem' },
+                                        lineHeight: 1.7,
+                                        textAlign: 'justify'
+                                    }}>
+                                        {t('about_section.p4')}
+                                    </Typography>
+                                    <Typography paragraph color="text.secondary" sx={{
+                                        fontSize: { xs: '0.95rem', md: '1.05rem' },
+                                        lineHeight: 1.7,
+                                        textAlign: 'justify'
+                                    }}>
+                                        {t('about_section.p5')}
+                                    </Typography>
+                                </Box>
+
+                                <Box sx={{ display: { xs: 'block', md: 'none' }, textAlign: 'left', mt: 1 }}>
+                                    <Button 
+                                        onClick={() => setExpandedAbout(!expandedAbout)}
+                                        sx={{ 
+                                            textTransform: 'none', 
+                                            fontWeight: 700, 
+                                            color: '#1565c0',
+                                            p: 0,
+                                            '&:hover': { bgcolor: 'transparent', textDecoration: 'none' }
+                                        }}
+                                    >
+                                        {expandedAbout ? t('common.read_less', 'Read Less') : t('common.read_more', 'Read More..')}
+                                    </Button>
+                                </Box>
                             </Grid>
                         </Grid>
                     </Paper>
@@ -803,7 +830,7 @@ const UserLandingPage = () => {
                                         image={obj.image}
                                         alt={obj.title}
                                     />
-                                    <CardContent sx={{ p: 1.5 }}>
+                                    <CardContent sx={{ p: 1.2, '&:last-child': { pb: 1.2 } }}>
                                         <Typography variant="body2" textAlign="center" fontWeight={600} sx={{ fontSize: { xs: '0.75rem', md: '0.875rem' } }}>
                                             {obj.title}
                                         </Typography>
@@ -896,12 +923,16 @@ const UserLandingPage = () => {
                             <Box key={item._id} sx={{ px: 1.5, py: 1 }}>
                                 <Card
                                     sx={{
-                                        cursor: 'pointer',
+                                        cursor: { xs: 'default', md: 'pointer' },
                                         borderRadius: 2,
                                         overflow: 'hidden',
                                         boxShadow: 2
                                     }}
-                                    onClick={() => setSelectedImage(item.photo)}
+                                    onClick={() => {
+                                        if (window.innerWidth > 600) {
+                                            setSelectedImage(item.photo);
+                                        }
+                                    }}
                                 >
                                     <CardMedia
                                         component="img"
@@ -995,12 +1026,31 @@ const UserLandingPage = () => {
                                                     fontSize: { xs: '0.95rem', md: '1.05rem' },
                                                     lineHeight: 1.8,
                                                     textAlign: 'justify',
-                                                    mb: idx === 5 ? 0 : 2.5
+                                                    mb: idx === 5 ? 0 : 2.5,
+                                                    display: { 
+                                                        xs: (idx > 2 && !expandedPresident) ? 'none' : 'block', 
+                                                        md: 'block' 
+                                                    }
                                                 }}
                                             >
                                                 {t(`president_message.p${idx}`)}
                                             </Typography>
                                         ))}
+
+                                        <Box sx={{ display: { xs: 'block', md: 'none' }, textAlign: 'left', mt: 1 }}>
+                                            <Button 
+                                                onClick={() => setExpandedPresident(!expandedPresident)}
+                                                sx={{ 
+                                                    textTransform: 'none', 
+                                                    fontWeight: 700, 
+                                                    color: '#1565c0',
+                                                    p: 0,
+                                                    '&:hover': { bgcolor: 'transparent', textDecoration: 'none' }
+                                                }}
+                                            >
+                                                {expandedPresident ? t('common.read_less', 'Read Less') : t('common.read_more', 'Read More..')}
+                                            </Button>
+                                        </Box>
                                     </Box>
                                 </Box>
                             </Grid>

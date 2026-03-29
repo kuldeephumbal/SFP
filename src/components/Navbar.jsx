@@ -329,15 +329,16 @@ const Navbar = () => {
             {/* Header/Navbar */}
             <AppBar position="sticky" sx={{ bgcolor: '#1976d2', color: 'white', boxShadow: 0 }}>
                 <Container maxWidth="lg" sx={{ px: { xs: 2, sm: 3 } }}>
-                    <Toolbar sx={{ justifyContent: 'space-between', gap: 0, minHeight: '44px !important', py: 0 }}>
+                    <Toolbar sx={{ justifyContent: 'space-between', gap: 0, minHeight: { xs: '60px !important', md: '44px !important' }, py: 0 }}>
                         <Box sx={{ display: { xs: 'flex', md: 'none' }, alignItems: 'center', width: '100%', justifyContent: 'space-between' }}>
-                            <Box onClick={() => navigate('/')} sx={{ display: 'flex', alignItems: 'center', gap: 1, cursor: 'pointer' }}>
-                                <img src="/assets/img/Shankhnad-logo.png" alt="Logo" style={{ height: 28 }} />
+                            <Box onClick={() => navigate('/')} sx={{ display: 'flex', alignItems: 'center', gap: 1.5, cursor: 'pointer' }}>
+                                <img src="/assets/img/Shankhnad-logo.png" alt="Logo" style={{ height: 40 }} />
                                 <Typography variant="subtitle1" sx={{
-                                    fontWeight: 700,
+                                    fontWeight: 750,
                                     color: 'white',
-                                    fontSize: { xs: '0.75rem', sm: '0.9rem' },
-                                    lineHeight: 1.2
+                                    fontSize: { xs: '1.1rem', sm: '1.2rem' },
+                                    lineHeight: 1.1,
+                                    letterSpacing: '0.02em'
                                 }}>
                                     {t('foundation_name')}
                                 </Typography>

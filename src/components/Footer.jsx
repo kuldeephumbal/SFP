@@ -12,56 +12,78 @@ const Footer = () => {
                 <Grid container spacing={4} justifyContent={{ xs: 'center', md: 'space-between' }} alignItems="flex-start">
                     {/* Logo & Follow Us Section */}
                     <Grid size={{ xs: 12, md: 4 }}>
-                        <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2 }}>
-                            <Box sx={{ bgcolor: 'white', p: 2, borderRadius: 2 }}>
-                                <img
-                                    src="/assets/img/Shankhnad-logo.png"
-                                    alt={t('foundation_name')}
-                                    style={{ width: 100 }}
-                                />
-                            </Box>
-                            <Typography variant="h6" sx={{ fontWeight: 600 }}>{t('footer.follow_us')}</Typography>
-                            <Box sx={{ display: 'flex', gap: 1 }}>
-                                <IconButton component="a" href="https://www.facebook.com/shankhnadnews/" target="_blank" sx={{ bgcolor: '#3b5998', color: 'white', '&:hover': { bgcolor: '#2d4373' } }}>
-                                    <Facebook />
-                                </IconButton>
-                                <IconButton component="a" href="https://x.com/NewsShankhnad" target="_blank" sx={{ bgcolor: '#000000', color: 'white', '&:hover': { bgcolor: '#333333' } }}>
-                                    <XIcon />
-                                </IconButton>
-                                <IconButton component="a" href="https://www.instagram.com/shankhnad_the_voice/" target="_blank" sx={{ bgcolor: '#e4405f', color: 'white', '&:hover': { bgcolor: '#c13584' } }}>
-                                    <Instagram />
-                                </IconButton>
-                                <IconButton component="a" href="https://www.youtube.com/channel/UC-FPnJJ5-YAYTjTrt7P1o4w" target="_blank" sx={{ bgcolor: '#ff0000', color: 'white', '&:hover': { bgcolor: '#cc0000' } }}>
-                                    <YouTube />
-                                </IconButton>
+                        <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: { xs: 'center', md: 'flex-start' } }}>
+                            <Box sx={{ 
+                                width: '100%', 
+                                maxWidth: '320px', 
+                                display: 'flex', 
+                                flexDirection: { xs: 'row', md: 'column' }, 
+                                alignItems: { xs: 'center', md: 'flex-start' }, 
+                                gap: { xs: 3, md: 2 } 
+                            }}>
+                                <Box sx={{ bgcolor: 'white', p: 1.5, borderRadius: 2, flexShrink: 0 }}>
+                                    <img
+                                        src="/assets/img/Shankhnad-logo.png"
+                                        alt={t('foundation_name')}
+                                        style={{ width: 80 }}
+                                    />
+                                </Box>
+                                
+                                <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 1 }}>
+                                    <Typography variant="subtitle1" sx={{ fontWeight: 700, fontSize: '0.95rem' }}>{t('footer.follow_us')}</Typography>
+                                    <Box sx={{ display: 'flex', gap: 1 }}>
+                                        <IconButton component="a" href="https://www.facebook.com/shankhnadnews/" target="_blank" size="small" sx={{ bgcolor: '#3b5998', color: 'white', p: 0.8, '&:hover': { bgcolor: '#2d4373' } }}>
+                                            <Facebook fontSize="small" />
+                                        </IconButton>
+                                        <IconButton component="a" href="https://x.com/NewsShankhnad" target="_blank" size="small" sx={{ bgcolor: '#000000', color: 'white', p: 0.8, '&:hover': { bgcolor: '#333333' } }}>
+                                            <XIcon fontSize="small" />
+                                        </IconButton>
+                                        <IconButton component="a" href="https://www.instagram.com/shankhnad_the_voice/" target="_blank" size="small" sx={{ bgcolor: '#e4405f', color: 'white', p: 0.8, '&:hover': { bgcolor: '#c13584' } }}>
+                                            <Instagram fontSize="small" />
+                                        </IconButton>
+                                        <IconButton component="a" href="https://www.youtube.com/channel/UC-FPnJJ5-YAYTjTrt7P1o4w" target="_blank" size="small" sx={{ bgcolor: '#ff0000', color: 'white', p: 0.8, '&:hover': { bgcolor: '#cc0000' } }}>
+                                            <YouTube fontSize="small" />
+                                        </IconButton>
+                                    </Box>
+                                </Box>
                             </Box>
                         </Box>
                     </Grid>
 
                     {/* Contact Info Section - Address last */}
                     <Grid size={{ xs: 12, md: 4 }}>
-                        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3, width: '100%', alignItems: { xs: 'center', md: 'flex-start' }, textAlign: { xs: 'center', md: 'left' } }}>
-                            <Box sx={{ display: 'flex', flexDirection: { xs: 'column', md: 'row' }, alignItems: { xs: 'center', md: 'flex-start' }, gap: 2 }}>
-                                <Phone sx={{ color: '#ecf0f1', fontSize: '1.8rem', mt: { md: 0.5 } }} />
-                                <Box>
-                                    <Typography variant="subtitle1" sx={{ fontWeight: 600, color: 'white' }}>{t('footer.call_us')}</Typography>
-                                    <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.8)' }}>+91 98792 75333</Typography>
+                        <Box sx={{ 
+                            display: 'flex', 
+                            flexDirection: 'column', 
+                            gap: 3, 
+                            width: '100%', 
+                            alignItems: { xs: 'center', md: 'flex-start' }, 
+                            textAlign: 'left' 
+                        }}>
+                            {/* Grouping for perfect vertical alignment of icons while centering the group */}
+                            <Box sx={{ width: '100%', maxWidth: '320px', display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 3 }}>
+                                <Box sx={{ display: 'flex', flexDirection: 'row', alignItems: 'flex-start', gap: 2 }}>
+                                    <Phone sx={{ color: '#ecf0f1', fontSize: '1.5rem', mt: 0.5 }} />
+                                    <Box>
+                                        <Typography variant="subtitle1" sx={{ fontWeight: 700, color: 'white', lineHeight: 1.2 }}>{t('footer.call_us')}</Typography>
+                                        <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.8)' }}>+91 98792 75333</Typography>
+                                    </Box>
                                 </Box>
-                            </Box>
-                            <Box sx={{ display: 'flex', flexDirection: { xs: 'column', md: 'row' }, alignItems: { xs: 'center', md: 'flex-start' }, gap: 2 }}>
-                                <Email sx={{ color: '#ecf0f1', fontSize: '1.8rem', mt: { md: 0.5 } }} />
-                                <Box>
-                                    <Typography variant="subtitle1" sx={{ fontWeight: 600, color: 'white' }}>{t('footer.email')}</Typography>
-                                    <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.8)' }}>shanknadfs@gmail.com</Typography>
+                                <Box sx={{ display: 'flex', flexDirection: 'row', alignItems: 'flex-start', gap: 2 }}>
+                                    <Email sx={{ color: '#ecf0f1', fontSize: '1.5rem', mt: 0.5 }} />
+                                    <Box>
+                                        <Typography variant="subtitle1" sx={{ fontWeight: 700, color: 'white', lineHeight: 1.2 }}>{t('footer.email')}</Typography>
+                                        <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.8)' }}>shanknadfs@gmail.com</Typography>
+                                    </Box>
                                 </Box>
-                            </Box>
-                            <Box sx={{ display: 'flex', flexDirection: { xs: 'column', md: 'row' }, alignItems: { xs: 'center', md: 'flex-start' }, gap: 2 }}>
-                                <LocationOn sx={{ color: '#ecf0f1', fontSize: '1.8rem', mt: { md: 0.5 } }} />
-                                <Box>
-                                    <Typography variant="subtitle1" sx={{ fontWeight: 600, color: 'white' }}>{t('footer.address')}</Typography>
-                                    <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.8)', maxWidth: '280px' }}>
-                                        {t('footer.footer_address', 'Shankhanad News, 402-Dwarkesh Flat, Sihor Pin - 364240')}
-                                    </Typography>
+                                <Box sx={{ display: 'flex', flexDirection: 'row', alignItems: 'flex-start', gap: 2 }}>
+                                    <LocationOn sx={{ color: '#ecf0f1', fontSize: '1.5rem', mt: 0.5 }} />
+                                    <Box>
+                                        <Typography variant="subtitle1" sx={{ fontWeight: 700, color: 'white', lineHeight: 1.2 }}>{t('footer.address')}</Typography>
+                                        <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.8)', maxWidth: '280px' }}>
+                                            {t('footer.footer_address', 'Shankhanad News, 402-Dwarkesh Flat, Sihor Pin - 364240')}
+                                        </Typography>
+                                    </Box>
                                 </Box>
                             </Box>
                         </Box>
@@ -69,11 +91,12 @@ const Footer = () => {
 
                     {/* Useful Links Section */}
                     <Grid size={{ xs: 12, md: 4 }}>
-                        <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: { xs: 'center', md: 'flex-start' }, textAlign: { xs: 'center', md: 'left' } }}>
-                            <Typography variant="h6" sx={{ fontWeight: 600, mb: 3, pb: 1, borderBottom: '2px solid rgba(255,255,255,0.1)', width: { xs: 'auto', md: '100%' } }}>{t('footer.useful_links')}</Typography>
-                            <Grid container spacing={2} sx={{ width: '100%', maxWidth: { xs: '300px', md: 'none' } }}>
+                        <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: { xs: 'center', md: 'flex-start' }, textAlign: 'left' }}>
+                            <Box sx={{ width: '100%', maxWidth: '320px', display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
+                                <Typography variant="h6" sx={{ fontWeight: 600, mb: 3, pb: 1, borderBottom: '2px solid rgba(255,255,255,0.1)', width: '100%' }}>{t('footer.useful_links')}</Typography>
+                                <Grid container spacing={2} sx={{ width: '100%' }}>
                                 <Grid size={{ xs: 6 }}>
-                                    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.2, alignItems: { xs: 'center', md: 'flex-start' } }}>
+                                    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.2, alignItems: 'flex-start' }}>
                                         <MuiLink component={Link} to="/" color="inherit" underline="hover" sx={{ fontSize: '0.85rem', color: 'rgba(255,255,255,0.8)', '&:hover': { color: 'white' } }}>{t('navbar.home')}</MuiLink>
                                         <MuiLink component={Link} to="/member-apply" color="inherit" underline="hover" sx={{ fontSize: '0.85rem', color: 'rgba(255,255,255,0.8)', '&:hover': { color: 'white' } }}>{t('navbar.apply')}</MuiLink>
                                         <MuiLink component={Link} to="/our-team" color="inherit" underline="hover" sx={{ fontSize: '0.85rem', color: 'rgba(255,255,255,0.8)', '&:hover': { color: 'white' } }}>{t('navbar.team')}</MuiLink>
@@ -82,7 +105,7 @@ const Footer = () => {
                                     </Box>
                                 </Grid>
                                 <Grid size={{ xs: 6 }}>
-                                    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.2, alignItems: { xs: 'center', md: 'flex-start' } }}>
+                                    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.2, alignItems: 'flex-start' }}>
                                         <MuiLink component={Link} to="/upcoming-events" color="inherit" underline="hover" sx={{ fontSize: '0.85rem', color: 'rgba(255,255,255,0.8)', '&:hover': { color: 'white' } }}>{t('navbar.upcoming_events')}</MuiLink>
                                         <MuiLink component={Link} to="/donate" color="inherit" underline="hover" sx={{ fontSize: '0.85rem', color: 'rgba(255,255,255,0.8)', '&:hover': { color: 'white' } }}>{t('navbar.donate')}</MuiLink>
                                         <MuiLink component={Link} to="/gallery" color="inherit" underline="hover" sx={{ fontSize: '0.85rem', color: 'rgba(255,255,255,0.8)', '&:hover': { color: 'white' } }}>{t('navbar.gallery')}</MuiLink>
@@ -92,7 +115,8 @@ const Footer = () => {
                                 </Grid>
                             </Grid>
                         </Box>
-                    </Grid>
+                    </Box>
+                </Grid>
                 </Grid>
                 <Divider sx={{ my: 3, bgcolor: 'rgba(255,255,255,0.2)' }} />
                 <Box sx={{ textAlign: 'center' }}>

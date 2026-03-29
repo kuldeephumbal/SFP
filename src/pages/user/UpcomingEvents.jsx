@@ -153,8 +153,8 @@ const UpcomingEvents = () => {
                                             image={getImageUrl(event.photo)}
                                             alt={event.topic}
                                             sx={{
-                                                width: { xs: '100%', md: '40%' },
-                                                height: { xs: 250, md: 'auto' },
+                                                width: { xs: '100%', md: '35%' },
+                                                height: { xs: 220, sm: 240, md: 280 },
                                                 objectFit: 'cover',
                                             }}
                                         />

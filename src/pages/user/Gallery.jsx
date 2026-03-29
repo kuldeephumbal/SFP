@@ -47,9 +47,11 @@ const Gallery = () => {
         fetchGallery();
     }, []);
 
-    // Handle opening image in modal
+    // Handle opening image in modal (only for screens > 600px)
     const handleImageClick = (photo) => {
-        setSelectedImage(photo);
+        if (window.innerWidth > 600) {
+            setSelectedImage(photo);
+        }
     };
 
     // Handle closing modal
@@ -91,19 +93,30 @@ const Gallery = () => {
                             </Typography>
                         </Box>
                     ) : (
-                        <Grid container spacing={3}>
+                        <Box
+                            sx={{
+                                display: 'grid',
+                                gridTemplateColumns: {
+                                    xs: '1fr',
+                                    sm: 'repeat(2, 1fr)',
+                                    md: 'repeat(4, 1fr)',
+                                },
+                                gap: 3,
+                            }}
+                        >
                             {galleryItems.map((item) => (
-                                <Grid item xs={12} sm={6} md={4} key={item._id}>
+                                <Box key={item._id}>
                                     <Card
                                         sx={{
-                                            cursor: 'pointer',
+                                            cursor: { xs: 'default', md: 'pointer' },
                                             boxShadow: 2,
-                                            borderRadius: 1,
+                                            borderRadius: 2,
                                             overflow: 'hidden',
+                                            transition: 'all 0.3s ease-in-out',
+                                            height: '100%',
                                             '&:hover': {
-                                                boxShadow: 6,
-                                                transform: { xs: 'none', md: 'scale(1.02)' },
-                                                transition: 'all 0.3s ease-in-out',
+                                                boxShadow: { xs: 2, md: 8 },
+                                                transform: { xs: 'none', md: 'translateY(-5px)' },
                                             },
                                         }}
                                         onClick={() => handleImageClick(item.photo)}
@@ -113,21 +126,23 @@ const Gallery = () => {
                                             image={getImageUrl(item.photo)}
                                             alt={item.title || 'Gallery Image'}
                                             sx={{
-                                                height: 250,
+                                                width: '100%',
+                                                aspectRatio: '16/11',
                                                 objectFit: 'cover',
+                                                display: 'block',
                                             }}
                                         />
                                         {item.title && (
-                                            <Box sx={{ p: 1.5, textAlign: 'center' }}>
-                                                <Typography variant="body2" sx={{ fontWeight: 500 }}>
+                                            <Box sx={{ p: 1.5, textAlign: 'center', bgcolor: 'white' }}>
+                                                <Typography variant="body2" sx={{ fontWeight: 600, color: '#333' }}>
                                                     {item.title}
                                                 </Typography>
                                             </Box>
                                         )}
                                     </Card>
-                                </Grid>
+                                </Box>
                             ))}
-                        </Grid>
+                        </Box>
                     )}
 
                     {/* Image Modal */}

@@ -134,11 +134,11 @@ const OurTeam = () => {
                                         image={member.photo ? `${IMAGE_BASE_URL}/${member.photo.replace(/^\/+/, '')}` : '/assets/img/default-member.png'}
                                         alt={member.name}
                                         sx={{
-                                            height: { xs: 200, sm: 220 },
+                                            height: { xs: 210, sm: 270 },
                                             objectFit: 'cover',
                                         }}
                                     />
-                                    <CardContent sx={{ flexGrow: 1 }}>
+                                    <CardContent sx={{ flexGrow: 1, p: 1.5, '&:last-child': { pb: 1.5 } }}>
                                         <Typography
                                             variant="h6"
                                             sx={{
